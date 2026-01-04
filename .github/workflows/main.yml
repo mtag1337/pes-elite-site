@@ -14,3 +14,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           projectId: pes-elite
           channelId: live
+          entryPoint: .
