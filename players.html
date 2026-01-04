@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PES ELITE | دليل المستخدمين</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --bg: #020205;
+            --panel: #0a0a0f;
+            --border: rgba(255, 255, 255, 0.05);
+        }
+
+        /* الصفحة مخفية تماماً في البداية */
+        body {
+            background: var(--bg);
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto 30px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 15px;
+        }
+
+        .search-box {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: #fff;
+            width: 300px;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .player-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
+        }
+
+        .player-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+
+        .player-img {
+            width: 80px; height: 80px;
+            border-radius: 15px; object-fit: cover;
+            border: 2px solid #1a1a1a;
+        }
+
+        .info h3 { margin: 0; font-size: 18px; color: var(--primary); }
+        .info p { margin: 3px 0; font-size: 12px; color: #888; }
+
+        .stat-item {
+            background: rgba(0, 242, 255, 0.05);
+            padding: 5px 10px; border-radius: 8px;
+            font-size: 11px; color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2><i class="fas fa-users"></i> دليل اللاعبين المسجلين (<span id="count">0</span>)</h2>
+    <input type="text" id="searchInput" class="search-box" placeholder="ابحث باسم اللاعب..." onkeyup="search()">
+</div>
+
+<div class="players-grid" id="playersContainer"></div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
+        authDomain: "pes-elite.firebaseapp.com",
+        projectId: "pes-elite",
+        storageBucket: "pes-elite.firebasestorage.app",
+        messagingSenderId: "407069539120",
+        appId: "1:407069539120:web:466249fa7f716266d9e6f5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // --- إعدادات الحماية ---
+    const ADMIN_EMAIL = "mtag1337@gmail.com"; 
+    const MASTER_PASS = "mtag1337@010#@010#";
+
+    auth.onAuthStateChanged(user => {
+        if (user && user.email === ADMIN_EMAIL) {
+            // الخطوة 2: الباسورد
+            let pass = prompt("من فضلك أدخل كلمة السر لرؤية دليل اللاعبين:");
+            if (pass === MASTER_PASS) {
+                document.body.style.opacity = "1"; // إظهار الصفحة
+                loadPlayers(); // تحميل البيانات
+            } else {
+                alert("كلمة سر خاطئة!");
+                window.location.href = "home.html";
+            }
+        } else {
+            // ليس المسؤول أو لم يسجل دخول
+            window.location.href = "login.html";
+        }
+    });
+
+    function loadPlayers() {
+        db.collection("players").orderBy("rank", "desc").onSnapshot(snap => {
+            const container = document.getElementById('playersContainer');
+            document.getElementById('count').innerText = snap.size;
+            container.innerHTML = "";
+
+            snap.forEach(doc => {
+                const p = doc.data();
+                const lvl = Math.floor((p.xp || 0) / 1000) + 1;
+                
+                container.innerHTML += `
+                    <div class="player-card">
+                        <img src="${p.photoURL || 'https://via.placeholder.com/80'}" class="player-img">
+                        <div class="info">
+                            <h3>${p.nickname}</h3>
+                            <p><i class="fas fa-id-badge"></i> ID: #${p.playerID}</p>
+                            <p><i class="fas fa-envelope"></i> ${p.email || 'مخفي'}</p>
+                            <div style="display:flex; gap:10px; margin-top:10px;">
+                                <div class="stat-item">LVL ${lvl}</div>
+                                <div class="stat-item">RANK ${p.rank}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    function search() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let cards = document.getElementsByClassName('player-card');
+        for (let card of cards) {
+            let name = card.getElementsByTagName('h3')[0].innerText.toLowerCase();
+            card.style.display = name.includes(input) ? "flex" : "none";
+        }
+    }
+</script>
+</body>
+</html>

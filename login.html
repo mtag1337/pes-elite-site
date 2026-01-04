@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+
+    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
+    
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648"
+     crossorigin="anonymous"></script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eFootball PES ELITE | LOGIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@900&family=Noto+Sans+AR:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --efootball-blue: #0014d3;
+            --efootball-yellow: #eaff00;
+            --efootball-pink: #ff007a;
+            --dark-overlay: rgba(0, 5, 40, 0.85);
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Noto Sans AR', sans-serif;
+            background-color: #000; overflow: hidden;
+        }
+
+        /* الخلفية الرسمية */
+        .video-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://w0.peakpx.com/wallpaper/246/401/HD-wallpaper-efootball-2022-messi.jpg') center/cover;
+            z-index: -1; transform: scale(1.1);
+            filter: saturate(1.5) contrast(1.1);
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(0, 20, 211, 0.7) 0%, rgba(255, 0, 122, 0.2) 100%);
+            z-index: 0;
+        }
+
+        .login-screen {
+            position: relative; z-index: 10;
+            height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: flex-start;
+            padding-right: 10%;
+        }
+
+        .brand-logo {
+            margin-bottom: 20px;
+            border-right: 8px solid var(--efootball-yellow);
+            padding-right: 20px;
+        }
+
+        .brand-logo h1 {
+            font-family: 'Kanit', sans-serif;
+            font-size: 80px; color: white; margin: 0;
+            font-style: italic; line-height: 0.9;
+            text-shadow: 4px 4px 0px var(--efootball-blue);
+        }
+
+        .brand-logo h1 span { color: var(--efootball-yellow); }
+
+        .sub-text {
+            color: white; font-size: 20px; font-weight: 900;
+            background: var(--efootball-pink); padding: 5px 20px;
+            display: inline-block; transform: skewX(-15deg);
+            margin-bottom: 50px;
+        }
+
+        .login-btn {
+            background: var(--efootball-yellow);
+            color: black; border: none;
+            padding: 20px 60px; font-size: 24px; font-weight: 900;
+            cursor: pointer; display: flex; align-items: center; gap: 20px;
+            clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05) translateX(10px);
+            background: white;
+            box-shadow: -10px 0 30px var(--efootball-yellow);
+        }
+
+        .login-btn i { font-size: 30px; color: var(--efootball-blue); }
+
+        .footer-info {
+            position: absolute; bottom: 40px; right: 10%;
+            color: white; font-size: 12px; opacity: 0.7;
+            text-align: left;
+        }
+
+        .fade-in { animation: fadeInRight 1s ease-out; }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-bg"></div>
+    <div class="overlay"></div>
+
+    <div class="login-screen">
+        <div class="brand-logo fade-in">
+            <h1>PES<br><span>ELITE</span></h1>
+        </div>
+        
+        <div class="sub-text fade-in" style="animation-delay: 0.2s;">
+            SEASON 2026: THE EVOLUTION
+        </div>
+
+        <button class="login-btn fade-in" style="animation-delay: 0.4s;" onclick="login()">
+            <i class="fab fa-google"></i>
+            PRESS START TO LOGIN
+        </button>
+    </div>
+
+    <div class="footer-info">
+        &copy; 2026 KONAMI Digital Entertainment (Elite Mod)<br>
+        Powered by Firebase Auth & eFootball Engine
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
+            authDomain: "pes-elite.firebaseapp.com",
+            projectId: "pes-elite",
+            storageBucket: "pes-elite.firebasestorage.app",
+            messagingSenderId: "407069539120",
+            appId: "1:407069539120:web:466249fa7f716266d9e6f5"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function login() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).then((result) => {
+                const user = result.user;
+                const userRef = db.collection("players").doc(user.uid);
+
+                // فحص هل اللاعب مسجل قبل كدة ولا أول مرة؟
+                userRef.get().then((doc) => {
+                    if (!doc.exists) {
+                        // إنشاء بروفايل جديد ببيانات افتراضية
+                        return userRef.set({
+                            nickname: user.displayName,
+                            profilePic: user.photoURL,
+                            email: user.email,
+                            efootballId: "لم يحدد", // اللاعب يغيره من البروفايل
+                            gpPoints: 1000,
+                            trophies: 0,
+                            matchesPlayed: 0,
+                            verified: false,
+                            role: "player",
+                            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } else {
+                        // تحديث وقت الدخول فقط دون مسح البيانات (زي الـ GP)
+                        return userRef.update({
+                            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                }).then(() => {
+                    window.location.href = "home.html";
+                });
+
+            }).catch((err) => {
+                alert("حدث خطأ في الدخول: " + err.message);
+            });
+        }
+    </script>
+</body>
+</html>
