@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الدوري | PES ELITE</title>
+    <title>إدارة PES ELITE</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
-        body { background: #050508; color: white; font-family: sans-serif; padding: 15px; }
-        .card { background: #111; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 20px; }
-        select, input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: none; font-size: 1rem; }
-        button { background: #eaff00; color: #000; font-weight: bold; cursor: pointer; }
+        :root { --p: #eaff00; --bg: #050508; --c: #111; }
+        body { background: var(--bg); color: white; font-family: sans-serif; padding: 15px; margin: 0; }
+        .card { background: var(--c); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 20px; }
+        select, input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: none; font-size: 1rem; box-sizing: border-box; }
+        button { background: var(--p); color: #000; font-weight: bold; cursor: pointer; }
         .reset-btn { background: #ff4d4d; color: white; font-size: 0.8rem; }
+        h2, h3 { color: var(--p); margin-top: 0; }
     </style>
 </head>
 <body>
@@ -19,7 +21,7 @@
     <h2 style="text-align:center">⚙️ لوحة التحكم الشاملة</h2>
 
     <div class="card">
-        <h3>⚽ تسجيل مباراة (ستظهر في الدوري والأرشيف)</h3>
+        <h3>⚽ تسجيل نتيجة مباراة</h3>
         <select id="t1"></select>
         <select id="t2"></select>
         <div style="display:flex; gap:10px;">
@@ -30,16 +32,17 @@
     </div>
 
     <div class="card">
-        <h3>📝 تسمية الفرق (الـ 15 خانة)</h3>
+        <h3>📝 إعداد أسماء الفرق (15 خانة)</h3>
         <select id="editSelect"></select>
-        <input type="text" id="newName" placeholder="اسم اللاعب/الفريق الجديد">
+        <input type="text" id="newName" placeholder="الاسم الجديد">
         <input type="text" id="newLogo" placeholder="رابط الصورة (Logo)">
-        <button style="background:white" onclick="updateTeam()">تحديث الاسم والصورة</button>
+        <button style="background:white" onclick="updateTeam()">تحديث البيانات</button>
     </div>
 
-    <div class="card" style="text-align:center; border-color: red;">
-        <h3>🚨 إعداد دوري جديد</h3>
-        <button class="reset-btn" onclick="createNewLeague()">إنشاء 15 خانة دوري فارغة (تصفير الكل)</button>
+    <div class="card" style="border-color: red; text-align: center;">
+        <h3>🚨 منطقة الخطر</h3>
+        <button class="reset-btn" onclick="createNewLeague()">إنشاء دوري جديد (تصفير الكل)</button>
+        <p style="font-size: 0.7rem; color: #777; margin-top: 10px;">* هذا الزر يمسح كل النتائج ويجهز 15 خانة فارغة.</p>
     </div>
 
 <script>
@@ -54,36 +57,27 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // تحميل الفرق في القوائم
     function loadTeams() {
         db.collection("MainLeague").orderBy("id").onSnapshot(snap => {
             let html = '<option value="">اختر الفريق...</option>';
-            snap.forEach(doc => {
-                html += `<option value="${doc.id}">${doc.data().name}</option>`;
-            });
+            snap.forEach(doc => { html += `<option value="${doc.id}">${doc.data().name}</option>`; });
             document.getElementById('t1').innerHTML = html;
             document.getElementById('t2').innerHTML = html;
             document.getElementById('editSelect').innerHTML = html;
         });
     }
 
-    // تسجيل المباراة وتحديث الجدول
     async function recordMatch() {
         const id1 = document.getElementById('t1').value, id2 = document.getElementById('t2').value;
         const sc1 = parseInt(document.getElementById('s1').value), sc2 = parseInt(document.getElementById('s2').value);
-        if(!id1 || !id2 || isNaN(sc1) || isNaN(sc2)) return alert("برجاء إدخال كافة البيانات");
-
+        if(!id1 || !id2 || isNaN(sc1)) return alert("أكمل البيانات");
         const n1 = document.querySelector(`#t1 option[value="${id1}"]`).text;
         const n2 = document.querySelector(`#t2 option[value="${id2}"]`).text;
 
-        // 1. تسجيل في الأرشيف
         await db.collection("AllMatchesHistory").add({ t1: n1, t2: n2, s1: sc1, s2: sc2, time: Date.now() });
-        
-        // 2. تحديث نقاط الفريقين
         await updateStats(id1, sc1, sc2);
         await updateStats(id2, sc2, sc1);
-        
-        alert("تم الحفظ بنجاح!");
+        alert("تم الحفظ!");
     }
 
     async function updateStats(id, gf, ga) {
@@ -101,27 +95,25 @@
 
     async function updateTeam() {
         const id = document.getElementById('editSelect').value;
-        const name = document.getElementById('newName').value;
-        const logo = document.getElementById('newLogo').value;
-        if(!id) return alert("اختر فريقاً أولاً");
+        const name = document.getElementById('newName').value, logo = document.getElementById('newLogo').value;
+        if(!id) return;
         let obj = {}; if(name) obj.name = name; if(logo) obj.logo = logo;
         await db.collection("MainLeague").doc(id).update(obj);
-        alert("تم تحديث الفريق");
+        alert("تم التحديث");
     }
 
     async function createNewLeague() {
-        if(!confirm("سيتم حذف الدوري الحالي وكافة النتائج! هل أنت متأكد؟")) return;
+        if(!confirm("سيتم تصفير الدوري بالكامل! هل أنت متأكد؟")) return;
         const oldL = await db.collection("MainLeague").get();
         for(let doc of oldL.docs) await db.collection("MainLeague").doc(doc.id).delete();
         const oldH = await db.collection("AllMatchesHistory").get();
         for(let doc of oldH.docs) await db.collection("AllMatchesHistory").doc(doc.id).delete();
-        
         for(let i=1; i<=15; i++) {
             await db.collection("MainLeague").doc("team"+i).set({
                 id: i, name: "فريق " + i, logo: "", played: 0, w:0, d:0, l:0, gf:0, ga:0, pts: 0, gd: 0
             });
         }
-        alert("تم إنشاء دوري جديد فارغ!");
+        alert("تم إنشاء دوري جديد!");
     }
     loadTeams();
 </script>
