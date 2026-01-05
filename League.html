@@ -1,96 +1,94 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-
-    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
-    
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648"
-     crossorigin="anonymous"></script>
-
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PES ELITE | الدوري العام</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Orbitron:wght@800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --bg: #050508; --neon: #00ff88; --accent: #00f2ff; --glass: rgba(255, 255, 255, 0.05); }
-        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; overflow-x: hidden; }
+        :root { 
+            --primary: #eaff00; 
+            --bg: #020205; 
+            --panel: #0a0a0f; 
+            --border: rgba(255, 255, 255, 0.05); 
+        }
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; }
         
-        /* شريط الأخبار المتحرك */
-        .news-ticker { background: #ff0055; color: white; padding: 12px; font-weight: bold; font-size: 16px; border-bottom: 3px solid rgba(0,0,0,0.3); }
+        .league-container { max-width: 1200px; margin: auto; }
         
-        .container { max-width: 1000px; margin: auto; padding: 20px; }
-        
-        /* تصميم الجدول */
-        .main-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 20px; }
-        .main-table tr { background: var(--glass); transition: 0.3s; }
-        .main-table tr:hover { background: rgba(255,255,255,0.1); }
-        .main-table th { padding: 15px; color: var(--neon); font-size: 14px; text-align: center; border-bottom: 2px solid #222; }
-        .main-table td { padding: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
-        
-        .rank-box { font-family: 'Orbitron'; font-size: 24px; color: var(--neon); font-weight: 900; }
-        .player-name { text-align: right !important; font-size: 18px; font-weight: 900; }
-        .points-badge { font-family: 'Orbitron'; background: rgba(0,255,136,0.15); color: var(--neon); padding: 8px 15px; border-radius: 10px; border: 1px solid var(--neon); font-size: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px; }
+        .header h1 { font-family: 'Orbitron'; font-style: italic; font-size: 28px; }
 
-        /* أزرار التنقل */
-        .nav-tabs { display: flex; gap: 15px; margin: 30px 0; justify-content: center; }
-        .tab-btn { padding: 12px 30px; background: var(--glass); border: 1px solid #333; color: white; cursor: pointer; border-radius: 50px; font-family: 'Cairo'; font-weight: bold; transition: 0.3s; }
-        .active-tab { background: var(--neon); color: black; border-color: var(--neon); box-shadow: 0 0 15px var(--neon); }
+        /* جدول الترتيب */
+        .standings-table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 15px; overflow: hidden; margin-bottom: 40px; border: 1px solid var(--border); }
+        .standings-table th { background: rgba(234, 255, 0, 0.1); color: var(--primary); padding: 15px; text-align: center; font-size: 14px; }
+        .standings-table td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .player-info { display: flex; align-items: center; gap: 10px; text-align: right; }
+        .p-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid var(--primary); }
 
-        /* كروت سجل المباريات */
-        .match-item { background: #111; border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .score-pill { font-family: 'Orbitron'; background: #000; color: var(--accent); padding: 10px 20px; border-radius: 8px; font-size: 22px; border: 1px solid #333; min-width: 80px; text-align: center; }
-        .match-player { width: 35%; font-size: 17px; font-weight: bold; }
+        /* كروت المباريات */
+        .matches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .match-card { background: var(--panel); border-radius: 15px; padding: 20px; border: 1px solid var(--border); position: relative; transition: 0.3s; }
+        .match-card:hover { border-color: var(--primary); }
+        .match-teams { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .team { text-align: center; flex: 1; }
+        .team img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #222; }
+        .score { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; color: var(--primary); background: #000; padding: 5px 15px; border-radius: 8px; }
+
+        .btn-back { background: none; border: 1px solid var(--primary); color: var(--primary); padding: 8px 20px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .btn-back:hover { background: var(--primary); color: #000; }
+        
+        .status-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
+        .finished { background: #222; color: #888; }
+        .live { background: #ff007a; color: #fff; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div class="news-ticker">
-    <marquee id="newsMarquee">بانتظار تحديث الأخبار من الإدارة...</marquee>
-</div>
-
-<div class="container">
-    <header style="text-align:center; margin-top: 40px;">
-        <h1 style="font-family:'Orbitron'; color: var(--neon); font-size: 40px; text-shadow: 0 0 20px var(--neon); margin:0;">LEAGUE TABLE</h1>
-        <p style="color:#888; letter-spacing: 2px;">PES ELITE CHAMPIONSHIP</p>
-    </header>
-
-    <div class="nav-tabs">
-        <button id="tab1" class="tab-btn active-tab" onclick="switchView('table')"><i class="fas fa-trophy"></i> جدول الترتيب</button>
-        <button id="tab2" class="tab-btn" onclick="switchView('matches')"><i class="fas fa-history"></i> نتائج المباريات</button>
+<div class="league-container">
+    <div class="header">
+        <h1><i class="fas fa-trophy"></i> LEAGUE <span>TABLE</span></h1>
+        <a href="index.html" class="btn-back">العودة للرئيسية</a>
     </div>
 
-    <div id="tableContent">
-        <table class="main-table">
+    <section>
+        <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--primary);">ترتيب الدوري</h2>
+        <table class="standings-table">
             <thead>
                 <tr>
-                    <th>مركز</th>
+                    <th>المركز</th>
                     <th style="text-align: right;">اللاعب</th>
                     <th>لعب</th>
                     <th>فوز</th>
+                    <th>تعادل</th>
+                    <th>خسارة</th>
+                    <th>له</th>
+                    <th>عليه</th>
+                    <th>+/-</th>
                     <th>نقاط</th>
                 </tr>
             </thead>
-            <tbody id="standingsRows">
+            <tbody id="standingsBody">
                 </tbody>
         </table>
-    </div>
+    </section>
 
-    <div id="matchesContent" style="display: none;">
-        <div id="matchesList">
+    <section>
+        <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--primary);">آخر المباريات</h2>
+        <div class="matches-grid" id="matchesGrid">
             </div>
-    </div>
+    </section>
 </div>
 
 <script>
-    // 1. Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -102,69 +100,73 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 2. التنقل بين التبويبات
-    function switchView(view) {
-        document.getElementById('tableContent').style.display = view === 'table' ? 'block' : 'none';
-        document.getElementById('matchesContent').style.display = view === 'matches' ? 'block' : 'none';
-        document.getElementById('tab1').classList.toggle('active-tab', view === 'table');
-        document.getElementById('tab2').classList.toggle('active-tab', view === 'matches');
+    // 1. تحميل جدول الترتيب
+    function loadStandings() {
+        db.collection("leaguePlayers").orderBy("pts", "desc").orderBy("gd", "desc").onSnapshot(snap => {
+            const tbody = document.getElementById('standingsBody');
+            tbody.innerHTML = "";
+            let rank = 1;
+            snap.forEach(doc => {
+                const p = doc.data();
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-family:'Orbitron'; font-weight:900; color:${rank<=3 ? 'var(--primary)' : '#fff'}">${rank}</td>
+                        <td>
+                            <div class="player-info">
+                                <img class="p-img" src="${p.photoURL || 'https://via.placeholder.com/35'}">
+                                <span>${p.nickname || p.name}</span>
+                            </div>
+                        </td>
+                        <td>${p.played || 0}</td>
+                        <td>${p.w || 0}</td>
+                        <td>${p.d || 0}</td>
+                        <td>${p.l || 0}</td>
+                        <td>${p.gf || 0}</td>
+                        <td>${p.ga || 0}</td>
+                        <td>${(p.gf || 0) - (p.ga || 0)}</td>
+                        <td style="font-weight:900; color:var(--primary);">${p.pts || 0}</td>
+                    </tr>
+                `;
+                rank++;
+            });
+        });
     }
 
-    // 3. تحديث شريط الأخبار من السيرفر
-    db.collection("settings").doc("leagueConfig").onSnapshot(doc => {
-        if(doc.exists) document.getElementById('newsMarquee').innerText = doc.data().news || "أهلاً بكم في بطولة PES ELITE";
-    });
-
-    // 4. معالجة البيانات والترتيب
-    db.collection("leagueMatches").onSnapshot(snap => {
-        let playersMap = {};
-        let matchesHtml = "";
-
-        snap.forEach(doc => {
-            const m = doc.data();
-            // حماية ضد البيانات الناقصة
-            if(m.player1 && m.player2) {
-                if(!playersMap[m.player1]) playersMap[m.player1] = { name: m.player1, pts: 0, pld: 0, wins: 0 };
-                if(!playersMap[m.player2]) playersMap[m.player2] = { name: m.player2, pts: 0, pld: 0, wins: 0 };
-
-                playersMap[m.player1].pld++;
-                playersMap[m.player2].pld++;
-
-                const s1 = parseInt(m.score1) || 0;
-                const s2 = parseInt(m.score2) || 0;
-
-                if(s1 > s2) { playersMap[m.player1].pts += 3; playersMap[m.player1].wins++; }
-                else if(s2 > s1) { playersMap[m.player2].pts += 3; playersMap[m.player2].wins++; }
-                else { playersMap[m.player1].pts += 1; playersMap[m.player2].pts += 1; }
-
-                // بناء سجل الماتشات
-                matchesHtml += `
-                    <div class="match-item">
-                        <div class="match-player" style="text-align:left;">${m.player1}</div>
-                        <div class="score-pill">${s1} - ${s2}</div>
-                        <div class="match-player" style="text-align:right;">${m.player2}</div>
-                    </div>`;
-            }
+    // 2. تحميل المباريات
+    function loadMatches() {
+        db.collection("leagueMatches").orderBy("time", "desc").onSnapshot(snap => {
+            const grid = document.getElementById('matchesGrid');
+            grid.innerHTML = "";
+            snap.forEach(doc => {
+                const m = doc.data();
+                const isFinished = m.status === "finished";
+                grid.innerHTML += `
+                    <div class="match-card">
+                        <div style="text-align:center; margin-bottom:10px;">
+                            <span class="status-badge ${isFinished ? 'finished' : 'live'}">${isFinished ? 'انتهت' : 'مباشر'}</span>
+                        </div>
+                        <div class="match-teams">
+                            <div class="team">
+                                <img src="${m.p1Photo || 'https://via.placeholder.com/50'}">
+                                <div style="font-size:12px; font-weight:bold;">${m.p1Name}</div>
+                            </div>
+                            <div class="score">${m.p1Score} - ${m.p2Score}</div>
+                            <div class="team">
+                                <img src="${m.p2Photo || 'https://via.placeholder.com/50'}">
+                                <div style="font-size:12px; font-weight:bold;">${m.p2Name}</div>
+                            </div>
+                        </div>
+                        <div style="font-size:10px; color:#555; text-align:center;">${m.roundName || 'الدوري العام'}</div>
+                    </div>
+                `;
+            });
         });
+    }
 
-        // تحويل الماب لمصفوفة وترتيبها
-        let sorted = Object.values(playersMap).sort((a,b) => b.pts - a.pts);
-        
-        const body = document.getElementById('standingsRows');
-        body.innerHTML = "";
-        sorted.forEach((p, i) => {
-            body.innerHTML += `
-                <tr>
-                    <td class="rank-box">${i+1}</td>
-                    <td class="player-name">${p.name}</td>
-                    <td>${p.pld}</td>
-                    <td>${p.wins}</td>
-                    <td><span class="points-badge">${p.pts}</span></td>
-                </tr>`;
-        });
-
-        document.getElementById('matchesList').innerHTML = matchesHtml || "<p style='text-align:center; color:#555;'>لا توجد مباريات مسجلة حالياً</p>";
-    });
+    // التشغيل
+    loadStandings();
+    loadMatches();
 </script>
+
 </body>
 </html>
