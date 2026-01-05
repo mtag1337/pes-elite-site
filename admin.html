@@ -2,66 +2,41 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | التحكم الكامل</title>
+    <title>PES ELITE | Admin Double Security</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #eaff00; --bg: #050508; --card: #12121a; --error: #ff3333; }
-        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; text-align: right; }
-        .wrapper { max-width: 800px; margin: auto; }
-        .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { color: var(--main); border-right: 4px solid var(--main); padding-right: 15px; margin-top: 0; }
-        label { display: block; margin-bottom: 8px; color: #888; font-size: 0.9rem; }
-        select, input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-family: 'Cairo'; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; font-family: 'Cairo'; }
-        .btn-save { background: var(--main); color: #000; }
-        .btn-init { background: #222; color: #fff; border: 2px dashed var(--main); margin-bottom: 30px; }
-        .btn-init:hover { background: var(--main); color: #000; }
-        .alert-info { background: #1a1a00; border: 1px solid var(--main); padding: 15px; border-radius: 8px; color: var(--main); margin-bottom: 20px; font-size: 0.9rem; }
+        :root { --main: #eaff00; --bg: #050508; }
+        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #12121a; padding: 30px; border-radius: 15px; border: 1px solid var(--main); text-align: center; width: 350px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #000; color: white; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: var(--main); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #admin-interface { display: none; width: 100%; max-width: 850px; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div class="wrapper">
-    <h1>🎮 لوحة تحكم PES ELITE</h1>
-
-    <div id="initAlert" class="card" style="border: 2px solid var(--main); display: block;">
-        <h3 style="margin-top:0">⚠️ تنبيه هام</h3>
-        <p>إذا كانت القوائم (Select) فارغة ولا تظهر بها أي أسماء، يجب عليك الضغط على الزر بالأسفل لإنشاء الـ 15 خانة لأول مرة في قاعدة البيانات.</p>
-        <button class="btn btn-init" onclick="setupNewLeague()">إطلاق الدوري (إنشاء الـ 15 خانة الآن)</button>
+    <div id="step-1" class="card">
+        <h2>🔒 المرحلة الأولى</h2>
+        <p>سجل دخول بحساب جوجل أولاً</p>
+        <button class="btn" onclick="login()">دخول عبر Google</button>
     </div>
 
-    <div class="card">
-        <h2>📝 إدارة الأسماء (الـ 15 خانة)</h2>
-        <label>اختر "فريق X" لتغيير اسمه لاسم اللاعب الحقيقي:</label>
-        <select id="editSelect"><option>جاري تحميل الخانات...</option></select>
-        <label>الاسم الجديد:</label>
-        <input type="text" id="newName" placeholder="اكتب اسم اللاعب هنا...">
-        <button class="btn" style="background: white; color: black;" onclick="updateTeam()">تحديث الاسم فوراً 🔄</button>
+    <div id="step-2" class="card" style="display: none;">
+        <h2>🔐 المرحلة الثانية</h2>
+        <p>أدخل كلمة السر الخاصة باللوحة</p>
+        <input type="password" id="secret-pass" placeholder="كلمة المرور">
+        <button class="btn" onclick="checkPass()">تأكيد الدخول</button>
+        <p id="pass-error" style="color: red; margin-top: 10px;"></p>
     </div>
 
-    <div class="card">
-        <h2>⚽ تسجيل نتيجة مباراة</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div>
-                <label>الفريق الأول</label>
-                <select id="t1"></select>
+    <div id="admin-interface">
+        <h1 style="color: var(--main); text-align: center;">🎮 لوحة تحكم الأدمن (مؤمنة بالكامل)</h1>
+        <div style="background: #12121a; padding: 20px; border: 1px solid #333; border-radius: 10px;">
+            <p>أهلاً بك يا أدمن، تم التحقق من هويتك ومن كلمة السر بنجاح.</p>
             </div>
-            <div>
-                <label>الفريق الثاني</label>
-                <select id="t2"></select>
-            </div>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <input type="number" id="s1" placeholder="أهداف 1">
-            <input type="number" id="s2" placeholder="أهداف 2">
-        </div>
-        <button class="btn btn-save" onclick="recordMatch()">حفظ النتيجة وتحديث الترتيب ✅</button>
     </div>
-
-</div>
 
 <script>
     const firebaseConfig = {
@@ -73,82 +48,36 @@
         appId: "1:407069539120:web:466249fa7f716266d9e6f5"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const auth = firebase.auth();
 
-    // تشغيل القوائم
-    function init() {
-        db.collection("MainLeague").orderBy("id").onSnapshot(snap => {
-            if (snap.empty) {
-                document.getElementById('initAlert').style.display = 'block';
-                return;
-            }
-            document.getElementById('initAlert').style.display = 'none';
-            let html = '<option value="">-- اختر من القائمة --</option>';
-            snap.forEach(doc => {
-                html += `<option value="${doc.id}">${doc.data().name}</option>`;
-            });
-            document.getElementById('t1').innerHTML = html;
-            document.getElementById('t2').innerHTML = html;
-            document.getElementById('editSelect').innerHTML = html;
-        });
+    // 1. كلمة السر اللي أنت عايزها (تقدر تغيرها من هنا)
+    const MY_PRIVATE_PASS = "mtag1337@010#@010#"; 
+
+    function login() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider);
     }
 
-    // الزرار السحري اللي بيفتح الخانات
-    async function setupNewLeague() {
-        if(!confirm("سيتم إنشاء 15 خانة فارغة في الدوري. هل أنت متأكد؟")) return;
-        
-        // تنظيف قديم لو موجود
-        const oldL = await db.collection("MainLeague").get();
-        for(let doc of oldL.docs) await db.collection("MainLeague").doc(doc.id).delete();
-        
-        // إنشاء 15 خانة
-        for(let i=1; i<=15; i++) {
-            await db.collection("MainLeague").doc("team"+i).set({
-                id: i,
-                name: "فريق " + i,
-                played: 0,
-                pts: 0,
-                gd: 0
-            });
+    auth.onAuthStateChanged(user => {
+        if (user && user.email === "mtag1337@gmail.com") {
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+        } else if (user) {
+            alert("أنت لست الأدمن!");
+            auth.signOut();
         }
-        alert("تم إنشاء الـ 15 خانة! القوائم ستظهر الآن.");
+    });
+
+    function checkPass() {
+        const entered = document.getElementById('secret-pass').value;
+        if (entered === MY_PRIVATE_PASS) {
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('admin-interface').style.display = 'block';
+            // هنا تشغل الـ loadData()
+        } else {
+            document.getElementById('pass-error').innerText = "كلمة السر غلط يا بطل!";
+        }
     }
-
-    async function updateTeam() {
-        const id = document.getElementById('editSelect').value;
-        const name = document.getElementById('newName').value;
-        if(!id || !name) return alert("اختر الخانة واكتب الاسم الجديد!");
-        await db.collection("MainLeague").doc(id).update({ name: name });
-        alert("تم تغيير الاسم بنجاح!");
-        document.getElementById('newName').value = '';
-    }
-
-    async function recordMatch() {
-        const id1 = document.getElementById('t1').value, id2 = document.getElementById('t2').value;
-        const s1 = parseInt(document.getElementById('s1').value), s2 = parseInt(document.getElementById('s2').value);
-        if(!id1 || !id2 || isNaN(s1)) return alert("دخل البيانات كاملة!");
-        
-        const n1 = document.querySelector(`#t1 option[value="${id1}"]`).text;
-        const n2 = document.querySelector(`#t2 option[value="${id2}"]`).text;
-
-        await db.collection("AllMatches").add({ t1: n1, t2: n2, s1, s2, time: Date.now() });
-        await updateStats(id1, s1, s2);
-        await updateStats(id2, s2, s1);
-        alert("تم تسجيل النتيجة!");
-    }
-
-    async function updateStats(id, gf, ga) {
-        const ref = db.collection("MainLeague").doc(id);
-        const d = (await ref.get()).data();
-        let win = gf > ga ? 1 : 0, draw = gf === ga ? 1 : 0;
-        await ref.update({
-            played: (d.played || 0) + 1,
-            pts: (d.pts || 0) + (win * 3 + draw),
-            gd: (d.gd || 0) + (gf - ga)
-        });
-    }
-
-    init();
 </script>
 </body>
 </html>
