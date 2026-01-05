@@ -22,7 +22,7 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-family: 'Cairo'; box-sizing: border-box; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.3s; }
         .btn-main { background: var(--main); color: #000; }
-        .btn-danger { background: var(--danger); color: #fff; border-radius: 5px; padding: 5px 10px; cursor: pointer; }
+        .btn-danger { background: var(--danger); color: #fff; border-radius: 5px; padding: 8px 15px; cursor: pointer; border:none; }
         table { width: 100%; border-collapse: collapse; background: #000; border-radius: 10px; overflow: hidden; }
         th { background: #111; color: var(--main); padding: 12px; }
         td { padding: 10px; border-bottom: 1px solid #222; text-align: center; }
@@ -65,10 +65,10 @@
 
     <div id="playerSec" class="section">
         <div class="card">
-            <h3>إضافة لاعب جديد</h3>
-            <input type="text" id="pName" placeholder="الاسم">
+            <h3>إضافة لاعب جديد للدوري</h3>
+            <input type="text" id="pName" placeholder="اسم اللاعب">
             <input type="text" id="pID" placeholder="الـ ID الخاص">
-            <button class="btn btn-main" onclick="addPlayer()">تثبيت اللاعب</button>
+            <button class="btn btn-main" onclick="addPlayer()">تثبيت اللاعب في الدوري</button>
         </div>
         <div id="playersList"></div>
     </div>
@@ -140,14 +140,7 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active-sec');
         btn.classList.add('active');
-    }
-
-    // دالة حذف أي وثيقة
-    async function delDoc(col, id) {
-        if(confirm("هل أنت متأكد من الحذف النهائي؟")) {
-            await db.collection(col).doc(id).delete();
-            alert("تم الحذف بنجاح");
-        }
+        if(id === 'matchSec') buildMatchTable();
     }
 
     function startAdminApp() {
@@ -157,6 +150,7 @@
         loadSettings();
     }
 
+    // --- إدارة اللاعبين ---
     let playersCache = [];
     function loadPlayers() {
         db.collection("leaguePlayers").onSnapshot(snap => {
@@ -169,10 +163,11 @@
                 const p = doc.data();
                 playersCache.push(p);
                 opts += `<option value="${p.name}">${p.name}</option>`;
-                list.innerHTML += `<div class="card" style="margin-bottom:5px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span>${p.name} (ID: ${p.id})</span>
-                    <button onclick="delDoc('leaguePlayers','${doc.id}')" class="btn-danger">حذف</button>
-                </div>`;
+                list.innerHTML += `
+                    <div class="card" style="margin-bottom:5px; padding:10px; display:flex; justify-content:space-between; align-items:center; border-right:4px solid var(--main)">
+                        <span><strong>${p.name}</strong> (ID: ${p.id})</span>
+                        <button onclick="delDoc('leaguePlayers','${doc.id}')" class="btn-danger">حذف 🗑️</button>
+                    </div>`;
             });
             document.getElementById('top1').innerHTML = opts;
             document.getElementById('top2').innerHTML = opts;
@@ -182,27 +177,32 @@
     }
 
     async function addPlayer() {
-        const n = document.getElementById('pName').value, id = document.getElementById('pID').value;
+        const n = document.getElementById('pName').value;
+        const id = document.getElementById('pID').value;
         if(n && id) { 
             await db.collection("leaguePlayers").doc(id).set({name:n, id:id}); 
-            alert("تم إضافة اللاعب");
+            alert("✅ تم تثبيت اللاعب بنجاح");
             document.getElementById('pName').value = "";
             document.getElementById('pID').value = "";
+        } else {
+            alert("يرجى ملء البيانات");
         }
     }
 
+    // --- جدول المباريات ---
     function buildMatchTable() {
         const table = document.getElementById('matchTable');
+        if(!table) return;
         table.innerHTML = "";
-        let playerOpts = playersCache.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        let playerOpts = '<option value="">-- لاعب --</option>' + playersCache.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
         
         for(let i=1; i<=60; i++) {
             table.innerHTML += `<tr>
                 <td>${i}</td>
-                <td><select id="m${i}p1"><option value="">لاعب 1</option>${playerOpts}</select></td>
-                <td><input type="number" id="m${i}s1" style="width:50px;"> : <input type="number" id="m${i}s2" style="width:50px;"></td>
-                <td><select id="m${i}p2"><option value="">لاعب 2</option>${playerOpts}</select></td>
-                <td><button onclick="saveMatch(${i})" style="background:var(--main); border:none; padding:5px 10px; cursor:pointer; border-radius:5px;">💾</button></td>
+                <td><select id="m${i}p1">${playerOpts}</select></td>
+                <td><input type="number" id="m${i}s1" style="width:45px; background:#000; border:1px solid #333; color:#fff;"> : <input type="number" id="m${i}s2" style="width:45px; background:#000; border:1px solid #333; color:#fff;"></td>
+                <td><select id="m${i}p2">${playerOpts}</select></td>
+                <td><button onclick="saveMatch(${i})" style="background:var(--main); border:none; padding:5px 12px; cursor:pointer; border-radius:5px; font-weight:bold;">حفظ</button></td>
             </tr>`;
         }
         loadExistingMatches();
@@ -230,7 +230,21 @@
             score2: document.getElementById(`m${n}s2`).value || 0,
             matchNum: n
         });
-        alert("تم حفظ المباراة رقم " + n);
+        alert("💾 تم حفظ نتيجة المباراة " + n);
+    }
+
+    // --- البطولات والطلبات ---
+    async function addTour() {
+        const title = document.getElementById('tTitle').value;
+        if(!title) return alert("أدخل اسم البطولة");
+        await db.collection("tournaments").add({
+            title: title,
+            prize: document.getElementById('tPrize').value,
+            time: document.getElementById('tTime').value,
+            platform: document.getElementById('tPlatform').value,
+            date: Date.now()
+        });
+        alert("🚀 تم نشر البطولة");
     }
 
     function loadTournaments() {
@@ -247,19 +261,6 @@
         });
     }
 
-    async function addTour() {
-        const title = document.getElementById('tTitle').value;
-        if(!title) return alert("أدخل اسم البطولة");
-        await db.collection("tournaments").add({
-            title: title,
-            prize: document.getElementById('tPrize').value,
-            time: document.getElementById('tTime').value,
-            platform: document.getElementById('tPlatform').value,
-            date: Date.now()
-        });
-        alert("تم النشر!");
-    }
-
     function loadRequests() {
         db.collection("playerRequests").onSnapshot(snap => {
             document.getElementById('reqBadge').innerText = snap.size;
@@ -270,7 +271,7 @@
                 const r = doc.data();
                 list.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>${r.playerName} (ID: ${r.playerID}) - ${r.tournamentName}</span>
-                    <button class="btn btn-main" style="width:auto;" onclick="approve('${doc.id}','${r.playerName}','${r.playerID}')">قبول</button>
+                    <button class="btn btn-main" style="width:auto; padding:5px 15px;" onclick="approve('${doc.id}','${r.playerName}','${r.playerID}')">قبول ✅</button>
                 </div>`;
             });
         });
@@ -279,30 +280,39 @@
     async function approve(docId, name, playerId) {
         await db.collection("leaguePlayers").doc(playerId).set({name: name, id: playerId});
         await db.collection("playerRequests").doc(docId).delete();
-        alert("تم قبول اللاعب وإضافته بنجاح");
+        alert("تم قبول اللاعب ونقله لقائمة الدوري");
     }
 
+    // --- الإعدادات ---
     async function saveTop3() {
         await db.collection("settings").doc("top3").set({
             first: document.getElementById('top1').value,
             second: document.getElementById('top2').value,
             third: document.getElementById('top3').value
         });
-        alert("تم تحديث الأبطال");
+        alert("🏆 تم تحديث قائمة الأبطال");
     }
 
     async function saveNews() {
         await db.collection("settings").doc("leagueConfig").set({ news: document.getElementById('newsInput').value }, {merge:true});
-        alert("تم تحديث الأخبار");
+        alert("📢 تم تحديث الأخبار");
     }
 
     async function loadSettings() {
         const newsDoc = await db.collection("settings").doc("leagueConfig").get();
         if(newsDoc.exists) document.getElementById('newsInput').value = newsDoc.data().news || "";
     }
+
+    async function delDoc(col, id) { 
+        if(confirm("حذف نهائي؟")) { 
+            await db.collection(col).doc(id).delete(); 
+            alert("تم الحذف");
+        } 
+    }
 </script>
 </body>
 </html>
+
 
 
 
