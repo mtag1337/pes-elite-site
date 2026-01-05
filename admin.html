@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>PES ELITE | إمبراطورية الإدارة</title>
+    <title>PES ELITE | نظام الإدارة الأسطوري</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -11,118 +11,128 @@
     
     <style>
         :root { --main: #eaff00; --bg: #050507; --card: #111116; --danger: #ff3e3e; --accent: #00f2ff; }
-        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; opacity: 0; transition: 0.5s; }
+        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 280px; background: var(--card); border-left: 1px solid #222; padding: 20px; display: flex; flex-direction: column; }
-        .nav-btn { padding: 12px 15px; margin: 5px 0; border-radius: 10px; cursor: pointer; border: 1px solid transparent; background: none; color: #888; text-align: right; font-size: 15px; transition: 0.3s; width: 100%; }
-        .nav-btn i { margin-left: 10px; width: 20px; }
+        .sidebar { width: 280px; background: var(--card); border-left: 1px solid #222; padding: 20px; display: flex; flex-direction: column; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .nav-btn { padding: 12px 15px; margin: 5px 0; border-radius: 10px; cursor: pointer; border: 1px solid transparent; background: none; color: #888; text-align: right; font-size: 15px; transition: 0.3s; }
+        .nav-btn i { margin-left: 10px; }
         .nav-btn.active { background: var(--main); color: #000; font-weight: bold; }
 
         /* Workspace */
-        .workspace { flex: 1; padding: 30px; overflow-y: auto; }
-        .section { display: none; animation: fadeIn 0.4s; }
+        .workspace { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top right, #0a0a0f, #050507); }
+        .section { display: none; animation: fadeIn 0.4s ease; }
         .active-sec { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Cards & UI */
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; }
+        /* Modern UI Elements */
+        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; transition: 0.3s; }
+        .card:hover { border-color: var(--main); }
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-family: 'Cairo'; }
         .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.2s; }
         .btn-main { background: var(--main); color: #000; }
         .btn-danger { background: var(--danger); color: #fff; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: #000; color: var(--main); padding: 12px; border: 1px solid #222; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #000; }
+        th { background: #1a1a1a; color: var(--main); padding: 12px; border: 1px solid #222; }
         td { padding: 10px; border: 1px solid #222; text-align: center; }
         
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; }
-        .status-pending { background: orange; color: black; }
-        .status-accepted { background: #00ff88; color: black; }
+        .badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; float: left; }
     </style>
 </head>
 <body>
 
 <aside class="sidebar">
-    <h2 style="color:var(--main); text-align:center; margin-bottom:30px;">ELITE PANEL</h2>
-    <button class="nav-btn active" onclick="openSec('dashSec', this)"><i class="fas fa-home"></i> نظرة عامة</button>
-    <button class="nav-btn" onclick="openSec('tourManager', this)"><i class="fas fa-trophy"></i> إدارة البطولات</button>
-    <button class="nav-btn" onclick="openSec('reqSec', this)"><i class="fas fa-user-plus"></i> طلبات الانضمام</button>
-    <button class="nav-btn" onclick="openSec('playerManager', this)"><i class="fas fa-users"></i> قاعدة اللاعبين</button>
-    <button class="nav-btn" onclick="openSec('msgSec', this)"><i class="fas fa-paper-plane"></i> الرسائل الخاصة</button>
-    <button class="nav-btn" onclick="openSec('settingsSec', this)"><i class="fas fa-cog"></i> الإعدادات والأخبار</button>
+    <h2 style="color:var(--main); text-align:center; font-weight:900;">PES ELITE <small style="display:block; font-size:10px; color:#fff;">MASTER ADMIN</small></h2>
+    <hr style="width:100%; border:0.5px solid #222; margin:20px 0;">
     
-    <button class="btn btn-danger" onclick="auth.signOut()" style="margin-top:auto">خروج آمن</button>
+    <button class="nav-btn active" onclick="openSec('dashSec', this)"><i class="fas fa-chart-line"></i> الإحصائيات</button>
+    <button class="nav-btn" onclick="openSec('tourSec', this)"><i class="fas fa-trophy"></i> إدارة البطولات</button>
+    <button class="nav-btn" onclick="openSec('leagueSec', this)"><i class="fas fa-list-ol"></i> الدوري (60 مباراة)</button>
+    <button class="nav-btn" onclick="openSec('reqSec', this)"><i class="fas fa-user-clock"></i> الطلبات <span id="reqBadge" class="badge">0</span></button>
+    <button class="nav-btn" onclick="openSec('playerSec', this)"><i class="fas fa-users-cog"></i> التحكم باللاعبين</button>
+    <button class="nav-btn" onclick="openSec('chatSec', this)"><i class="fas fa-comments"></i> إدارة الشات</button>
+    <button class="nav-btn" onclick="openSec('newsSec', this)"><i class="fas fa-bullhorn"></i> الأخبار والإشعارات</button>
+    
+    <button class="btn btn-danger" onclick="auth.signOut()" style="margin-top:auto">خروج الإدارة</button>
 </aside>
 
 <main class="workspace">
     <div id="dashSec" class="section active-sec">
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
-            <div class="card"><h3>إجمالي اللاعبين</h3><p id="statPlayers" style="font-size:32px; color:var(--main)">0</p></div>
-            <div class="card"><h3>البطولات</h3><p id="statTours" style="font-size:32px; color:var(--accent)">0</p></div>
-            <div class="card"><h3>طلبات معلقة</h3><p id="statReqs" style="font-size:32px; color:var(--danger)">0</p></div>
+            <div class="card"><h3>اللاعبين</h3><p id="statPlayers" style="font-size:35px; color:var(--main)">0</p></div>
+            <div class="card"><h3>البطولات</h3><p id="statTours" style="font-size:35px; color:var(--accent)">0</p></div>
+            <div class="card"><h3>الطلبات</h3><p id="statReqs" style="font-size:35px; color:var(--danger)">0</p></div>
         </div>
     </div>
 
-    <div id="tourManager" class="section">
+    <div id="tourSec" class="section">
         <div class="card">
-            <h3>إضافة بطولة جديدة</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="text" id="tTitle" placeholder="اسم البطولة (مثلاً: كأس النخبة)">
-                <input type="text" id="tPrize" placeholder="الجائزة (مثلاً: 5000 GP)">
+            <h3>إنشاء بطولة جديدة</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="text" id="tTitle" placeholder="اسم البطولة">
+                <input type="text" id="tPrize" placeholder="الجائزة">
                 <input type="datetime-local" id="tDate">
-                <input type="number" id="tMax" placeholder="الحد الأقصى للاعبين">
+                <input type="number" id="tMax" placeholder="الحد الأقصى (عدد اللاعبين)">
             </div>
-            <button class="btn btn-main" style="margin-top:10px;" onclick="createNewTour()">إنشاء البطولة</button>
+            <button class="btn btn-main" style="width:100%; margin-top:10px;" onclick="addTournament()">نشر البطولة</button>
         </div>
-        <div id="toursList"></div>
+        <div id="tourList"></div>
+    </div>
+
+    <div id="leagueSec" class="section">
+        <div class="card" style="max-height:85vh; overflow-y:auto;">
+            <h3>جدول الدوري الرئيسي</h3>
+            <table>
+                <thead>
+                    <tr><th>#</th><th>لاعب 1</th><th>النتيجة</th><th>لاعب 2</th><th>حفظ</th></tr>
+                </thead>
+                <tbody id="leagueTableBody"></tbody>
+            </table>
+        </div>
     </div>
 
     <div id="reqSec" class="section">
-        <h3>مراجعة طلبات الاشتراك</h3>
+        <h3>طلبات الانضمام المعلقة</h3>
+        <div id="reqContainer"></div>
+    </div>
+
+    <div id="playerSec" class="section">
         <div class="card">
-            <table>
-                <thead>
-                    <tr><th>اللاعب</th><th>البطولة</th><th>الحالة</th><th>الإجراء</th></tr>
-                </thead>
-                <tbody id="requestsTable"></tbody>
+            <h3>البحث والتحكم في لاعب</h3>
+            <input type="text" id="pSearch" placeholder="ابحث باسم اللاعب..." oninput="loadPlayers()">
+            <table style="font-size: 13px;">
+                <thead><tr><th>الاسم</th><th>الـ ID</th><th>GP</th><th>الإجراء</th></tr></thead>
+                <tbody id="pTableBody"></tbody>
             </table>
         </div>
-    </div>
-
-    <div id="playerManager" class="section">
-        <h3>إدارة جميع المسجلين</h3>
-        <div class="card">
-            <input type="text" id="searchPlayer" placeholder="ابحث عن لاعب بالاسم..." oninput="filterPlayers()">
-            <table style="font-size: 14px;">
-                <thead>
-                    <tr><th>الاسم</th><th>الـ ID</th><th>GP</th><th>Rating</th><th>الإجراء</th></tr>
-                </thead>
-                <tbody id="allPlayersTable"></tbody>
-            </table>
+        
+        <div class="card" id="msgBox" style="border: 1px solid var(--accent);">
+            <h3>إرسال رسالة خاصة (Direct Message)</h3>
+            <input type="text" id="msgTargetID" placeholder="UID اللاعب (انسخه من الجدول أعلاه)">
+            <textarea id="msgContent" rows="3" placeholder="اكتب رسالتك الخاصة للاعب هنا..."></textarea>
+            <button class="btn btn-main" onclick="sendDM()">إرسال الرسالة فوراً</button>
         </div>
     </div>
 
-    <div id="msgSec" class="section">
+    <div id="chatSec" class="section">
         <div class="card">
-            <h3>إرسال رسالة خاصة للاعب</h3>
-            <input type="text" id="targetUID" placeholder="ضع هنا الـ UID الخاص باللاعب">
-            <textarea id="privateMsgText" rows="4" placeholder="اكتب رسالتك هنا..."></textarea>
-            <button class="btn btn-main" onclick="sendPrivateMsg()">إرسال الرسالة</button>
+            <h3>التحكم في الشات العام</h3>
+            <button class="btn btn-danger" onclick="clearChat()">مسح كل رسائل الشات 🗑️</button>
+            <div id="chatPreview" style="margin-top:20px; height:300px; overflow-y:auto; background:#000; padding:10px; border-radius:10px;"></div>
         </div>
     </div>
 
-    <div id="settingsSec" class="section">
+    <div id="newsSec" class="section">
         <div class="card">
-            <h3>تحديث شريط الأخبار</h3>
-            <textarea id="newsContent" rows="3"></textarea>
-            <button class="btn btn-main" onclick="updateNews()">نشر الخبر</button>
+            <h3>شريط الأخبار والحدث العاجل</h3>
+            <textarea id="newsIn" rows="3"></textarea>
+            <button class="btn btn-main" onclick="saveNews()">تحديث الخبر</button>
         </div>
     </div>
 </main>
 
 <script>
-    // تكوين Firebase (استخدم بياناتك)
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -140,7 +150,7 @@
     auth.onAuthStateChanged(user => {
         if (user && user.email === ADMIN_EMAIL) {
             document.body.style.opacity = "1";
-            initAdmin();
+            startMasterControl();
         } else {
             window.location.href = "login.html";
         }
@@ -153,162 +163,191 @@
         btn.classList.add('active');
     }
 
-    function initAdmin() {
+    function startMasterControl() {
         loadStats();
-        loadTours();
+        loadTournaments();
+        buildLeagueTable();
         loadRequests();
         loadPlayers();
+        loadChatPreview();
     }
 
-    // --- الوظائف الأساسية ---
-
+    // --- نظام الإحصائيات ---
     function loadStats() {
         db.collection("players").onSnapshot(s => document.getElementById('statPlayers').innerText = s.size);
         db.collection("tournaments").onSnapshot(s => document.getElementById('statTours').innerText = s.size);
-        db.collection("playerRequests").where("status","==","pending").onSnapshot(s => document.getElementById('statReqs').innerText = s.size);
+        db.collection("playerRequests").where("status","==","pending").onSnapshot(s => {
+            document.getElementById('statReqs').innerText = s.size;
+            document.getElementById('reqBadge').innerText = s.size;
+        });
     }
 
-    async function createNewTour() {
-        const title = document.getElementById('tTitle').value;
-        const prize = document.getElementById('tPrize').value;
-        const max = document.getElementById('tMax').value;
-        const date = document.getElementById('tDate').value;
-
-        if(!title || !max) return alert("أكمل البيانات!");
-
-        await db.collection("tournaments").add({
-            title: title,
-            prize: prize,
-            maxPlayers: parseInt(max),
-            joinedPlayers: [], // القائمة تبدأ فارغة
-            startDate: date,
+    // --- نظام البطولات ---
+    async function addTournament() {
+        const t = {
+            title: document.getElementById('tTitle').value,
+            prize: document.getElementById('tPrize').value,
+            date: document.getElementById('tDate').value,
+            max: parseInt(document.getElementById('tMax').value),
+            joined: [],
             status: "open",
             createdAt: Date.now()
-        });
-        alert("تم إنشاء البطولة بنجاح!");
+        };
+        await db.collection("tournaments").add(t);
+        alert("تم النشر!");
     }
 
-    function loadTours() {
-        db.collection("tournaments").orderBy("createdAt", "desc").onSnapshot(snap => {
-            const container = document.getElementById('toursList');
-            container.innerHTML = "";
+    function loadTournaments() {
+        db.collection("tournaments").onSnapshot(snap => {
+            const list = document.getElementById('tourList');
+            list.innerHTML = "";
             snap.forEach(doc => {
-                const t = doc.data();
-                container.innerHTML += `
-                    <div class="card" style="border-right: 5px solid var(--accent)">
-                        <div style="display:flex; justify-content:space-between">
-                            <h4>${t.title} (${t.joinedPlayers.length}/${t.maxPlayers})</h4>
-                            <button onclick="deleteTour('${doc.id}')" class="btn-danger btn">حذف</button>
-                        </div>
-                        <p style="font-size:12px; color:#777">الجائزة: ${t.prize} | الموعد: ${t.startDate}</p>
-                    </div>
-                `;
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="card" style="border-right:5px solid var(--accent)">
+                        <h4>${d.title} (${d.joined.length}/${d.max})</h4>
+                        <p>الجائزة: ${d.prize} | الموعد: ${d.date}</p>
+                        <button onclick="deleteDoc('tournaments','${doc.id}')" class="btn-danger btn">حذف</button>
+                    </div>`;
             });
         });
     }
 
+    // --- نظام الدوري (60 مباراة) ---
+    function buildLeagueTable() {
+        const body = document.getElementById('leagueTableBody');
+        body.innerHTML = "";
+        for(let i=1; i<=60; i++) {
+            body.innerHTML += `
+                <tr>
+                    <td>${i}</td>
+                    <td><input type="text" id="m${i}p1" placeholder="لاعب 1"></td>
+                    <td><input type="number" id="m${i}s1" style="width:35px">:<input type="number" id="m${i}s2" style="width:35px"></td>
+                    <td><input type="text" id="m${i}p2" placeholder="لاعب 2"></td>
+                    <td><button onclick="saveMatch(${i})" class="btn-main btn">💾</button></td>
+                </tr>`;
+        }
+        loadMatchesData();
+    }
+
+    async function saveMatch(n) {
+        await db.collection("leagueMatches").doc(`m${n}`).set({
+            p1: document.getElementById(`m${n}p1`).value,
+            p2: document.getElementById(`m${n}p2`).value,
+            s1: document.getElementById(`m${n}s1`).value,
+            s2: document.getElementById(`m${n}s2`).value
+        });
+        alert("تم الحفظ!");
+    }
+
+    async function loadMatchesData() {
+        const snap = await db.collection("leagueMatches").get();
+        snap.forEach(doc => {
+            const id = doc.id.replace('m','');
+            const d = doc.data();
+            if(document.getElementById(`m${id}p1`)) {
+                document.getElementById(`m${id}p1`).value = d.p1;
+                document.getElementById(`m${id}p2`).value = d.p2;
+                document.getElementById(`m${id}s1`).value = d.s1;
+                document.getElementById(`m${id}s2`).value = d.s2;
+            }
+        });
+    }
+
+    // --- نظام الطلبات والإشعارات ---
     function loadRequests() {
-        db.collection("playerRequests").onSnapshot(snap => {
-            const table = document.getElementById('requestsTable');
-            table.innerHTML = "";
+        db.collection("playerRequests").where("status","==","pending").onSnapshot(snap => {
+            const cont = document.getElementById('reqContainer');
+            cont.innerHTML = "";
             snap.forEach(doc => {
                 const r = doc.data();
-                table.innerHTML += `
-                    <tr>
-                        <td>${r.playerName}</td>
-                        <td>${r.tournamentName}</td>
-                        <td><span class="status-badge status-${r.status}">${r.status}</span></td>
-                        <td>
-                            ${r.status === 'pending' ? 
-                            `<button onclick="handleReq('${doc.id}', '${r.uid}', '${r.tournamentName}', true)" class="btn btn-main">قبول</button>
-                             <button onclick="handleReq('${doc.id}', '${r.uid}', '${r.tournamentName}', false)" class="btn btn-danger">رفض</button>` 
-                            : 'تمت المعالجة'}
-                        </td>
-                    </tr>
-                `;
+                cont.innerHTML += `
+                    <div class="card">
+                        <b>${r.playerName}</b> يطلب الانضمام لـ <b>${r.tournamentName}</b>
+                        <div style="margin-top:10px;">
+                            <button class="btn btn-main" onclick="handleRequest('${doc.id}','${r.uid}','${r.tournamentName}',true)">قبول وإشعار ✅</button>
+                            <button class="btn btn-danger" onclick="handleRequest('${doc.id}','${r.uid}','${r.tournamentName}',false)">رفض ❌</button>
+                        </div>
+                    </div>`;
             });
         });
     }
 
-    async function handleReq(reqId, playerUID, tourName, isAccept) {
-        if(isAccept) {
-            // 1. تحديث حالة الطلب
-            await db.collection("playerRequests").doc(reqId).update({ status: "accepted" });
-            
-            // 2. إرسال إشعار للاعب
-            await db.collection("players").doc(playerUID).collection("notifications").add({
-                msg: `✅ مبروك! تم قبول انضمامك لبطولة: ${tourName}`,
-                time: Date.now(),
-                read: false
+    async function handleRequest(id, uid, tour, accept) {
+        if(accept) {
+            await db.collection("playerRequests").doc(id).update({status: "accepted"});
+            // إرسال إشعار للاعب
+            await db.collection("players").doc(uid).collection("notifications").add({
+                msg: `✅ مبروك! تم قبولك في بطولة: ${tour}`,
+                time: Date.now()
             });
-            alert("تم قبول اللاعب وإرسال إشعار له");
         } else {
-            await db.collection("playerRequests").doc(reqId).delete();
-            alert("تم رفض الطلب");
+            await db.collection("playerRequests").doc(id).delete();
         }
+        alert("تمت العملية");
     }
 
+    // --- إدارة اللاعبين والرسائل الخاصة ---
     function loadPlayers() {
         db.collection("players").onSnapshot(snap => {
-            const table = document.getElementById('allPlayersTable');
-            table.innerHTML = "";
+            const body = document.getElementById('pTableBody');
+            body.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
-                table.innerHTML += `
+                body.innerHTML += `
                     <tr>
                         <td>${p.nickname}</td>
-                        <td>#${p.playerID}</td>
-                        <td><input type="number" value="${p.gpPoints}" onchange="updateGP('${doc.id}', this.value)" style="width:70px"></td>
-                        <td>${p.rank}</td>
+                        <td><small onclick="copyID('${doc.id}')" style="cursor:pointer; color:var(--accent)">${doc.id.substring(0,6)}..</small></td>
+                        <td>${p.gpPoints}</td>
                         <td>
-                            <button onclick="toggleVerify('${doc.id}', ${p.isVerified})" class="btn" style="background:${p.isVerified?'#00f2ff':'#444'}">
-                                <i class="fas fa-check-circle"></i>
-                            </button>
-                            <button onclick="copyUID('${doc.id}')" class="btn" title="نسخ الـ UID"><i class="fas fa-copy"></i></button>
+                            <button onclick="copyID('${doc.id}')" class="btn-main" style="padding:2px 5px">UID</button>
+                            <button onclick="deleteDoc('players','${doc.id}')" class="btn-danger" style="padding:2px 5px">❌</button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         });
     }
 
-    async function updateGP(uid, val) {
-        await db.collection("players").doc(uid).update({ gpPoints: parseInt(val) });
+    function copyID(id) {
+        document.getElementById('msgTargetID').value = id;
+        alert("تم نسخ UID اللاعب لقسم الرسائل!");
     }
 
-    async function toggleVerify(uid, current) {
-        await db.collection("players").doc(uid).update({ isVerified: !current });
-    }
-
-    function copyUID(uid) {
-        navigator.clipboard.writeText(uid);
-        alert("تم نسخ UID اللاعب لمراسلته");
-    }
-
-    async function sendPrivateMsg() {
-        const uid = document.getElementById('targetUID').value;
-        const txt = document.getElementById('privateMsgText').value;
-        if(!uid || !txt) return alert("أدخل البيانات!");
-
+    async function sendDM() {
+        const uid = document.getElementById('msgTargetID').value;
+        const msg = document.getElementById('msgContent').value;
         await db.collection("players").doc(uid).collection("notifications").add({
-            msg: "✉️ رسالة خاصة من الإدارة: " + txt,
-            time: Date.now(),
-            read: false
+            msg: "✉️ رسالة خاصة: " + msg,
+            time: Date.now()
         });
-        alert("تم إرسال الرسالة بنجاح!");
-        document.getElementById('privateMsgText').value = "";
+        alert("تم إرسال الرسالة الخاصة!");
     }
 
-    async function updateNews() {
-        const txt = document.getElementById('newsContent').value;
-        await db.collection("settings").doc("ticker").set({ msg: txt });
-        alert("تم تحديث شريط الأخبار في الموقع الرئيسي");
+    // --- الشات والأخبار ---
+    function loadChatPreview() {
+        db.collection("chat").orderBy("time","desc").limit(10).onSnapshot(snap => {
+            const div = document.getElementById('chatPreview');
+            div.innerHTML = "";
+            snap.forEach(doc => {
+                div.innerHTML += `<p><b style="color:var(--main)">${doc.data().name}:</b> ${doc.data().msg}</p>`;
+            });
+        });
     }
 
-    async function deleteTour(id) {
-        if(confirm("هل أنت متأكد من حذف هذه البطولة؟")) {
-            await db.collection("tournaments").doc(id).delete();
+    async function clearChat() {
+        if(confirm("هل تريد مسح الشات بالكامل؟")) {
+            const snap = await db.collection("chat").get();
+            snap.forEach(doc => doc.ref.delete());
         }
+    }
+
+    async function saveNews() {
+        await db.collection("settings").doc("ticker").set({msg: document.getElementById('newsIn').value});
+        alert("تم تحديث الأخبار");
+    }
+
+    async function deleteDoc(col, id) {
+        if(confirm("حذف نهائي؟")) await db.collection(col).doc(id).delete();
     }
 </script>
 </body>
