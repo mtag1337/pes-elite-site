@@ -3,78 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | Admin Dashboard</title>
+    <title>PES ELITE | التحكم الكامل</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --main: #eaff00; --bg: #050508; --card: #12121a; --error: #ff3333; }
-        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; }
-        .wrapper { max-width: 900px; margin: auto; }
-        
-        /* تصميم الكروت */
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; text-align: right; }
+        .wrapper { max-width: 800px; margin: auto; }
         .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { color: var(--main); border-right: 4px solid var(--main); padding-right: 15px; font-weight: 900; }
-        
-        /* عناصر التحكم */
+        h2 { color: var(--main); border-right: 4px solid var(--main); padding-right: 15px; margin-top: 0; }
         label { display: block; margin-bottom: 8px; color: #888; font-size: 0.9rem; }
-        select, input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-family: 'Cairo'; outline: none; }
-        select:focus, input:focus { border-color: var(--main); }
-
+        select, input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-family: 'Cairo'; box-sizing: border-box; }
         .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; font-family: 'Cairo'; }
         .btn-save { background: var(--main); color: #000; }
-        .btn-save:hover { background: #c8d900; transform: scale(1.02); }
-        .btn-danger { background: none; border: 1px solid var(--error); color: var(--error); margin-top: 50px; }
-        .btn-danger:hover { background: var(--error); color: #fff; }
-
-        .nav-links { display: flex; gap: 10px; margin-bottom: 20px; }
-        .nav-links a { text-decoration: none; color: #aaa; border: 1px solid #333; padding: 8px 15px; border-radius: 5px; font-size: 0.8rem; }
-        .nav-links a:hover { color: var(--main); border-color: var(--main); }
+        .btn-init { background: #222; color: #fff; border: 2px dashed var(--main); margin-bottom: 30px; }
+        .btn-init:hover { background: var(--main); color: #000; }
+        .alert-info { background: #1a1a00; border: 1px solid var(--main); padding: 15px; border-radius: 8px; color: var(--main); margin-bottom: 20px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
 <div class="wrapper">
-    <div class="nav-links">
-        <a href="league.html" target="_blank">🌐 فتح صفحة الدوري العام</a>
-        <a href="all-matches.html" target="_blank">📜 أرشيف المواجهات</a>
+    <h1>🎮 لوحة تحكم PES ELITE</h1>
+
+    <div id="initAlert" class="card" style="border: 2px solid var(--main); display: block;">
+        <h3 style="margin-top:0">⚠️ تنبيه هام</h3>
+        <p>إذا كانت القوائم (Select) فارغة ولا تظهر بها أي أسماء، يجب عليك الضغط على الزر بالأسفل لإنشاء الـ 15 خانة لأول مرة في قاعدة البيانات.</p>
+        <button class="btn btn-init" onclick="setupNewLeague()">إطلاق الدوري (إنشاء الـ 15 خانة الآن)</button>
+    </div>
+
+    <div class="card">
+        <h2>📝 إدارة الأسماء (الـ 15 خانة)</h2>
+        <label>اختر "فريق X" لتغيير اسمه لاسم اللاعب الحقيقي:</label>
+        <select id="editSelect"><option>جاري تحميل الخانات...</option></select>
+        <label>الاسم الجديد:</label>
+        <input type="text" id="newName" placeholder="اكتب اسم اللاعب هنا...">
+        <button class="btn" style="background: white; color: black;" onclick="updateTeam()">تحديث الاسم فوراً 🔄</button>
     </div>
 
     <div class="card">
         <h2>⚽ تسجيل نتيجة مباراة</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div>
-                <label>الفريق الأول (صاحب الأرض)</label>
+                <label>الفريق الأول</label>
                 <select id="t1"></select>
             </div>
             <div>
-                <label>الفريق الثاني (الضيف)</label>
+                <label>الفريق الثاني</label>
                 <select id="t2"></select>
             </div>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <input type="number" id="s1" placeholder="أهداف الفريق 1">
-            <input type="number" id="s2" placeholder="أهداف الفريق 2">
+            <input type="number" id="s1" placeholder="أهداف 1">
+            <input type="number" id="s2" placeholder="أهداف 2">
         </div>
-        <button class="btn btn-save" onclick="recordMatch()">إرسال النتيجة للجدول الحقيقي ✅</button>
+        <button class="btn btn-save" onclick="recordMatch()">حفظ النتيجة وتحديث الترتيب ✅</button>
     </div>
 
-    <div class="card">
-        <h2>📝 إدارة هوية اللاعبين</h2>
-        <label>اختر الخانة المراد تعديلها</label>
-        <select id="editSelect"></select>
-        <label>الاسم الجديد للاعب أو الفريق</label>
-        <input type="text" id="newName" placeholder="مثلاً: محمد صلاح">
-        <button class="btn" style="background: white; color: #000;" onclick="updateTeam()">تحديث الاسم الآن 🔄</button>
-    </div>
-
-    <button class="btn btn-danger" onclick="setupNewLeague()">تصفير الدوري بالكامل (دوري جديد) ⚠️</button>
 </div>
 
-
-
 <script>
-    // إعدادات Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -86,9 +75,14 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // تحديث القوائم تلقائياً
+    // تشغيل القوائم
     function init() {
         db.collection("MainLeague").orderBy("id").onSnapshot(snap => {
+            if (snap.empty) {
+                document.getElementById('initAlert').style.display = 'block';
+                return;
+            }
+            document.getElementById('initAlert').style.display = 'none';
             let html = '<option value="">-- اختر من القائمة --</option>';
             snap.forEach(doc => {
                 html += `<option value="${doc.id}">${doc.data().name}</option>`;
@@ -99,26 +93,48 @@
         });
     }
 
+    // الزرار السحري اللي بيفتح الخانات
+    async function setupNewLeague() {
+        if(!confirm("سيتم إنشاء 15 خانة فارغة في الدوري. هل أنت متأكد؟")) return;
+        
+        // تنظيف قديم لو موجود
+        const oldL = await db.collection("MainLeague").get();
+        for(let doc of oldL.docs) await db.collection("MainLeague").doc(doc.id).delete();
+        
+        // إنشاء 15 خانة
+        for(let i=1; i<=15; i++) {
+            await db.collection("MainLeague").doc("team"+i).set({
+                id: i,
+                name: "فريق " + i,
+                played: 0,
+                pts: 0,
+                gd: 0
+            });
+        }
+        alert("تم إنشاء الـ 15 خانة! القوائم ستظهر الآن.");
+    }
+
+    async function updateTeam() {
+        const id = document.getElementById('editSelect').value;
+        const name = document.getElementById('newName').value;
+        if(!id || !name) return alert("اختر الخانة واكتب الاسم الجديد!");
+        await db.collection("MainLeague").doc(id).update({ name: name });
+        alert("تم تغيير الاسم بنجاح!");
+        document.getElementById('newName').value = '';
+    }
+
     async function recordMatch() {
         const id1 = document.getElementById('t1').value, id2 = document.getElementById('t2').value;
         const s1 = parseInt(document.getElementById('s1').value), s2 = parseInt(document.getElementById('s2').value);
+        if(!id1 || !id2 || isNaN(s1)) return alert("دخل البيانات كاملة!");
         
-        if(!id1 || !id2 || isNaN(s1)) return alert("يا بطل، لازم تختار الفرق وتحط النتيجة الأول!");
-        if(id1 === id2) return alert("مينفعش الفريق يلعب ضد نفسه!");
-
         const n1 = document.querySelector(`#t1 option[value="${id1}"]`).text;
         const n2 = document.querySelector(`#t2 option[value="${id2}"]`).text;
 
-        try {
-            // 1. تسجيل الماتش
-            await db.collection("AllMatches").add({ t1: n1, t2: n2, s1, s2, time: Date.now() });
-            // 2. تحديث الإحصائيات
-            await updateStats(id1, s1, s2);
-            await updateStats(id2, s2, s1);
-            
-            alert("تم الحفظ وتحديث الترتيب بنجاح! 🏆");
-            document.getElementById('s1').value = ''; document.getElementById('s2').value = '';
-        } catch(e) { alert("في مشكلة في النت، جرب تاني."); }
+        await db.collection("AllMatches").add({ t1: n1, t2: n2, s1, s2, time: Date.now() });
+        await updateStats(id1, s1, s2);
+        await updateStats(id2, s2, s1);
+        alert("تم تسجيل النتيجة!");
     }
 
     async function updateStats(id, gf, ga) {
@@ -130,28 +146,6 @@
             pts: (d.pts || 0) + (win * 3 + draw),
             gd: (d.gd || 0) + (gf - ga)
         });
-    }
-
-    async function updateTeam() {
-        const id = document.getElementById('editSelect').value;
-        const name = document.getElementById('newName').value;
-        if(!id || !name) return alert("اختر الفريق واكتب الاسم الجديد.");
-        await db.collection("MainLeague").doc(id).update({ name: name });
-        alert("تم تغيير الاسم بنجاح! ✨");
-        document.getElementById('newName').value = '';
-    }
-
-    async function setupNewLeague() {
-        if(!confirm("أنت كدة بتمسح كل الماتشات والترتيب عشان تبدأ دوري جديد.. متأكد؟")) return;
-        const oldL = await db.collection("MainLeague").get();
-        for(let doc of oldL.docs) await db.collection("MainLeague").doc(doc.id).delete();
-        const oldH = await db.collection("AllMatches").get();
-        for(let doc of oldH.docs) await db.collection("AllMatches").doc(doc.id).delete();
-        
-        for(let i=1; i<=15; i++) {
-            await db.collection("MainLeague").doc("team"+i).set({ id: i, name: "فريق " + i, played: 0, pts: 0, gd: 0 });
-        }
-        alert("مبروك! دوري جديد فاضي جاهز للاستخدام.");
     }
 
     init();
