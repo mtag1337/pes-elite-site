@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <!-- Ads (كما هي بدون تغيير) -->
     <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eFootball PES ELITE | LOGIN</title>
+
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@900&family=Noto+Sans+AR:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <!-- ================= STYLE (كما هو) ================= -->
     <style>
         :root {
             --efootball-blue: #0014d3;
@@ -95,6 +99,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="video-bg"></div>
@@ -104,12 +109,12 @@
         <div class="brand-logo fade-in">
             <h1>PES<br><span>ELITE</span></h1>
         </div>
-        
-        <div class="sub-text fade-in" style="animation-delay: 0.2s;">
+
+        <div class="sub-text fade-in" style="animation-delay:0.2s">
             SEASON 2026: THE EVOLUTION
         </div>
 
-        <button class="login-btn fade-in" style="animation-delay: 0.4s;" onclick="login()">
+        <button class="login-btn fade-in" style="animation-delay:0.4s" onclick="login()">
             <i class="fab fa-google"></i>
             PRESS START TO LOGIN
         </button>
@@ -120,11 +125,13 @@
         Powered by Firebase Auth & eFootball Engine
     </div>
 
+    <!-- ================= Firebase ================= -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
+        /* ========= Firebase Config ========= */
         const firebaseConfig = {
             apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
             authDomain: "pes-elite.firebaseapp.com",
@@ -134,27 +141,33 @@
             appId: "1:407069539120:web:466249fa7f716266d9e6f5"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
 
+        const auth = firebase.auth();
+        const db   = firebase.firestore();
+
+        /* ========= إجبار تسجيل الدخول كل مرة ========= */
+        auth.signOut().catch(() => {});
+
+        /* ========= Login Function ========= */
         function login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then((result) => {
+
+            auth.signInWithPopup(provider)
+            .then((result) => {
                 const user = result.user;
                 const userRef = db.collection("players").doc(user.uid);
 
-                userRef.get().then((doc) => {
+                return userRef.get().then((doc) => {
                     if (!doc.exists) {
                         return userRef.set({
                             nickname: user.displayName,
                             profilePic: user.photoURL,
                             email: user.email,
-                            efootballId: "لم يحدد",
+                            efootballId: "",
                             gpPoints: 1000,
                             trophies: 0,
                             matchesPlayed: 0,
                             verified: false,
-                            role: user.email === "mtag1337@gmail.com" ? "admin" : "player",
                             joinedAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                     } else {
@@ -163,19 +176,21 @@
                         });
                     }
                 }).then(() => {
-                    // التوجيه النهائي
-                    if (user.email === "mtag1337@gmail.com") {
+                    return db.collection("admins").doc(user.uid).get();
+                }).then((adminDoc) => {
+                    if (adminDoc.exists) {
                         window.location.href = "admin.html";
                     } else {
-                        window.location.href = "league.html";
+                        window.location.href = "index.html";
                     }
                 });
-
-            }).catch((err) => {
+            })
+            .catch((err) => {
                 console.error(err);
-                alert("حدث خطأ في الدخول: " + err.message);
+                alert("حدث خطأ أثناء تسجيل الدخول");
             });
         }
     </script>
+
 </body>
 </html>
