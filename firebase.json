@@ -7,7 +7,7 @@ const firebaseConfig = {
     appId: "1:407069539120:web:466249fa7f716266d9e6f5"
 };
 
-// تشغيل Firebase
+//  Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -17,11 +17,9 @@ const db = firebase.firestore();
 // js/firebase-config.js
 
 function goTo(page) {
-    // 1. تنظيف اسم الصفحة
     let target = page.trim().replace(/^\/+|\/+$/g, '');
     
-    // 2. بناء الرابط الكامل عشان نجبر المتصفح ينسى أي مسار قديم
     let newLocation = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/' + target;
     
-    // 3. التوجيه الإجباري
     window.location.replace(newLocation);
+
