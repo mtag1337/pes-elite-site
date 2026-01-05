@@ -1,542 +1,217 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
-
 <head>
-
     <meta charset="UTF-8">
-
     <title>إدارة PES ELITE | التحكم الاحترافي</title>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-
         :root { --p: #e1ff00; --bg: #050508; --card: #111118; --danger: #ff4d4d; }
-
         body { background: var(--bg); color: white; font-family: 'Cairo'; margin: 0; padding: 20px; }
-
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-
         .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; }
-
         h2 { color: var(--p); font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
-
         input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-family: 'Cairo'; }
-
         input, select { background: #000; color: #fff; border: 1px solid #333; }
-
         button { cursor: pointer; font-weight: bold; transition: 0.3s; }
-
         .btn-add { background: var(--p); color: #000; }
-
         .btn-del { background: var(--danger); color: #fff; padding: 5px 10px; font-size: 12px; width: auto; }
-
         .item-list { max-height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
-
         .list-entry { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; }
-
     </style>
-
 </head>
-
 <body>
-
-
 
 <h1><i class="fas fa-user-shield"></i> لوحة التحكم النهائية</h1>
 
-
-
 <div class="admin-grid">
 
-
-
     <div class="card">
-
-        <h2><i class="fas fa-edit"></i> إدارة نقاط الدوري</h2>
-
-        <select id="targetPlayer"><option value="">اختر الفريق...</option></select>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
-
-            <input type="number" id="plusW" placeholder="+ فوز">
-
-            <input type="number" id="plusD" placeholder="+ تعادل">
-
-            <input type="number" id="plusL" placeholder="+ خسارة">
-
-            <input type="number" id="plusGF" placeholder="+ له">
-
-            <input type="number" id="plusGA" placeholder="+ عليه">
-
+        <h2><i class="fas fa-handshake"></i> تسجيل مواجهة (Match)</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <select id="matchTeam1"><option value="">الفريق الأول</option></select>
+            <select id="matchTeam2"><option value="">الفريق الثاني</option></select>
         </div>
-
-        <button class="btn-add" onclick="updatePlayerStats()">تحديث النتائج</button>
-
-        <button style="background:#444; color:#fff; font-size:11px;" onclick="setupProLeague()">تهيئة الـ 15 فريق (بدون تكرار)</button>
-
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+            <input type="number" id="score1" placeholder="أهداف الأول">
+            <input type="number" id="score2" placeholder="أهداف الثاني">
+        </div>
+        <button class="btn-add" style="background:#2ecc71; color:white;" onclick="recordMatch()">تسجيل النتيجة وتحديث الدوري</button>
     </div>
 
-
+    <div class="card">
+        <h2><i class="fas fa-edit"></i> تعديل نقاط يدوي</h2>
+        <select id="targetPlayer"><option value="">اختر الفريق...</option></select>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+            <input type="number" id="plusW" placeholder="+ فوز">
+            <input type="number" id="plusD" placeholder="+ تعادل">
+            <input type="number" id="plusL" placeholder="+ خسارة">
+            <input type="number" id="plusGF" placeholder="+ له">
+            <input type="number" id="plusGA" placeholder="+ عليه">
+        </div>
+        <button class="btn-add" onclick="updatePlayerStats()">تحديث يدوي</button>
+        <button style="background:#444; color:#fff; font-size:11px;" onclick="setupProLeague()">تهيئة الـ 15 فريق (مرة واحدة)</button>
+    </div>
 
     <div class="card">
-
         <h2><i class="fas fa-user-edit"></i> تعديل اسم/لوجو الفريق</h2>
-
         <select id="editTeamSelect"><option value="">اختر الفريق...</option></select>
-
         <input type="text" id="newName" placeholder="الاسم الجديد">
-
         <input type="text" id="newPhoto" placeholder="رابط اللوجو الجديد">
-
-        <button class="btn-add" style="background:white; color:black;" onclick="updateTeamIdentity()">حفظ الهوية الجديدة</button>
-
+        <button class="btn-add" style="background:white; color:black;" onclick="updateTeamIdentity()">حفظ التغييرات</button>
     </div>
 
     <div class="card">
-
-    <h2><i class="fas fa-handshake"></i> تسجيل مواجهة (Match)</h2>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-
-        <select id="matchTeam1"><option value="">الفريق الأول</option></select>
-
-        <select id="matchTeam2"><option value="">الفريق الثاني</option></select>
-
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-
-        <input type="number" id="score1" placeholder="أهداف الأول">
-
-        <input type="number" id="score2" placeholder="أهداف الثاني">
-
-    </div>
-
-    <button class="btn-add" style="background:#2ecc71; color:white;" onclick="recordMatch()">تسجيل المباراة في الجدول والسجل</button>
-
-</div>
-
-    
-
-
-
-    <div class="card">
-
-        <h2><i class="fas fa-history"></i> سجل المباريات</h2>
-
+        <h2><i class="fas fa-history"></i> آخر التعديلات</h2>
         <div id="matchesLog" class="item-list"></div>
-
     </div>
-
-
-
-    <div class="card">
-
-        <h2><i class="fas fa-trophy"></i> البطولات</h2>
-
-        <input type="text" id="tTitle" placeholder="اسم البطولة">
-
-        <input type="text" id="tPrize" placeholder="الجائزة">
-
-        <button class="btn-add" onclick="createT()">نشر بطولة</button>
-
-        <div id="tList" class="item-list"></div>
-
-    </div>
-
-
 
 </div>
-
-
 
 <script>
-
     const firebaseConfig = {
-
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
-
         authDomain: "pes-elite.firebaseapp.com",
-
         projectId: "pes-elite",
-
         storageBucket: "pes-elite.firebasestorage.app",
-
         messagingSenderId: "407069539120",
-
         appId: "1:407069539120:web:466249fa7f716266d9e6f5"
-
     };
-
     firebase.initializeApp(firebaseConfig);
-
     const db = firebase.firestore();
 
-
-
     window.onload = () => {
-
         loadLeaguePlayers();
-
         loadMatchesLog();
-
         loadTournaments();
-
     };
 
-
-
-    // 1. تهيئة احترافية بالـ Batch لتجنب التكرار
-
-    async function setupProLeague() {
-
-        if(!confirm("سيتم ضبط الـ 15 فريق الأساسيين بهوية ثابتة. هل أنت متأكد؟")) return;
-
-        const names = ["الأهلي", "الزمالك", "ريال مدريد", "مان سيتي", "برشلونة", "بايرن", "ليفربول", "أرسنال", "انتر", "باريس", "النصر", "الهلال", "الاتحاد", "روما", "ميلان"];
-
-        const batch = db.batch();
-
-        
-
-        names.forEach((name, i) => {
-
-            const teamId = "team_" + (i + 1);
-
-            const ref = db.collection("leaguePlayers").doc(teamId);
-
-            batch.set(ref, {
-
-                nickname: name, photoURL: "https://via.placeholder.com/50",
-
-                pts: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, played: 0, gd: 0, order: i
-
-            }, { merge: true });
-
-        });
-
-        
-
-        await batch.commit();
-
-        alert("تمت التهيئة بنجاح!");
-
-    }
-
-
-
-    // 2. تحميل الفرق في القوائم
-
+    // تحميل الفرق في كل القوائم المتاحة
     function loadLeaguePlayers() {
-
         db.collection("leaguePlayers").orderBy("order").onSnapshot(snap => {
-
-            const s1 = document.getElementById('targetPlayer');
-
-            const s2 = document.getElementById('editTeamSelect');
-
+            const ids = ['targetPlayer', 'editTeamSelect', 'matchTeam1', 'matchTeam2'];
             const options = '<option value="">اختر الفريق...</option>' + 
-
                 snap.docs.map(doc => `<option value="${doc.id}">${doc.data().nickname}</option>`).join('');
-
-            s1.innerHTML = options;
-
-            s2.innerHTML = options;
-
+            
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = options;
+            });
         });
-
     }
 
+    // تسجيل مواجهة وتحديث تلقائي
+    async function recordMatch() {
+        const t1Id = document.getElementById('matchTeam1').value;
+        const t2Id = document.getElementById('matchTeam2').value;
+        const s1 = parseInt(document.getElementById('score1').value);
+        const s2 = parseInt(document.getElementById('score2').value);
 
+        if (!t1Id || !t2Id || isNaN(s1) || isNaN(s2)) return alert("أكمل بيانات المباراة");
+        if (t1Id === t2Id) return alert("لا يمكن للفريق أن يلاعب نفسه!");
 
-    // 3. تحديث النقاط وحفظ السجل
+        const t1Name = document.querySelector(`#matchTeam1 option[value="${t1Id}"]`).text;
+        const t2Name = document.querySelector(`#matchTeam2 option[value="${t2Id}"]`).text;
 
-    async function updatePlayerStats() {
+        // سجل المواجهة
+        await db.collection("matchesHistory").add({
+            team1: t1Name, team2: t2Name, score1: s1, score2: s2, time: Date.now()
+        });
 
-        const uid = document.getElementById('targetPlayer').value;
+        // تحديث نقاط الفريقين
+        await updateAutoStats(t1Id, s1, s2);
+        await updateAutoStats(t2Id, s2, s1);
 
-        const w = parseInt(document.getElementById('plusW').value) || 0;
+        alert("تم تسجيل المباراة وتحديث ترتيب الدوري!");
+        document.getElementById('score1').value = "";
+        document.getElementById('score2').value = "";
+    }
 
-        const d = parseInt(document.getElementById('plusD').value) || 0;
-
-        const l = parseInt(document.getElementById('plusL').value) || 0;
-
-        const gf = parseInt(document.getElementById('plusGF').value) || 0;
-
-        const ga = parseInt(document.getElementById('plusGA').value) || 0;
-
-
-
-        if(!uid) return alert("اختر فريقاً");
-
-
-
-        const ref = db.collection("leaguePlayers").doc(uid);
-
-        const doc = await ref.get();
-
-        const cur = doc.data();
-
-
-
-        const nw = cur.w + w, nd = cur.d + d, nl = cur.l + l;
-
-        const ngf = cur.gf + gf, nga = cur.ga + ga;
-
-
+    async function updateAutoStats(id, gf, ga) {
+        const ref = db.collection("leaguePlayers").doc(id);
+        const d = (await ref.get()).data();
+        let win = gf > ga ? 1 : 0;
+        let draw = gf === ga ? 1 : 0;
+        let loss = gf < ga ? 1 : 0;
 
         await ref.update({
-
-            played: cur.played + (w + d + l),
-
-            w: nw, d: nd, l: nl,
-
-            gf: ngf, ga: nga,
-
-            pts: (nw * 3) + (nd * 1),
-
-            gd: ngf - nga
-
+            played: d.played + 1,
+            w: d.w + win, d: d.d + draw, l: d.l + loss,
+            gf: d.gf + gf, ga: d.ga + ga,
+            pts: (d.w + win) * 3 + (d.d + draw),
+            gd: (d.gf + gf) - (d.ga + ga)
         });
-
-
-
-        await db.collection("leagueMatches").add({
-
-            pName: cur.nickname, pId: uid, w, d, l, gf, ga, time: Date.now()
-
-        });
-
-
-
-        alert("تم التحديث");
-
-        ["plusW","plusD","plusL","plusGF","plusGA"].forEach(id => document.getElementById(id).value = "");
-
     }
 
+    async function updatePlayerStats() {
+        const uid = document.getElementById('targetPlayer').value;
+        const w = parseInt(document.getElementById('plusW').value) || 0;
+        const d = parseInt(document.getElementById('plusD').value) || 0;
+        const l = parseInt(document.getElementById('plusL').value) || 0;
+        const gf = parseInt(document.getElementById('plusGF').value) || 0;
+        const ga = parseInt(document.getElementById('plusGA').value) || 0;
 
-
-    // 4. تعديل الهوية (الاسم والصورة)
-
-    async function updateTeamIdentity() {
-
-        const id = document.getElementById('editTeamSelect').value;
-
-        const name = document.getElementById('newName').value;
-
-        const photo = document.getElementById('newPhoto').value;
-
-        if(!id) return alert("اختر الفريق");
-
-        
-
-        let data = {};
-
-        if(name) data.nickname = name;
-
-        if(photo) data.photoURL = photo;
-
-        
-
-        await db.collection("leaguePlayers").doc(id).update(data);
-
-        alert("تم تحديث بيانات الفريق");
-
-    }
-
-
-
-    // 5. السجل والتراجع
-
-    function loadMatchesLog() {
-
-        db.collection("leagueMatches").orderBy("time", "desc").limit(10).onSnapshot(snap => {
-
-            const log = document.getElementById('matchesLog');
-
-            log.innerHTML = snap.docs.map(doc => {
-
-                const m = doc.data();
-
-                return `<div class="list-entry">
-
-                    <span style="font-size:11px;">${m.pName}: +${m.w}ف / +${m.d}ت</span>
-
-                    <button class="btn-del" onclick="undoMatch('${doc.id}','${m.pId}',${m.w},${m.d},${m.l},${m.gf},${m.ga})">تراجع</button>
-
-                </div>`;
-
-            }).join('');
-
-        });
-
-    }
-
-
-
-    async function undoMatch(mId, pId, w, d, l, gf, ga) {
-
-        if(!confirm("تراجع عن هذه العملية؟")) return;
-
-        const ref = db.collection("leaguePlayers").doc(pId);
-
+        if(!uid) return alert("اختر فريقاً");
+        const ref = db.collection("leaguePlayers").doc(uid);
         const cur = (await ref.get()).data();
 
         await ref.update({
-
-            played: cur.played - (w + d + l),
-
-            w: cur.w - w, d: cur.d - d, l: cur.l - l,
-
-            gf: cur.gf - gf, ga: cur.ga - ga,
-
-            pts: ((cur.w - w) * 3) + ((cur.d - d) * 1),
-
-            gd: (cur.gf - gf) - (cur.ga - ga)
-
+            played: cur.played + (w+d+l),
+            w: cur.w + w, d: cur.d + d, l: cur.l + l,
+            gf: cur.gf + gf, ga: cur.ga + ga,
+            pts: (cur.w + w) * 3 + (cur.d + d),
+            gd: (cur.gf + gf) - (cur.ga + ga)
         });
-
-        await db.collection("leagueMatches").doc(mId).delete();
-
+        alert("تم التحديث اليدوي");
     }
 
+    async function setupProLeague() {
+        if(!confirm("إعادة تهيئة الـ 15 فريق؟")) return;
+        const names = ["الأهلي", "الزمالك", "ريال مدريد", "مان سيتي", "برشلونة", "بايرن", "ليفربول", "أرسنال", "انتر", "باريس", "النصر", "الهلال", "الاتحاد", "روما", "ميلان"];
+        const batch = db.batch();
+        names.forEach((name, i) => {
+            batch.set(db.collection("leaguePlayers").doc("team_" + (i + 1)), {
+                nickname: name, photoURL: "https://via.placeholder.com/50",
+                pts: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, played: 0, gd: 0, order: i
+            }, { merge: true });
+        });
+        await batch.commit();
+        alert("تمت التهيئة");
+    }
 
+    async function updateTeamIdentity() {
+        const id = document.getElementById('editTeamSelect').value;
+        const name = document.getElementById('newName').value;
+        const photo = document.getElementById('newPhoto').value;
+        if(!id) return;
+        let data = {};
+        if(name) data.nickname = name;
+        if(photo) data.photoURL = photo;
+        await db.collection("leaguePlayers").doc(id).update(data);
+        alert("تم التحديث");
+    }
 
-    // وظائف إضافية
+    function loadMatchesLog() {
+        db.collection("leagueMatches").orderBy("time", "desc").limit(10).onSnapshot(snap => {
+            const log = document.getElementById('matchesLog');
+            log.innerHTML = snap.docs.map(doc => `<div class="list-entry"><span style="font-size:11px;">${doc.data().pName} تم تعديله</span></div>`).join('');
+        });
+    }
 
     async function createT() {
-
         const title = document.getElementById('tTitle').value;
-
         if (title) await db.collection("tournaments").add({ title, prize: document.getElementById('tPrize').value, time: Date.now() });
-
     }
-
-
 
     function loadTournaments() {
-
         db.collection("tournaments").onSnapshot(snap => {
-
-            document.getElementById('tList').innerHTML = snap.docs.map(doc => 
-
-                `<div class="list-entry"><span>${doc.data().title}</span><button class="btn-del" onclick="db.collection('tournaments').doc('${doc.id}').delete()">حذف</button></div>`
-
-            ).join('');
-
+            const list = document.getElementById('tList');
+            if(list) list.innerHTML = snap.docs.map(doc => `<div class="list-entry"><span>${doc.data().title}</span></div>`).join('');
         });
-
     }
-
-  // أضف هذه الوظيفة داخل الـ Script في صفحة admin.html
-
-async function recordMatch() {
-
-    const t1Id = document.getElementById('matchTeam1').value;
-
-    const t2Id = document.getElementById('matchTeam2').value;
-
-    const s1 = parseInt(document.getElementById('score1').value);
-
-    const s2 = parseInt(document.getElementById('score2').value);
-
-
-
-    if (!t1Id || !t2Id || isNaN(s1) || isNaN(s2)) return alert("أكمل البيانات");
-
-    if (t1Id === t2Id) return alert("لا يمكن اختيار نفس الفريق!");
-
-
-
-    const t1Name = document.querySelector(`#matchTeam1 option[value="${t1Id}"]`).text;
-
-    const t2Name = document.querySelector(`#matchTeam2 option[value="${t2Id}"]`).text;
-
-
-
-    // 1. إضافة المباراة لسجل المواجهات
-
-    await db.collection("matchesHistory").add({
-
-        team1: t1Name,
-
-        team2: t2Name,
-
-        score1: s1,
-
-        score2: s2,
-
-        time: Date.now()
-
-    });
-
-
-
-    // 2. تحديث نقاط الفريقين في الجدول تلقائياً (اختياري لو مش عايز تعملها يدوي)
-
-    // لاحظ: هنا نستخدم منطق (فوز/تعادل/خسارة)
-
-    await updateAutoStats(t1Id, s1, s2);
-
-    await updateAutoStats(t2Id, s2, s1);
-
-
-
-    alert("تم تسجيل المواجهة وتحديث النقاط!");
-
-    location.reload();
-
-}
-
-
-
-async function updateAutoStats(id, gf, ga) {
-
-    const ref = db.collection("leaguePlayers").doc(id);
-
-    const d = (await ref.get()).data();
-
-    let w = gf > ga ? 1 : 0;
-
-    let dr = gf === ga ? 1 : 0;
-
-    let l = gf < ga ? 1 : 0;
-
-
-
-    await ref.update({
-
-        played: d.played + 1,
-
-        w: d.w + w, d: d.d + dr, l: d.l + l,
-
-        gf: d.gf + gf, ga: d.ga + ga,
-
-        pts: (d.w + w) * 3 + (d.d + dr),
-
-        gd: (d.gf + gf) - (d.ga + ga)
-
-    });
-
-}
-
-
-
-// تعديل بسيط: تأكد أن قائمة الـ matchTeam1 و matchTeam2 تتحمل مع بقية القوائم  
-
 </script>
-
 </body>
-
 </html>
-
