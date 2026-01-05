@@ -3,42 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الدوري العام</title>
+    <title>PES ELITE | جدول الترتيب العام</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #020205; color: white; font-family: sans-serif; padding: 10px; }
-        .table-wrap { overflow-x: auto; background: #111; border-radius: 12px; border: 1px solid #333; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: center; }
-        th { background: #eaff00; color: black; font-size: 0.8rem; }
-        .team-box { display: flex; align-items: center; gap: 10px; text-align: right; }
-        .logo { width: 30px; height: 30px; border-radius: 50%; background: #333; }
-        .archive-btn { display: block; width: 200px; margin: 20px auto; padding: 12px; background: none; border: 1px solid #eaff00; color: #eaff00; text-align: center; text-decoration: none; border-radius: 5px; }
+        :root { --main: #eaff00; --bg: #050508; --card: #12121a; }
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; }
+        h1 { text-align: center; color: var(--main); font-weight: 900; margin-bottom: 30px; text-shadow: 0 0 10px rgba(234, 255, 0, 0.3); }
+        
+        /* تصميم الجدول */
+        .table-wrapper { background: var(--card); border-radius: 15px; border: 1px solid #222; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        table { width: 100%; border-collapse: collapse; text-align: center; }
+        th { background: var(--main); color: #000; padding: 15px; font-weight: 900; font-size: 0.9rem; }
+        td { padding: 15px; border-bottom: 1px solid #222; font-weight: 700; }
+        
+        /* تمييز المراكز */
+        tr:nth-child(1) .rank { color: #ffd700; font-size: 1.4rem; } /* الأول ذهبي */
+        tr:nth-child(2) .rank { color: #c0c0c0; } /* الثاني فضي */
+        tr:nth-child(3) .rank { color: #cd7f32; } /* الثالث برونزي */
+        
+        .team-name { text-align: right; color: #fff; }
+        .pts { color: var(--main); font-size: 1.2rem; font-weight: 900; }
+        .gd { direction: ltr; } /* عشان علامة + و - تظهر صح */
+
+        .loading { text-align: center; padding: 40px; color: var(--main); font-size: 1.2rem; }
+        
+        /* أزرار التنقل */
+        .nav-links { text-align: center; margin-top: 30px; }
+        .btn-nav { text-decoration: none; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; transition: 0.3s; margin: 0 5px; }
+        .btn-nav:hover { color: var(--main); border-color: var(--main); background: #1a1a00; }
     </style>
 </head>
 <body>
 
-    <h1 style="text-align:center; color:#eaff00">🏆 ترتيب الدوري</h1>
+<div class="container">
+    <h1>🏆 PES ELITE LEAGUE STANDINGS</h1>
 
-    <div class="table-wrap">
+    <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
                     <th>م</th>
-                    <th style="text-align:right">الفريق</th>
+                    <th style="text-align: right;">اللاعب / الفريق</th>
                     <th>لعب</th>
                     <th>+/-</th>
                     <th>نقاط</th>
                 </tr>
             </thead>
-            <tbody id="leagueBody"></tbody>
+            <tbody id="league-table-body">
+                <tr><td colspan="5" class="loading">جاري مزامنة البيانات من الإدارة...</td></tr>
+            </tbody>
         </table>
     </div>
 
-    <a href="matches.html" class="archive-btn">📜 عرض كل المواجهات</a>
+    <div class="nav-links">
+        <a href="all-matches.html" class="btn-nav">📜 سجل المواجهات</a>
+        <a href="players.html" class="btn-nav">👤 صفحة اللاعبين</a>
+    </div>
+</div>
 
 <script>
+    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -50,19 +77,36 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    db.collection("league").orderBy("pts", "desc").orderBy("gd", "desc").onSnapshot(snap => {
-        let html = ''; let rank = 1;
+    // الاستماع للبيانات وترتيبها (النقاط أولاً، ثم فارق الأهداف)
+    db.collection("MainLeague").orderBy("pts", "desc").orderBy("gd", "desc").onSnapshot(snap => {
+        const tbody = document.getElementById('league-table-body');
+        
+        if (snap.empty) {
+            tbody.innerHTML = '<tr><td colspan="5" class="loading">لا توجد بيانات حالياً. تأكد من إعداد الدوري في صفحة الأدمن.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        let rank = 1;
+
         snap.forEach(doc => {
-            const p = doc.data();
-            html += `<tr>
-                <td style="font-weight:bold; color:${rank<=3?'#eaff00':'#fff'}">${rank++}</td>
-                <td><div class="team-box"><img src="${p.logo||''}" class="logo"><span>${p.name}</span></div></td>
-                <td>${p.played}</td>
-                <td style="color:${p.gd>=0?'#0f0':'#f00'}">${p.gd}</td>
-                <td style="font-weight:bold; color:#eaff00">${p.pts}</td>
-            </tr>`;
+            const d = doc.data();
+            // تلوين فارق الأهداف (أخضر للموجب، أحمر للسالب)
+            const gdColor = d.gd > 0 ? '#00ff88' : (d.gd < 0 ? '#ff4444' : '#fff');
+            const gdText = d.gd > 0 ? `+${d.gd}` : d.gd;
+
+            html += `
+                <tr>
+                    <td class="rank">${rank++}</td>
+                    <td class="team-name">${d.name || '---'}</td>
+                    <td>${d.played || 0}</td>
+                    <td class="gd" style="color: ${gdColor}">${gdText || 0}</td>
+                    <td class="pts">${d.pts || 0}</td>
+                </tr>
+            `;
         });
-        document.getElementById('leagueBody').innerHTML = html;
+
+        tbody.innerHTML = html;
     });
 </script>
 </body>
