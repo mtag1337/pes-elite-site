@@ -15,7 +15,6 @@
             --efootball-blue: #0014d3;
             --efootball-yellow: #eaff00;
             --efootball-pink: #ff007a;
-            --dark-overlay: rgba(0, 5, 40, 0.85);
         }
 
         body, html {
@@ -136,10 +135,11 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
         function login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then((result) => {
+            auth.signInWithPopup(provider).then((result) => {
                 const user = result.user;
                 const userRef = db.collection("players").doc(user.uid);
 
@@ -154,7 +154,7 @@
                             trophies: 0,
                             matchesPlayed: 0,
                             verified: false,
-                            role: "player",
+                            role: user.email === "mtag1337@gmail.com" ? "admin" : "player",
                             joinedAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                     } else {
@@ -163,7 +163,7 @@
                         });
                     }
                 }).then(() => {
-                    // التوجيه الذكي: لو الأدمن يروح لصفحة الإدارة، لو لاعب يروح للدوري
+                    // التوجيه النهائي
                     if (user.email === "mtag1337@gmail.com") {
                         window.location.href = "admin.html";
                     } else {
@@ -172,10 +172,10 @@
                 });
 
             }).catch((err) => {
+                console.error(err);
                 alert("حدث خطأ في الدخول: " + err.message);
             });
         }
     </script>
 </body>
 </html>
-
