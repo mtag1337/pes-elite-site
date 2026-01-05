@@ -1,34 +1,168 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
+
     <meta charset="UTF-8">
-    <title>PES ELITE | جدول الدوري</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PES ELITE | الدوري العام</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Orbitron:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { background: #050508; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        table { width: 100%; max-width: 800px; margin: auto; border-collapse: collapse; background: #12121a; border: 1px solid #eaff00; }
-        th { background: #eaff00; color: #000; padding: 12px; }
-        td { padding: 12px; border-bottom: 1px solid #222; }
+        :root { --bg: #050508; --neon: #00ff88; --accent: #00f2ff; --glass: rgba(255, 255, 255, 0.05); }
+        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        .news-ticker { background: #ff0055; color: white; padding: 12px; font-weight: bold; font-size: 16px; border-bottom: 3px solid rgba(0,0,0,0.3); }
+        .container { max-width: 1000px; margin: auto; padding: 20px; }
+        
+        .main-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 20px; }
+        .main-table tr { background: var(--glass); transition: 0.3s; }
+        .main-table tr:hover { background: rgba(255,255,255,0.1); border-right: 4px solid var(--neon); }
+        .main-table th { padding: 15px; color: var(--neon); font-size: 14px; text-align: center; border-bottom: 2px solid #222; }
+        .main-table td { padding: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
+        
+        .rank-box { font-family: 'Orbitron'; font-size: 24px; color: var(--neon); font-weight: 900; }
+        .player-name { text-align: right !important; font-size: 18px; font-weight: 900; }
+        .points-badge { font-family: 'Orbitron'; background: rgba(0,255,136,0.15); color: var(--neon); padding: 8px 15px; border-radius: 10px; border: 1px solid var(--neon); font-size: 20px; }
+
+        .nav-tabs { display: flex; gap: 15px; margin: 30px 0; justify-content: center; }
+        .tab-btn { padding: 12px 30px; background: var(--glass); border: 1px solid #333; color: white; cursor: pointer; border-radius: 50px; font-family: 'Cairo'; font-weight: bold; transition: 0.3s; }
+        .active-tab { background: var(--neon); color: black; border-color: var(--neon); box-shadow: 0 0 15px var(--neon); }
+
+        .match-item { background: #111; border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
+        .score-pill { font-family: 'Orbitron'; background: #000; color: var(--accent); padding: 10px 20px; border-radius: 8px; font-size: 22px; border: 1px solid #333; min-width: 100px; text-align: center; margin: 0 15px; }
+        .match-player { width: 40%; font-size: 17px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     </style>
 </head>
 <body>
-    <h1>🏆 ترتيب دوري PES ELITE</h1>
-    <table>
-        <thead><tr><th>م</th><th>اللاعب</th><th>لعب</th><th>+/-</th><th>نقاط</th></tr></thead>
-        <tbody id="tb"></tbody>
-    </table>
+
+<div class="news-ticker">
+    <marquee id="newsMarquee">بانتظار تحديث الأخبار من الإدارة...</marquee>
+</div>
+
+<div class="container">
+    <header style="text-align:center; margin-top: 40px;">
+        <h1 style="font-family:'Orbitron'; color: var(--neon); font-size: 40px; text-shadow: 0 0 20px var(--neon); margin:0;">LEAGUE TABLE</h1>
+        <p style="color:#888; letter-spacing: 2px;">PES ELITE CHAMPIONSHIP SEASON 2026</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button id="tab1" class="tab-btn active-tab" onclick="switchView('table')"><i class="fas fa-trophy"></i> جدول الترتيب</button>
+        <button id="tab2" class="tab-btn" onclick="switchView('matches')"><i class="fas fa-history"></i> نتائج المباريات</button>
+    </div>
+
+    <div id="tableContent">
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th>مركز</th>
+                    <th style="text-align: right;">اللاعب</th>
+                    <th>لعب</th>
+                    <th>فوز</th>
+                    <th>نقاط</th>
+                </tr>
+            </thead>
+            <tbody id="standingsRows">
+                </tbody>
+        </table>
+    </div>
+
+    <div id="matchesContent" style="display: none;">
+        <div id="matchesList">
+            </div>
+    </div>
+</div>
+
 <script>
-    firebase.initializeApp({ apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow", projectId: "pes-elite" });
+    const firebaseConfig = {
+        apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
+        authDomain: "pes-elite.firebaseapp.com",
+        projectId: "pes-elite",
+        storageBucket: "pes-elite.firebasestorage.app",
+        messagingSenderId: "407069539120",
+        appId: "1:407069539120:web:466249fa7f716266d9e6f5"
+    };
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    db.collection("leaguePlayers").orderBy("pts","desc").orderBy("gd","desc").onSnapshot(s => {
-        let h = ''; let i=1;
-        s.forEach(d => {
-            const x=d.data();
-            h += `<tr><td>${i++}</td><td>${x.name}</td><td>${x.played}</td><td>${x.gd}</td><td style="color:#eaff00">${x.pts}</td></tr>`;
+
+    function switchView(view) {
+        document.getElementById('tableContent').style.display = view === 'table' ? 'block' : 'none';
+        document.getElementById('matchesContent').style.display = view === 'matches' ? 'block' : 'none';
+        document.getElementById('tab1').classList.toggle('active-tab', view === 'table');
+        document.getElementById('tab2').classList.toggle('active-tab', view === 'matches');
+    }
+
+    // تحديث شريط الأخبار
+    db.collection("settings").doc("leagueConfig").onSnapshot(doc => {
+        if(doc.exists) document.getElementById('newsMarquee').innerText = doc.data().news || "أهلاً بكم في بطولة PES ELITE";
+    });
+
+    // معالجة الماتشات وحساب الجدول
+    db.collection("leagueMatches").onSnapshot(snap => {
+        let playersMap = {};
+        let matchesHtml = "";
+
+        snap.forEach(doc => {
+            const m = doc.data();
+            if(m.player1 && m.player2) {
+                // تعريف اللاعبين لو مش موجودين في القائمة
+                if(!playersMap[m.player1]) playersMap[m.player1] = { name: m.player1, pts: 0, pld: 0, wins: 0 };
+                if(!playersMap[m.player2]) playersMap[m.player2] = { name: m.player2, pts: 0, pld: 0, wins: 0 };
+
+                // إضافة "ماتش ملعوب"
+                playersMap[m.player1].pld++;
+                playersMap[m.player2].pld++;
+
+                const s1 = parseInt(m.score1) || 0;
+                const s2 = parseInt(m.score2) || 0;
+
+                // حساب النقاط والفوز
+                if(s1 > s2) { 
+                    playersMap[m.player1].pts += 3; 
+                    playersMap[m.player1].wins++; 
+                } else if(s2 > s1) { 
+                    playersMap[m.player2].pts += 3; 
+                    playersMap[m.player2].wins++; 
+                } else { 
+                    playersMap[m.player1].pts += 1; 
+                    playersMap[m.player2].pts += 1; 
+                }
+
+                // إضافة الماتش للسجل (من الأحدث للأقدم)
+                matchesHtml = `
+                    <div class="match-item">
+                        <div class="match-player" style="text-align:left;">${m.player1}</div>
+                        <div class="score-pill">${s1} - ${s2}</div>
+                        <div class="match-player" style="text-align:right;">${m.player2}</div>
+                    </div>` + matchesHtml;
+            }
         });
-        document.getElementById('tb').innerHTML = h;
+
+        // ترتيب اللاعبين حسب النقاط
+        let sorted = Object.values(playersMap).sort((a,b) => b.pts - a.pts);
+        
+        const body = document.getElementById('standingsRows');
+        body.innerHTML = "";
+        sorted.forEach((p, i) => {
+            body.innerHTML += `
+                <tr>
+                    <td class="rank-box">${i+1}</td>
+                    <td class="player-name">${p.name}</td>
+                    <td>${p.pld}</td>
+                    <td>${p.wins}</td>
+                    <td><span class="points-badge">${p.pts}</span></td>
+                </tr>`;
+        });
+
+        document.getElementById('matchesList').innerHTML = matchesHtml || "<p style='text-align:center; color:#555;'>لا توجد مباريات مسجلة حالياً</p>";
     });
 </script>
+
 </body>
 </html>
