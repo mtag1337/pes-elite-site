@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/ads2google.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,8 +17,8 @@
 
     <style>
         :root { 
-            --primary: #eaff00; /* أصفر eFootball */
-            --accent: #ff007a; /* وردي eFootball */
+            --primary: #eaff00; 
+            --accent: #ff007a; 
             --bg-deep: #000525; 
             --panel: rgba(0, 10, 60, 0.9); 
             --border: rgba(255, 255, 255, 0.1); 
@@ -26,7 +26,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg-deep); color: #fff; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
 
-        /* لوحة الإعلانات المتحركة */
         .news-ticker {
             background: linear-gradient(90deg, var(--accent), var(--bg-deep));
             height: 40px; display: flex; align-items: center; overflow: hidden;
@@ -44,7 +43,6 @@
 
         .app-container { display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px; padding: 20px; max-width: 1600px; margin: auto; }
 
-        /* كارت اللاعب الاحترافي */
         .player-card {
             background: linear-gradient(135deg, #222, #000);
             border: 2px solid var(--primary); border-radius: 20px; position: relative;
@@ -57,31 +55,43 @@
             animation: rotate 4s linear infinite; z-index: 1; opacity: 0.3;
         }
         @keyframes rotate { 100% { transform: rotate(360deg); } }
-        .card-inner { position: relative; z-index: 2; background: rgba(0,0,0,0.8); border-radius: 15px; padding: 15px; }
+        .card-inner { position: relative; z-index: 2; background: rgba(0,0,0,0.9); border-radius: 15px; padding: 15px; }
 
-        .avatar-box { width: 120px; height: 120px; margin: auto; border: 3px solid var(--primary); border-radius: 50%; overflow: hidden; margin-bottom: 10px; }
+        .avatar-box { width: 100px; height: 100px; margin: auto; border: 3px solid var(--primary); border-radius: 50%; overflow: hidden; margin-bottom: 10px; }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .stat-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
-        .stat-value { font-family: 'Orbitron'; color: var(--primary); font-size: 18px; display: block; }
-        .stat-label { font-size: 10px; color: #aaa; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .stat-item { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; border: 1px solid var(--border); }
+        .stat-value { font-family: 'Orbitron'; color: var(--primary); font-size: 16px; display: block; }
+        .stat-label { font-size: 9px; color: #aaa; }
 
-        /* استايل البطولات */
+        .power-shield {
+            background: linear-gradient(45deg, #000, #222);
+            border: 1px solid gold; padding: 8px; border-radius: 12px;
+            margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
         .tour-item { 
             background: var(--panel); border-left: 5px solid var(--primary); 
             border-radius: 15px; padding: 20px; margin-bottom: 15px;
             display: flex; justify-content: space-between; align-items: center;
-            transition: 0.3s;
         }
-        .tour-item:hover { transform: scale(1.02); background: rgba(0,20,80,1); }
 
         .btn-join { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; }
 
-        .chat-area { background: #000; border: 1px solid var(--border); border-radius: 15px; height: 400px; display: flex; flex-direction: column; }
-        .messages { flex: 1; overflow-y: auto; padding: 15px; scrollbar-width: thin; }
-        .msg { margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; font-size: 13px; }
-        
+        /* الشات المطور */
+        .chat-area { background: #000; border: 1px solid var(--border); border-radius: 15px; height: 450px; display: flex; flex-direction: column; }
+        .messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; font-size: 13px; border-right: 3px solid var(--primary); animation: slideIn 0.3s ease; }
+        .msg.admin-msg { border-right: 3px solid var(--accent); background: rgba(255, 0, 122, 0.05); }
+        .msg b { display: block; font-size: 10px; margin-bottom: 3px; color: var(--primary); }
+        .msg.admin-msg b { color: var(--accent); }
+
+        .activity-box { background: rgba(0,0,0,0.5); border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border); max-height: 150px; overflow: hidden; }
+        .act-item { font-size: 11px; margin-bottom: 8px; color: #00ff00; display: flex; align-items: center; gap: 8px; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         .section-view { display: none; animation: fadeIn 0.5s; }
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -92,7 +102,7 @@
 <body>
 
 <div class="news-ticker">
-    <div class="ticker-content" id="newsTicker">جاري تحميل آخر الأخبار من الإدارة...</div>
+    <div class="ticker-content" id="newsTicker">جاري جلب آخر تحديثات PES ELITE من الإدارة...</div>
 </div>
 
 <nav>
@@ -113,35 +123,24 @@
 
         <div id="userProfileContent" class="player-card" style="display: none;">
             <div class="card-inner">
-                <div class="avatar-box">
-                    <img id="myAvatar" src="https://via.placeholder.com/120">
-                </div>
+                <div class="avatar-box"><img id="myAvatar" src=""></div>
                 <h3 id="myName">---</h3>
-                <p id="myRole" style="color: var(--accent); font-size: 12px; font-weight: 900;">PLAYER</p>
+                <div class="power-shield">
+                    <i class="fas fa-bolt"></i>
+                    <span style="font-size: 11px; font-weight: bold;">GLOBAL POWER: <span id="myPower" style="color:gold">0</span></span>
+                </div>
                 
                 <div class="stat-grid">
-                    <div class="stat-item">
-                        <span class="stat-value" id="myGP">0</span>
-                        <span class="stat-label">GP POINTS</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="myRating">1000</span>
-                        <span class="stat-label">RATING</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="myMatches">0</span>
-                        <span class="stat-label">MATCHES</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="myID">#0000</span>
-                        <span class="stat-label">USER ID</span>
-                    </div>
+                    <div class="stat-item"><span class="stat-value" id="myGP">0</span><span class="stat-label">GP POINTS</span></div>
+                    <div class="stat-item"><span class="stat-value" id="myRating">1000</span><span class="stat-label">RATING</span></div>
+                    <div class="stat-item"><span class="stat-value" id="myMatches">0</span><span class="stat-label">MATCHES</span></div>
+                    <div class="stat-item"><span class="stat-value" id="myID">#0000</span><span class="stat-label">USER ID</span></div>
                 </div>
                 
-                <div class="menu-nav" style="margin-top: 20px; text-align: right;">
-                    <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="tab('dash', this)"><i class="fas fa-home"></i> الرئيسية</div>
-                    <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="tab('tours', this)"><i class="fas fa-trophy"></i> البطولات</div>
-                    <div style="cursor:pointer; padding:10px; color: #ff4d4d;" onclick="auth.signOut()"><i class="fas fa-power-off"></i> تسجيل خروج</div>
+                <div class="menu-nav" style="margin-top: 15px; text-align: right; font-size: 13px;">
+                    <div style="cursor:pointer; padding:8px; border-bottom:1px solid #222;" onclick="tab('dash')"><i class="fas fa-home"></i> الرئيسية</div>
+                    <div style="cursor:pointer; padding:8px; border-bottom:1px solid #222;" onclick="tab('tours')"><i class="fas fa-trophy"></i> البطولات</div>
+                    <div style="cursor:pointer; padding:8px; color: #ff4d4d;" onclick="auth.signOut()"><i class="fas fa-power-off"></i> تسجيل خروج</div>
                 </div>
             </div>
         </div>
@@ -149,7 +148,7 @@
 
     <main>
         <section id="dash-sec" class="section-view active">
-            <h2 style="margin-bottom: 20px;"><i class="fas fa-star" style="color: var(--primary);"></i> البطولات النشطة</h2>
+            <h2 style="margin-bottom: 20px;"><i class="fas fa-fire" style="color: var(--accent);"></i> البطولات النشطة</h2>
             <div id="homeTourGrid"></div>
         </section>
 
@@ -160,17 +159,19 @@
     </main>
 
     <aside>
-        <div style="background: var(--panel); padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--accent);">
-            <h4 style="color: var(--accent);"><i class="fas fa-shield-alt"></i> ELITE LEAGUE</h4>
-            <p style="font-size: 11px;">الدوري العام متاح للمحترفين فقط</p>
-            <button onclick="window.location.href='league.html'" class="btn-join" style="width: 100%; margin-top: 10px; background: var(--accent); color: white;">دخول الدوري</button>
+        <div class="activity-box">
+            <h4 style="font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px;">النشاط المباشر</h4>
+            <div id="liveActivity"></div>
         </div>
 
         <div class="chat-area">
-            <div style="padding: 10px; border-bottom: 1px solid #222; font-weight: 900; font-size: 14px;">الدردشة العامة</div>
+            <div style="padding: 10px; border-bottom: 1px solid #222; font-weight: 900; font-size: 14px; display: flex; justify-content: space-between;">
+                <span>الشات العام</span>
+                <span style="color:#00ff00; font-size: 10px;">LIVE</span>
+            </div>
             <div class="messages" id="globalChat"></div>
-            <div id="chatInputArea" style="display: none; padding: 10px; gap: 5px;">
-                <input type="text" id="chatInp" placeholder="اكتب رسالتك.." style="flex:1; background:#111; border:1px solid #333; color:white; padding:8px; border-radius:5px;">
+            <div id="chatInputArea" style="display: none; padding: 10px; gap: 5px; background: #050505;">
+                <input type="text" id="chatInp" placeholder="ارسل رسالة.." style="flex:1; background:#111; border:1px solid #333; color:white; padding:8px; border-radius:5px;">
                 <button onclick="sendMsg()" style="background:var(--primary); border:none; padding:10px; border-radius:5px;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
@@ -178,7 +179,6 @@
 </div>
 
 <script>
-    // Firebase Config (Keep yours)
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -196,11 +196,11 @@
     auth.onAuthStateChanged(user => {
         if(user) {
             uID = user.uid;
-            document.getElementById('mainLoginBtn').style.display = 'none';
             document.getElementById('navUserInfo').style.display = 'flex';
             document.getElementById('profileArea').style.display = 'none';
             document.getElementById('userProfileContent').style.display = 'block';
             document.getElementById('chatInputArea').style.display = 'flex';
+            document.getElementById('mainLoginBtn').style.display = 'none';
             syncUser();
         } else {
             document.getElementById('mainLoginBtn').style.display = 'block';
@@ -211,18 +211,21 @@
         }
     });
 
-    // جلب بيانات اللاعب الحقيقية
     function syncUser() {
         db.collection("players").doc(uID).onSnapshot(doc => {
             if(!doc.exists) return;
             userData = doc.data();
             document.getElementById('myName').innerText = userData.nickname;
             document.getElementById('myID').innerText = "#" + (userData.playerID || '0000');
-            document.getElementById('myGP').innerText = userData.gpPoints || 0;
-            document.getElementById('navGP').innerText = (userData.gpPoints || 0) + " GP";
-            document.getElementById('myRating').innerText = userData.rank || 1000;
+            const gp = userData.gpPoints || 0;
+            const rank = userData.rank || 1000;
+            document.getElementById('myGP').innerText = gp;
+            document.getElementById('navGP').innerText = gp + " GP";
+            document.getElementById('myRating').innerText = rank;
             document.getElementById('myMatches').innerText = userData.matchesPlayed || 0;
-            document.getElementById('myRole').innerText = (userData.role || 'PLAYER').toUpperCase();
+            // معادلة حساب القوة: (الريتنج + 10% من الـ GP)
+            document.getElementById('myPower').innerText = Math.floor(rank + (gp * 0.1));
+            
             if(userData.photoURL) {
                 document.getElementById('myAvatar').src = userData.photoURL;
                 document.getElementById('navUserImg').src = userData.photoURL;
@@ -232,36 +235,40 @@
     }
 
     function loadPublicData() {
-        // تحميل الإعلانات من الإدارة (collection: settings, doc: ticker)
+        // تحديث شريط الأخبار
         db.collection("settings").doc("ticker").onSnapshot(doc => {
             if(doc.exists) document.getElementById('newsTicker').innerText = doc.data().msg;
         });
 
-        // تحميل البطولات
+        // النشاط المباشر
+        db.collection("activity").orderBy("time", "desc").limit(5).onSnapshot(snap => {
+            const box = document.getElementById('liveActivity');
+            box.innerHTML = "";
+            snap.forEach(d => {
+                box.innerHTML += `<div class="act-item"><i class="fas fa-bolt"></i> ${d.data().msg}</div>`;
+            });
+        });
+
+        // البطولات
         db.collection("tournaments").orderBy("date", "desc").onSnapshot(snap => {
             const h = document.getElementById('homeTourGrid'), f = document.getElementById('fullTourGrid');
             h.innerHTML = f.innerHTML = "";
             snap.forEach(doc => {
                 const t = doc.data();
-                const html = `
-                <div class="tour-item">
-                    <div>
-                        <h3 style="color:var(--primary)">${t.title}</h3>
-                        <p style="font-size:12px; color:#aaa;">الجائزة: ${t.prize} | الحالة: نشطة</p>
-                    </div>
-                    <button class="btn-join" onclick="joinReq('${t.title}')">انضمام</button>
-                </div>`;
-                f.innerHTML += html;
-                h.innerHTML += html;
+                const html = `<div class="tour-item"><div><h3 style="color:var(--primary)">${t.title}</h3><p style="font-size:11px; color:#aaa;">${t.prize}</p></div><button class="btn-join" onclick="joinReq('${t.title}')">انضمام</button></div>`;
+                h.innerHTML += html; f.innerHTML += html;
             });
         });
 
-        // الشات العام
+        // الشات المطور
         db.collection("global_chat").orderBy("time", "desc").limit(20).onSnapshot(snap => {
             const box = document.getElementById('globalChat'); box.innerHTML = "";
-            snap.forEach(d => {
-                const m = d.data();
-                box.innerHTML = `<div class="msg"><b style="color:var(--primary)">${m.sender}:</b> ${m.text}</div>` + box.innerHTML;
+            let messages = [];
+            snap.forEach(d => messages.push(d.data()));
+            messages.reverse().forEach(m => {
+                const isAdmin = m.role === 'admin' ? 'admin-msg' : '';
+                const verified = m.role === 'admin' ? ' <i class="fas fa-check-circle" style="font-size:9px"></i>' : '';
+                box.innerHTML += `<div class="msg ${isAdmin}"><b>${m.sender}${verified}</b>${m.text}</div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
@@ -270,18 +277,14 @@
     async function sendMsg() {
         const i = document.getElementById('chatInp');
         if(i.value.trim() && uID) {
-            await db.collection("global_chat").add({ 
-                sender: userData.nickname, 
-                text: i.value, 
-                time: firebase.firestore.FieldValue.serverTimestamp() 
+            const msg = i.value; i.value = "";
+            await db.collection("global_chat").add({
+                sender: userData.nickname,
+                text: msg,
+                role: userData.role || 'player',
+                time: firebase.firestore.FieldValue.serverTimestamp()
             });
-            i.value = "";
         }
-    }
-
-    function tab(id, el) {
-        document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
-        document.getElementById(id + '-sec').classList.add('active');
     }
 
     async function joinReq(tName) {
@@ -289,13 +292,24 @@
         if(confirm(`تأكيد طلب الانضمام لـ ${tName}؟`)) {
             await db.collection("playerRequests").add({
                 uid: uID, playerName: userData.nickname, 
-                tournamentName: tName, status: "pending", date: Date.now()
+                tournamentName: tName, status: "pending", time: Date.now()
             });
-            alert("تم إرسال الطلب للمراجعة");
+            // تسجيل النشاط المباشر
+            await db.collection("activity").add({
+                msg: `${userData.nickname} طلب الانضمام لـ ${tName}`,
+                time: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("تم إرسال الطلب بنجاح!");
         }
+    }
+
+    function tab(id) {
+        document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+        document.getElementById(id + '-sec').classList.add('active');
     }
 </script>
 </body>
 </html>
+
 
 
