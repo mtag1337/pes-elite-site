@@ -1,25 +1,11 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
-    authDomain: "pes-elite.firebaseapp.com",
-    projectId: "pes-elite",
-    storageBucket: "pes-elite.firebasestorage.app",
-    messagingSenderId: "407069539120",
-    appId: "1:407069539120:web:466249fa7f716266d9e6f5"
-};
-
-//  Firebase
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
 }
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// js/firebase-config.js
-
-function goTo(page) {
-    let target = page.trim().replace(/^\/+|\/+$/g, '');
-    
-    let newLocation = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/' + target;
-    
-    window.location.replace(newLocation);
 
