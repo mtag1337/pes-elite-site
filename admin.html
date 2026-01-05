@@ -2,85 +2,53 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | CENTRAL CONTROL</title>
-    
+    <title>PES ELITE | نظام الإدارة المطور</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --admin-primary: #ff007a; --admin-bg: #030305; --card-bg: #0d0d12; }
-        body { background: var(--admin-bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; display: none; }
-        
-        .header { background: #000; padding: 20px; border-bottom: 2px solid var(--admin-primary); display: flex; justify-content: space-between; align-items: center; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
-        .stat-card { background: var(--card-bg); padding: 25px; border-radius: 15px; border-right: 5px solid var(--admin-primary); }
-        .stat-card i { font-size: 30px; color: var(--admin-primary); margin-bottom: 15px; }
-        .stat-card h3 { margin: 0; color: #888; font-size: 14px; }
-        .stat-card p { font-size: 28px; font-weight: 900; margin: 10px 0 0; font-family: 'Orbitron'; }
-
-        .admin-main { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding: 20px; }
-        .action-card { background: var(--card-bg); border-radius: 15px; padding: 20px; border: 1px solid #222; }
-        
-        .btn-action { width: 100%; padding: 12px; margin-bottom: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: #fff; text-align: right; }
-        .btn-p { background: #00bfff; }
-        .btn-l { background: #e1ff00; color: #000; }
-        .btn-danger { background: #ff4d4d; }
-
-        input, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; margin-bottom: 15px; }
+        :root { --primary: #e1ff00; --bg: #050508; --card: #111118; }
+        body { background: var(--bg); color: white; font-family: 'Cairo'; margin: 0; padding: 20px; }
+        .grid-admin { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; }
+        h2 { color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px; }
+        input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; }
+        input { background: #000; color: #fff; border: 1px solid #333; }
+        button { cursor: pointer; font-weight: bold; background: var(--primary); color: #000; }
+        .req-box { background: #1a1a24; padding: 15px; border-radius: 10px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-approve { background: #00ff88; width: auto; padding: 5px 15px; }
+        .btn-reject { background: #ff4d4d; width: auto; padding: 5px 15px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h2 style="font-family:'Orbitron';"><i class="fas fa-user-shield"></i> PES ELITE <span>ADMIN</span></h2>
-    <button onclick="window.location.href='index.html'" style="background:none; color:#fff; border:1px solid #fff; padding:5px 15px; border-radius:5px;">خروج</button>
-</div>
+<h1><i class="fas fa-tools"></i> لوحة التحكم المتقدمة</h1>
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <i class="fas fa-users"></i>
-        <h3>إجمالي اللاعبين</h3>
-        <p id="totalPlayers">0</p>
+<div class="grid-admin">
+    <div class="card">
+        <h2><i class="fas fa-trophy"></i> إنشاء بطولة جديدة</h2>
+        <input type="text" id="tourTitle" placeholder="اسم البطولة (مثلاً: كاس النخبة)">
+        <input type="text" id="tourPrize" placeholder="الجائزة (مثلاً: 5000 GP)">
+        <button onclick="createNewTournament()">نشر البطولة للمستخدمين</button>
     </div>
-    <div class="stat-card">
-        <i class="fas fa-gamepad"></i>
-        <h3>مباريات الدوري</h3>
-        <p id="totalMatches">0</p>
-    </div>
-    <div class="stat-card">
-        <i class="fas fa-comment-dots"></i>
-        <h3>رسائل الشات</h3>
-        <p id="totalMsgs">0</p>
+
+    <div class="card">
+        <h2><i class="fas fa-user-plus"></i> طلبات الانضمام المعلقة</h2>
+        <div id="pendingRequests">جاري تحميل الطلبات...</div>
     </div>
 </div>
 
-<div class="admin-main">
-    <div class="action-card">
-        <h3 style="color: var(--admin-primary); margin-bottom: 20px;"><i class="fas fa-plus-circle"></i> إضافة نتيجة مباراة دوري</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <select id="player1Select"><option>اختر اللاعب الأول</option></select>
-            <select id="player2Select"><option>اختر اللاعب الثاني</option></select>
-            <input type="number" id="p1Score" placeholder="أهداف الأول">
-            <input type="number" id="p2Score" placeholder="أهداف الثاني">
-        </div>
-        <button class="btn-action btn-l" onclick="addMatchResult()">حفظ النتيجة وتحديث الجدول</button>
-    </div>
-
-    <div class="action-card">
-        <h3>روابط سريعة</h3>
-        <button class="btn-action btn-p" onclick="window.location.href='players.html'"><i class="fas fa-user-cog"></i> إدارة بيانات اللاعبين</button>
-        <button class="btn-action btn-p" onclick="window.location.href='League.html'"><i class="fas fa-table"></i> معاينة جدول الدوري</button>
-        <button class="btn-action btn-danger" onclick="clearGlobalChat()"><i class="fas fa-trash"></i> مسح سجل الشات</button>
-    </div>
+<div class="card">
+    <h2><i class="fas fa-bell"></i> إرسال إشعار عام لكل اللاعبين</h2>
+    <input type="text" id="globalNotice" placeholder="اكتب نص الإشعار هنا...">
+    <button style="background: #00bfff;" onclick="sendGlobalNotification()">إرسال إشعار</button>
 </div>
 
 <script>
+    // ضع إعدادات Firebase الخاصة بك هنا
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -91,65 +59,74 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const auth = firebase.auth();
 
-    const ADMIN_EMAIL = "mtag1337@gmail.com";
+    // 1. وظيفة إنشاء بطولة
+    async function createNewTournament() {
+        const title = document.getElementById('tourTitle').value;
+        const prize = document.getElementById('tourPrize').value;
+        if(!title || !prize) return alert("أكمل البيانات");
 
-    auth.onAuthStateChanged(user => {
-        if (user && user.email === ADMIN_EMAIL) {
-            document.body.style.display = "block";
-            fetchStats();
-            fillPlayersSelect();
-        } else {
-            window.location.href = "index.html";
-        }
-    });
-
-    async function fetchStats() {
-        db.collection("players").get().then(snap => document.getElementById('totalPlayers').innerText = snap.size);
-        db.collection("leagueMatches").get().then(snap => document.getElementById('totalMatches').innerText = snap.size);
-        db.collection("global_chat").get().then(snap => document.getElementById('totalMsgs').innerText = snap.size);
+        await db.collection("tournaments").add({
+            title: title,
+            prize: prize,
+            status: "open",
+            createdAt: Date.now()
+        });
+        alert("تم نشر البطولة!");
     }
 
-    async function fillPlayersSelect() {
-        const snap = await db.collection("players").get();
-        const s1 = document.getElementById('player1Select');
-        const s2 = document.getElementById('player2Select');
-        snap.forEach(doc => {
-            let opt = `<option value="${doc.id}">${doc.data().nickname}</option>`;
-            s1.innerHTML += opt;
-            s2.innerHTML += opt;
+    // 2. تحميل طلبات الانضمام وقبولها
+    function loadRequests() {
+        db.collection("playerRequests").where("status", "==", "pending").onSnapshot(snap => {
+            const div = document.getElementById('pendingRequests');
+            div.innerHTML = "";
+            snap.forEach(doc => {
+                const r = doc.data();
+                div.innerHTML += `
+                    <div class="req-box">
+                        <div>
+                            <b>${r.playerName}</b><br>
+                            <small>البطولة: ${r.tournamentName}</small>
+                        </div>
+                        <div>
+                            <button class="btn-approve" onclick="actionRequest('${doc.id}', '${r.uid}', 'approved', '${r.tournamentName}')">قبول</button>
+                            <button class="btn-reject" onclick="actionRequest('${doc.id}', '${r.uid}', 'rejected', '${r.tournamentName}')">رفض</button>
+                        </div>
+                    </div>
+                `;
+            });
         });
     }
 
-    async function addMatchResult() {
-        const p1Id = document.getElementById('player1Select').value;
-        const p2Id = document.getElementById('player2Select').value;
-        const s1 = parseInt(document.getElementById('p1Score').value);
-        const s2 = parseInt(document.getElementById('p2Score').value);
-
-        if(!p1Id || !p2Id || isNaN(s1)) return alert("أكمل البيانات");
-
-        await db.collection("leagueMatches").add({
-            p1Name: document.getElementById('player1Select').options[document.getElementById('player1Select').selectedIndex].text,
-            p2Name: document.getElementById('player2Select').options[document.getElementById('player2Select').selectedIndex].text,
-            p1Score: s1,
-            p2Score: s2,
-            status: "finished",
-            time: Date.now()
+    async function actionRequest(docId, userId, newStatus, tName) {
+        // 1. تحديث حالة الطلب
+        await db.collection("playerRequests").doc(docId).update({ status: newStatus });
+        
+        // 2. إرسال إشعار خاص للاعب
+        const msg = newStatus === 'approved' ? `مبروك! تم قبولك في بطولة ${tName}` : `نعتذر، تم رفض طلبك في ${tName}`;
+        await db.collection("notifications").add({
+            to: userId,
+            text: msg,
+            time: Date.now(),
+            read: false
         });
-
-        alert("تمت إضافة النتيجة بنجاح!");
-        location.reload();
+        alert("تمت العملية وإرسال إشعار للاعب");
     }
 
-    async function clearGlobalChat() {
-        if(confirm("هل أنت متأكد من مسح كل رسائل الشات؟")) {
-            const snap = await db.collection("global_chat").get();
-            snap.forEach(doc => doc.ref.delete());
-            alert("تم تنظيف الشات.");
-        }
+    // 3. إرسال إشعار عام
+    async function sendGlobalNotification() {
+        const txt = document.getElementById('globalNotice').value;
+        if(!txt) return;
+        await db.collection("notifications").add({
+            to: "all",
+            text: txt,
+            time: Date.now(),
+            read: false
+        });
+        alert("تم إرسال الإشعار للجميع!");
     }
+
+    loadRequests();
 </script>
 </body>
 </html>
