@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>إدارة PES ELITE | التحكم الكامل</title>
+    <title>إدارة PES ELITE | التحكم الشامل</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -11,59 +11,59 @@
     <style>
         :root { --p: #e1ff00; --bg: #050508; --card: #111118; --danger: #ff4d4d; }
         body { background: var(--bg); color: white; font-family: 'Cairo'; margin: 0; padding: 20px; }
-        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; }
         h2 { color: var(--p); font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
         input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-family: 'Cairo'; }
         input, select { background: #000; color: #fff; border: 1px solid #333; }
         button { cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-add { background: var(--p); color: #000; }
-        .btn-del { background: var(--danger); color: #fff; padding: 5px; font-size: 12px; width: auto; }
-        .item-list { max-height: 200px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
+        .btn-del { background: var(--danger); color: #fff; padding: 5px 10px; font-size: 12px; width: auto; }
+        .item-list { max-height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
         .list-entry { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; }
-        .init-btn { background: #555; color: #fff; font-size: 10px; padding: 5px; width: auto; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<h1><i class="fas fa-user-shield"></i> مركز إدارة العمليات</h1>
+<h1><i class="fas fa-user-shield"></i> لوحة تحكم القائد</h1>
 
 <div class="admin-grid">
 
     <div class="card">
-        <h2><i class="fas fa-trophy"></i> إدارة البطولات الحالية</h2>
+        <h2><i class="fas fa-trophy"></i> البطولات</h2>
         <input type="text" id="tTitle" placeholder="اسم البطولة">
         <input type="text" id="tPrize" placeholder="الجائزة">
-        <button class="btn-add" onclick="createT()">إنشاء بطولة جديدة</button>
-        <hr>
+        <button class="btn-add" onclick="createT()">إنشاء بطولة</button>
         <div id="tList" class="item-list"></div>
     </div>
 
     <div class="card">
         <h2><i class="fas fa-edit"></i> تحديث نقاط الدوري</h2>
-        <p style="font-size: 12px; color: #888;">اختر اللاعب وعدل أرقامه التراكمية</p>
-        <select id="targetPlayer">
-            <option value="">اختر اللاعب من الدوري</option>
-        </select>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+        <select id="targetPlayer"><option value="">اختر فريقاً...</option></select>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
             <input type="number" id="plusW" placeholder="+ فوز">
             <input type="number" id="plusD" placeholder="+ تعادل">
             <input type="number" id="plusL" placeholder="+ خسارة">
-            <input type="number" id="plusGF" placeholder="+ أهداف له">
-            <input type="number" id="plusGA" placeholder="+ أهداف عليه">
+            <input type="number" id="plusGF" placeholder="+ له">
+            <input type="number" id="plusGA" placeholder="+ عليه">
         </div>
-        <button class="btn-add" style="background:#00bfff; color:white;" onclick="updatePlayerStats()">تحديث في الجدول</button>
-        <button class="init-btn" onclick="initializeLeague()">تهيئة الـ 15 خانة (مرة واحدة فقط)</button>
+        <button class="btn-add" style="background:#00bfff; color:white;" onclick="updatePlayerStats()">تحديث النتائج</button>
+        <button style="background:#444; font-size:10px;" onclick="setupProLeague()">تهيئة الـ 15 فريق الأصليين</button>
     </div>
 
     <div class="card">
-        <h2><i class="fas fa-id-card"></i> طلبات الانضمام</h2>
+        <h2><i class="fas fa-history"></i> سجل المباريات</h2>
+        <div id="matchesLog" class="item-list"></div>
+    </div>
+
+    <div class="card">
+        <h2><i class="fas fa-id-card"></i> طلبات معلقة</h2>
         <div id="reqs" class="item-list"></div>
-        <hr>
-        <h2><i class="fas fa-users-cog"></i> إسناد فريق للاعب</h2>
-        <select id="allPlayersList"><option value="">اختر لاعباً من الموقع</option></select>
-        <input type="text" id="teamName" placeholder="اسم الفريق (مثل: الأهلي)">
-        <button class="btn-add" style="background:white; color:black;" onclick="assignTeam()">حفظ الفريق</button>
+        <hr style="border-color:#333">
+        <h2><i class="fas fa-user-tag"></i> إسناد فريق للاعب</h2>
+        <select id="allPlayersList"></select>
+        <input type="text" id="teamName" placeholder="اسم النادي">
+        <button class="btn-add" style="background:white; color:black;" onclick="assignTeam()">حفظ التعديل</button>
     </div>
 
 </div>
@@ -84,60 +84,54 @@
         loadTournaments();
         loadPlayers();
         loadRequests();
-        loadLeaguePlayers(); // تحميل الـ 15 لاعب في القائمة
+        loadLeaguePlayers();
+        loadMatchesLog();
     };
 
-    // إنشاء بطولة
+    // وظائف البطولات
     async function createT() {
         const title = document.getElementById('tTitle').value;
         const prize = document.getElementById('tPrize').value;
         if (title) {
             await db.collection("tournaments").add({ title, prize, status: "open", time: Date.now() });
-            alert("تمت إضافة البطولة");
-            location.reload();
+            alert("تم النشر");
         }
     }
 
-    // تحميل البطولات للحذف
     function loadTournaments() {
         db.collection("tournaments").onSnapshot(snap => {
             const container = document.getElementById('tList');
             container.innerHTML = "";
             snap.forEach(doc => {
-                container.innerHTML += `
-                    <div class="list-entry">
-                        <span>${doc.data().title}</span>
-                        <button class="btn-del" onclick="deleteDoc('tournaments', '${doc.id}')">حذف</button>
-                    </div>`;
+                container.innerHTML += `<div class="list-entry"><span>${doc.data().title}</span><button class="btn-del" onclick="deleteDoc('tournaments', '${doc.id}')">حذف</button></div>`;
             });
         });
     }
 
-    // تهيئة الدوري لـ 15 فريق (تستخدمها مرة واحدة فقط في البداية)
-    async function initializeLeague() {
-        if(!confirm("هل تريد إنشاء 15 خانة فارغة في الدوري؟")) return;
-        for (let i = 1; i <= 15; i++) {
+    // تهيئة الدوري (مرة واحدة فقط)
+    async function setupProLeague() {
+        if(!confirm("سيتم إنشاء الـ 15 فريق الأساسيين، هل أنت متأكد؟")) return;
+        const names = ["الأهلي", "الزمالك", "ريال مدريد", "مان سيتي", "برشلونة", "بايرن", "ليفربول", "أرسنال", "انتر", "باريس", "النصر", "الهلال", "الاتحاد", "روما", "ميلان"];
+        for(let name of names) {
             await db.collection("leaguePlayers").add({
-                nickname: "فريق فارغ " + i,
+                nickname: name, photoURL: "https://via.placeholder.com/50",
                 pts: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, played: 0, gd: 0
             });
         }
-        alert("تمت التهيئة! يمكنك الآن تعديل أسمائهم ونقاطهم.");
-        location.reload();
+        alert("تمت التهيئة");
     }
 
-    // تحميل أسماء لاعبي الدوري في القائمة المنسدلة
     function loadLeaguePlayers() {
         db.collection("leaguePlayers").onSnapshot(snap => {
             const select = document.getElementById('targetPlayer');
-            select.innerHTML = '<option value="">اختر اللاعب من الدوري</option>';
+            select.innerHTML = '<option value="">اختر الفريق...</option>';
             snap.forEach(doc => {
                 select.innerHTML += `<option value="${doc.id}">${doc.data().nickname}</option>`;
             });
         });
     }
 
-    // تحديث النقاط التراكمي
+    // تحديث النقاط وحفظ المباراة في السجل
     async function updatePlayerStats() {
         const uid = document.getElementById('targetPlayer').value;
         const w = parseInt(document.getElementById('plusW').value) || 0;
@@ -146,43 +140,69 @@
         const gf = parseInt(document.getElementById('plusGF').value) || 0;
         const ga = parseInt(document.getElementById('plusGA').value) || 0;
 
-        if(!uid) return alert("اختر لاعب أولاً");
+        if(!uid) return alert("اختر فريقاً");
 
         const ref = db.collection("leaguePlayers").doc(uid);
         const doc = await ref.get();
-        let current = doc.data();
+        const cur = doc.data();
 
-        const newW = current.w + w;
-        const newD = current.d + d;
-        const newL = current.l + l;
-
+        // تحديث الجدول
         await ref.update({
-            played: current.played + (w + d + l),
-            w: newW,
-            d: newD,
-            l: newL,
-            gf: current.gf + gf,
-            ga: current.ga + ga,
-            pts: (newW * 3) + (newD * 1),
-            gd: (current.gf + gf) - (current.ga + ga)
+            played: cur.played + (w + d + l),
+            w: cur.w + w, d: cur.d + d, l: cur.l + l,
+            gf: cur.gf + gf, ga: cur.ga + ga,
+            pts: ((cur.w + w) * 3) + ((cur.d + d) * 1),
+            gd: (cur.gf + gf) - (cur.ga + ga)
         });
 
-        alert("تم تحديث ترتيب اللاعب!");
-        // تصغير القيم بعد الإضافة لعدم التكرار بالخطأ
-        document.getElementById('plusW').value = "";
-        document.getElementById('plusD').value = "";
-        document.getElementById('plusL').value = "";
-        document.getElementById('plusGF').value = "";
-        document.getElementById('plusGA').value = "";
+        // حفظ في السجل (عشان نعرف نمسحها لو غلطنا)
+        await db.collection("leagueMatches").add({
+            pName: cur.nickname, pId: uid,
+            w, d, l, gf, ga, time: Date.now()
+        });
+
+        alert("تم التحديث");
+        location.reload();
     }
 
-    // وظائف عامة
+    // عرض سجل العمليات وحذفها
+    function loadMatchesLog() {
+        db.collection("leagueMatches").orderBy("time", "desc").limit(10).onSnapshot(snap => {
+            const log = document.getElementById('matchesLog');
+            log.innerHTML = "";
+            snap.forEach(doc => {
+                const m = doc.data();
+                log.innerHTML += `<div class="list-entry">
+                    <span style="font-size:11px;">تعديل لـ: ${m.pName}</span>
+                    <button class="btn-del" onclick="undoMatch('${doc.id}', '${m.pId}', ${m.w}, ${m.d}, ${m.l}, ${m.gf}, ${m.ga})">تراجع</button>
+                </div>`;
+            });
+        });
+    }
+
+    async function undoMatch(mId, pId, w, d, l, gf, ga) {
+        if(!confirm("هل تريد التراجع عن هذه العملية؟")) return;
+        const ref = db.collection("leaguePlayers").doc(pId);
+        const doc = await ref.get();
+        const cur = doc.data();
+
+        await ref.update({
+            played: cur.played - (w + d + l),
+            w: cur.w - w, d: cur.d - d, l: cur.l - l,
+            gf: cur.gf - gf, ga: cur.ga - ga,
+            pts: ((cur.w - w) * 3) + ((cur.d - d) * 1),
+            gd: (cur.gf - gf) - (cur.ga - ga)
+        });
+
+        await db.collection("leagueMatches").doc(mId).delete();
+        alert("تم التراجع");
+    }
+
+    // وظائف اللاعبين والطلبات
     function loadPlayers() {
         db.collection("players").get().then(snap => {
-            const s3 = document.getElementById('allPlayersList');
-            snap.forEach(doc => {
-                s3.innerHTML += `<option value="${doc.id}">${doc.data().nickname || doc.data().name}</option>`;
-            });
+            const s = document.getElementById('allPlayersList');
+            snap.forEach(doc => { s.innerHTML += `<option value="${doc.id}">${doc.data().nickname || doc.data().name}</option>`; });
         });
     }
 
@@ -191,26 +211,22 @@
         const team = document.getElementById('teamName').value;
         if(uid && team) {
             await db.collection("players").doc(uid).update({ assignedTeam: team });
-            alert("تم إسناد الفريق");
+            alert("تم الحفظ");
         }
-    }
-
-    function deleteDoc(col, id) {
-        if(confirm("حذف نهائي؟")) db.collection(col).doc(id).delete();
     }
 
     function loadRequests() {
         db.collection("playerRequests").onSnapshot(snap => {
-            const container = document.getElementById('reqs');
-            container.innerHTML = "";
+            const c = document.getElementById('reqs');
+            c.innerHTML = "";
             snap.forEach(doc => {
-                container.innerHTML += `
-                    <div class="list-entry">
-                        <span>${doc.data().playerName}</span>
-                        <button class="btn-del" style="background:green" onclick="deleteDoc('playerRequests', '${doc.id}')">قبول</button>
-                    </div>`;
+                c.innerHTML += `<div class="list-entry"><span>${doc.data().playerName}</span><button class="btn-del" style="background:green" onclick="deleteDoc('playerRequests', '${doc.id}')">قبول</button></div>`;
             });
         });
+    }
+
+    function deleteDoc(col, id) {
+        if(confirm("متأكد؟")) db.collection(col).doc(id).delete();
     }
 </script>
 </body>
