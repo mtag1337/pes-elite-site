@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | دليل المستخدمين</title>
+    <title>PES ELITE | ADMIN PANEL</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -13,87 +13,86 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root {
-            --primary: #00f2ff;
-            --bg: #020205;
-            --panel: #0a0a0f;
-            --border: rgba(255, 255, 255, 0.05);
-        }
+        :root { --primary: #00f2ff; --accent: #e1ff00; --bg: #050508; --panel: #111118; --border: rgba(255,255,255,0.1); }
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; opacity: 0; transition: 0.5s; }
+        
+        .admin-wrapper { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+        
+        /* Sidebar */
+        aside { background: var(--panel); border-left: 1px solid var(--border); padding: 20px; }
+        .nav-item { padding: 15px; border-radius: 10px; cursor: pointer; margin-bottom: 10px; transition: 0.3s; color: #888; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: #000; font-weight: bold; }
 
-        /* الصفحة مخفية تماماً في البداية */
-        body {
-            background: var(--bg);
-            color: #fff;
-            font-family: 'Cairo', sans-serif;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
+        /* Main Content */
+        main { padding: 30px; overflow-y: auto; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 25px; }
+        
+        /* Players Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: right; color: var(--primary); padding: 12px; border-bottom: 2px solid #222; }
+        td { padding: 12px; border-bottom: 1px solid #222; font-size: 14px; }
+        
+        .p-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .btn-edit { background: var(--accent); color: #000; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        
+        /* Control Box */
+        .control-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; flex: 1; }
+        button { background: var(--primary); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto 30px;
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 15px;
-        }
-
-        .search-box {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            border-radius: 50px;
-            color: #fff;
-            width: 300px;
-        }
-
-        .players-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: auto;
-        }
-
-        .player-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: 0.3s;
-        }
-
-        .player-card:hover { border-color: var(--primary); transform: translateY(-5px); }
-
-        .player-img {
-            width: 80px; height: 80px;
-            border-radius: 15px; object-fit: cover;
-            border: 2px solid #1a1a1a;
-        }
-
-        .info h3 { margin: 0; font-size: 18px; color: var(--primary); }
-        .info p { margin: 3px 0; font-size: 12px; color: #888; }
-
-        .stat-item {
-            background: rgba(0, 242, 255, 0.05);
-            padding: 5px 10px; border-radius: 8px;
-            font-size: 11px; color: var(--primary);
-        }
+        .request-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 10px; border-right: 4px solid var(--primary); }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h2><i class="fas fa-users"></i> دليل اللاعبين المسجلين (<span id="count">0</span>)</h2>
-    <input type="text" id="searchInput" class="search-box" placeholder="ابحث باسم اللاعب..." onkeyup="search()">
-</div>
+<div class="admin-wrapper">
+    <aside>
+        <h2 style="font-family:'Orbitron'; color:var(--primary);">ADMIN <span>CORE</span></h2>
+        <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+        <div class="nav-item active" onclick="showSec('playersSec')"><i class="fas fa-users"></i> إدارة اللاعبين</div>
+        <div class="nav-item" onclick="showSec('reqSec')"><i class="fas fa-envelope-open-text"></i> طلبات الانضمام</div>
+        <div class="nav-item" onclick="showSec('settingsSec')"><i class="fas fa-cogs"></i> إعدادات الموقع</div>
+        <div class="nav-item" onclick="window.location.href='index.html'" style="margin-top:50px; color:var(--accent);"><i class="fas fa-arrow-left"></i> خروج للموقع</div>
+    </aside>
 
-<div class="players-grid" id="playersContainer"></div>
+    <main>
+        <section id="playersSec" class="admin-sec">
+            <div class="control-box">
+                <input type="text" id="pSearch" placeholder="ابحث عن لاعب باسمه..." onkeyup="searchPlayer()">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div class="card">
+                <h3>قائمة اللاعبين (<span id="pCount">0</span>)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اللاعب</th>
+                            <th>eFootball ID</th>
+                            <th>GP</th>
+                            <th>RANK</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="reqSec" class="admin-sec" style="display:none;">
+            <h3>طلبات انضمام البطولات</h3>
+            <div id="reqList"></div>
+        </section>
+
+        <section id="settingsSec" class="admin-sec" style="display:none;">
+            <div class="card">
+                <h3>تحديث شريط الأخبار الرئيسي</h3>
+                <textarea id="tickerMsg" style="width:100%; height:80px; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin:10px 0;"></textarea>
+                <button onclick="updateTicker()">تحديث الخبر</button>
+            </div>
+        </section>
+    </main>
+</div>
 
 <script>
     const firebaseConfig = {
@@ -108,62 +107,95 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // --- إعدادات الحماية ---
-    const ADMIN_EMAIL = "mtag1337@gmail.com"; 
-    const MASTER_PASS = "mtag1337@010#@010#";
+    const ADMIN_EMAIL = "mtag1337@gmail.com";
 
     auth.onAuthStateChanged(user => {
         if (user && user.email === ADMIN_EMAIL) {
-            // الخطوة 2: الباسورد
-            let pass = prompt("من فضلك أدخل كلمة السر لرؤية دليل اللاعبين:");
-            if (pass === MASTER_PASS) {
-                document.body.style.opacity = "1"; // إظهار الصفحة
-                loadPlayers(); // تحميل البيانات
-            } else {
-                alert("كلمة سر خاطئة!");
-                window.location.href = "home.html";
-            }
+            document.body.style.opacity = "1";
+            loadAdminData();
         } else {
-            // ليس المسؤول أو لم يسجل دخول
-            window.location.href = "login.html";
+            alert("غير مسموح لك بالدخول هنا!");
+            window.location.href = "index.html";
         }
     });
 
-    function loadPlayers() {
-        db.collection("players").orderBy("rank", "desc").onSnapshot(snap => {
-            const container = document.getElementById('playersContainer');
-            document.getElementById('count').innerText = snap.size;
-            container.innerHTML = "";
-
+    function loadAdminData() {
+        // تحميل اللاعبين
+        db.collection("players").onSnapshot(snap => {
+            const tbody = document.getElementById('pTableBody');
+            document.getElementById('pCount').innerText = snap.size;
+            tbody.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
-                const lvl = Math.floor((p.xp || 0) / 1000) + 1;
-                
-                container.innerHTML += `
-                    <div class="player-card">
-                        <img src="${p.photoURL || 'https://via.placeholder.com/80'}" class="player-img">
-                        <div class="info">
-                            <h3>${p.nickname}</h3>
-                            <p><i class="fas fa-id-badge"></i> ID: #${p.playerID}</p>
-                            <p><i class="fas fa-envelope"></i> ${p.email || 'مخفي'}</p>
-                            <div style="display:flex; gap:10px; margin-top:10px;">
-                                <div class="stat-item">LVL ${lvl}</div>
-                                <div class="stat-item">RANK ${p.rank}</div>
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <img src="${p.photoURL || 'https://via.placeholder.com/40'}" class="p-img">
+                                <b>${p.nickname || 'مستخدم جديد'}</b>
                             </div>
+                        </td>
+                        <td>${p.efootballId || '---'}</td>
+                        <td><input type="number" value="${p.gpPoints || 0}" onchange="updateStat('${doc.id}', 'gpPoints', this.value)" style="width:60px; padding:5px;"></td>
+                        <td><input type="number" value="${p.rank || 1000}" onchange="updateStat('${doc.id}', 'rank', this.value)" style="width:80px; padding:5px;"></td>
+                        <td>
+                            <button class="btn-edit" onclick="toggleVerify('${doc.id}', ${p.isVerified})">${p.isVerified ? 'إلغاء التوثيق' : 'توثيق'}</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+
+        // تحميل الطلبات
+        db.collection("playerRequests").orderBy("time", "desc").onSnapshot(snap => {
+            const list = document.getElementById('reqList');
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                const r = doc.data();
+                list.innerHTML += `
+                    <div class="request-item">
+                        <div>
+                            <b>${r.playerName}</b> <small>يطلب الانضمام لـ</small> <b>${r.tournamentName}</b>
                         </div>
+                        <button onclick="deleteDoc('playerRequests', '${doc.id}')" style="background:#ff4d4d;">مسح</button>
                     </div>
                 `;
             });
         });
     }
 
-    function search() {
-        let input = document.getElementById('searchInput').value.toLowerCase();
-        let cards = document.getElementsByClassName('player-card');
-        for (let card of cards) {
-            let name = card.getElementsByTagName('h3')[0].innerText.toLowerCase();
-            card.style.display = name.includes(input) ? "flex" : "none";
-        }
+    async function updateStat(uid, field, val) {
+        await db.collection("players").doc(uid).update({ [field]: parseInt(val) });
+    }
+
+    async function toggleVerify(uid, currentStatus) {
+        await db.collection("players").doc(uid).update({ isVerified: !currentStatus });
+    }
+
+    async function updateTicker() {
+        const m = document.getElementById('tickerMsg').value;
+        await db.collection("settings").doc("ticker").set({ msg: m });
+        alert("تم تحديث الشريط!");
+    }
+
+    function deleteDoc(col, id) {
+        if(confirm('هل تريد مسح هذا الطلب؟')) db.collection(col).doc(id).delete();
+    }
+
+    function showSec(id) {
+        document.querySelectorAll('.admin-sec').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    function searchPlayer() {
+        let input = document.getElementById('pSearch').value.toLowerCase();
+        let rows = document.querySelectorAll('#pTableBody tr');
+        rows.forEach(row => {
+            let name = row.querySelector('b').innerText.toLowerCase();
+            row.style.display = name.includes(input) ? '' : 'none';
+        });
     }
 </script>
 </body>
