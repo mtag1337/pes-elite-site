@@ -1,110 +1,132 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eFootball PES ELITE | LOGIN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@900&family=Noto+Sans+AR:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>PES ELITE | تسجيل الدخول</title>
     
-    <style>
-        :root {
-            --efootball-blue: #0014d3;
-            --efootball-yellow: #eaff00;
-            --efootball-pink: #ff007a;
-        }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Noto Sans AR', sans-serif; background-color: #000; overflow: hidden; }
-        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://w0.peakpx.com/wallpaper/246/401/HD-wallpaper-efootball-2022-messi.jpg') center/cover; z-index: -1; filter: saturate(1.5) contrast(1.1); }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0, 20, 211, 0.7) 0%, rgba(255, 0, 122, 0.2) 100%); z-index: 0; }
-        .login-screen { position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-right: 10%; }
-        .brand-logo { margin-bottom: 20px; border-right: 8px solid var(--efootball-yellow); padding-right: 20px; }
-        .brand-logo h1 { font-family: 'Kanit', sans-serif; font-size: 80px; color: white; margin: 0; font-style: italic; line-height: 0.9; text-shadow: 4px 4px 0px var(--efootball-blue); }
-        .brand-logo h1 span { color: var(--efootball-yellow); }
-        .sub-text { color: white; font-size: 20px; font-weight: 900; background: var(--efootball-pink); padding: 5px 20px; display: inline-block; transform: skewX(-15deg); margin-bottom: 50px; }
-        .login-btn { background: var(--efootball-yellow); color: black; border: none; padding: 20px 60px; font-size: 24px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 20px; clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%); transition: 0.3s; }
-        .login-btn:hover { transform: scale(1.05) translateX(10px); background: white; box-shadow: -10px 0 30px var(--efootball-yellow); }
-        .footer-info { position: absolute; bottom: 40px; right: 10%; color: white; font-size: 12px; opacity: 0.7; }
-        .fade-in { animation: fadeInRight 1s ease-out; }
-        @keyframes fadeInRight { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
-    </style>
-</head>
-<body>
-
-    <div class="video-bg"></div>
-    <div class="overlay"></div>
-
-    <div class="login-screen">
-        <div class="brand-logo fade-in">
-            <h1>PES<br><span>ELITE</span></h1>
-        </div>
-        <div class="sub-text fade-in">SEASON 2026: THE EVOLUTION</div>
-        <button class="login-btn fade-in" onclick="login()">
-            <i class="fab fa-google"></i> PRESS START TO LOGIN
-        </button>
-    </div>
-
-    <div class="footer-info">&copy; 2026 KONAMI Digital Entertainment (Elite Mod)<br>Powered by Firebase Auth</div>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
-            authDomain: "pes-elite.firebaseapp.com",
-            projectId: "pes-elite",
-            storageBucket: "pes-elite.firebasestorage.app",
-            messagingSenderId: "407069539120",
-            appId: "1:407069539120:web:466249fa7f716266d9e6f5"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-function login() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).then((result) => {
-        const user = result.user;
-        const userRef = db.collection("players").doc(user.uid);
+    <style>
+        :root { --primary: #e1ff00; --bg: #050508; --panel: #111118; }
+        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; overflow: hidden; }
+        
+        /* تأثير الخلفية المتحركة */
+        .bg-glow { position: absolute; width: 300px; height: 300px; background: var(--primary); filter: blur(150px); opacity: 0.1; z-index: -1; animation: move 10s infinite alternate; }
+        @keyframes move { from { transform: translate(-50%, -50%); } to { transform: translate(50%, 50%); } }
 
-        userRef.get().then((doc) => {
-            if (!doc.exists) {
-                // إنشاء بروفايل جديد
-                return userRef.set({
-                    nickname: user.displayName,
-                    photoURL: user.photoURL,
-                    email: user.email,
-                    playerID: Math.floor(100000 + Math.random() * 900000),
+        .login-card { width: 90%; max-width: 400px; background: var(--panel); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        
+        .logo { font-family: 'Orbitron'; font-size: 30px; margin-bottom: 30px; font-weight: 900; }
+        .logo span { color: var(--primary); }
+
+        .input-group { text-align: right; margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 14px; color: #888; }
+        .input-group input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 10px; font-family: 'Cairo'; }
+        .input-group input:focus { border-color: var(--primary); outline: none; }
+
+        .btn-login { width: 100%; padding: 15px; background: var(--primary); color: black; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        .btn-login:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        .toggle-link { margin-top: 20px; font-size: 14px; color: #888; cursor: pointer; }
+        .toggle-link span { color: var(--primary); font-weight: bold; }
+        
+        #errorMsg { color: #ff4d4d; font-size: 13px; margin-top: 15px; min-height: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="login-card">
+    <div class="logo">PES <span>ELITE</span></div>
+    <h2 id="formTitle">تسجيل الدخول</h2>
+    <p style="color: #666; font-size: 13px; margin-bottom: 30px;">مرحباً بك في مجتمع النخبة</p>
+
+    <div class="input-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="email" placeholder="example@mail.com">
+    </div>
+
+    <div class="input-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="pass" placeholder="••••••••">
+    </div>
+
+    <button class="btn-login" id="submitBtn" onclick="handleAuth()">دخول</button>
+    
+    <div class="toggle-link" onclick="toggleMode()">
+        <p id="toggleText">ليس لديك حساب؟ <span>سجل الآن</span></p>
+    </div>
+
+    <p id="errorMsg"></p>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
+        authDomain: "pes-elite.firebaseapp.com",
+        projectId: "pes-elite",
+        storageBucket: "pes-elite.firebasestorage.app",
+        messagingSenderId: "407069539120",
+        appId: "1:407069539120:web:466249fa7f716266d9e6f5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let isLogin = true;
+
+    function toggleMode() {
+        isLogin = !isLogin;
+        document.getElementById('formTitle').innerText = isLogin ? "تسجيل الدخول" : "إنشاء حساب جديد";
+        document.getElementById('submitBtn').innerText = isLogin ? "دخول" : "تسجيل";
+        document.getElementById('toggleText').innerHTML = isLogin ? "ليس لديك حساب؟ <span>سجل الآن</span>" : "لديك حساب بالفعل؟ <span>سجل دخول</span>";
+    }
+
+    async function handleAuth() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('pass').value;
+        const msg = document.getElementById('errorMsg');
+        const btn = document.getElementById('submitBtn');
+
+        if(!email || !pass) return msg.innerText = "يرجى ملء كافة الحقول";
+
+        btn.disabled = true;
+        msg.style.color = "var(--primary)";
+        msg.innerText = "جاري التحقق...";
+
+        try {
+            if (isLogin) {
+                // تسجيل الدخول
+                await auth.signInWithEmailAndPassword(email, pass);
+                window.location.href = "index.html";
+            } else {
+                // إنشاء حساب
+                const res = await auth.createUserWithEmailAndPassword(email, pass);
+                // تهيئة بيانات اللاعب في الداتابيز لأول مرة
+                await db.collection("players").doc(res.user.uid).set({
+                    email: email,
+                    nickname: email.split('@')[0], // اسم مؤقت
                     rank: 1000,
-                    xp: 0,
-                    role: "player",
-                    joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    gpPoints: 0,
+                    photoURL: "",
+                    isVerified: false,
+                    playerID: Math.floor(100000 + Math.random() * 900000)
                 });
-            } else {
-                return userRef.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
+                window.location.href = "profile.html"; // توجيهه للبروفايل لإكمال بياناته
             }
-        }).then(() => {
-            // --- السطر السحري للتوجيه ---
-            console.log("Success! Redirecting...");
-            
-            // تأكد من الإيميل الخاص بك كأدمن
-            if (user.email === "mtag1337@gmail.com") {
-                window.location.replace("admin.html");
-            } else {
-                // استخدام replace بدلاً من href لضمان عدم الرجوع للخلف
-                window.location.replace("index.html"); 
-            }
-        });
-    }).catch((err) => { 
-        console.error(err);
-        alert("حدث خطأ أثناء الدخول: " + err.message); 
-    });
-}
-    </script>
+        } catch (error) {
+            msg.style.color = "#ff4d4d";
+            msg.innerText = "خطأ: " + error.message;
+            btn.disabled = false;
+        }
+    }
+</script>
 </body>
 </html>
-
-
