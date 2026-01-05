@@ -1,65 +1,90 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-
-    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648"
-     crossorigin="anonymous"></script>
-
-     
     <meta charset="UTF-8">
-    <title>PES ELITE - الملف الشخصي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PES ELITE - تعديل الملف الشخصي</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="js/firebase-config.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --main: #e1ff00; --bg: #0a0a0a; --card: #1a1a1a; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; }
-        .profile-container { max-width: 500px; margin: auto; background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid #333; }
+        :root { --primary: #e1ff00; --bg: #0a0a0a; --card: #16161a; --input: #222; }
+        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
         
-        /* الصورة الشخصية */
-        .avatar-box { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
-        #userImg { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--main); }
-        .upload-label { position: absolute; bottom: 5px; right: 5px; background: var(--main); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; color: black; line-height: 35px; font-weight: bold; }
+        .profile-container { width: 90%; max-width: 450px; background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        .form-group { text-align: right; margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: var(--main); font-size: 14px; }
-        input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 10px; box-sizing: border-box; }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 25px; font-weight: 900; }
+
+        .avatar-box { position: relative; width: 130px; height: 130px; margin: 0 auto 30px; }
+        #userImg { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); background: #333; }
+        .upload-label { position: absolute; bottom: 5px; right: 5px; background: var(--primary); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; color: black; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; }
+        .upload-label:hover { transform: scale(1.1); }
         
-        .save-btn { width: 100%; padding: 15px; background: var(--main); color: black; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        .save-btn:disabled { background: #555; }
-        #statusMsg { margin-top: 10px; font-size: 13px; color: #888; }
+        .form-group { text-align: right; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #aaa; font-size: 14px; padding-right: 5px; }
+        input { width: 100%; padding: 14px; background: var(--input); border: 1px solid #444; color: white; border-radius: 12px; font-family: 'Cairo'; transition: 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; background: #2a2a2a; }
+        
+        .save-btn { width: 100%; padding: 15px; background: var(--primary); color: black; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 10px; }
+        .save-btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        .save-btn:disabled { background: #555; cursor: not-allowed; transform: none; }
+
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #888; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .back-link:hover { color: var(--primary); }
+
+        #statusMsg { margin-top: 15px; font-size: 14px; text-align: center; min-height: 20px; }
+        .loading-dots:after { content: ' .'; animation: dots 1s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { color: rgba(0,0,0,0); text-shadow: .5em 0 0 rgba(0,0,0,0), 1em 0 0 rgba(0,0,0,0); } 40% { color: var(--primary); text-shadow: .5em 0 0 rgba(0,0,0,0), 1em 0 0 rgba(0,0,0,0); } 60% { text-shadow: .5em 0 0 var(--primary), 1em 0 0 rgba(0,0,0,0); } 80%, 100% { text-shadow: .5em 0 0 var(--primary), 1em 0 0 var(--primary); } }
     </style>
 </head>
 <body>
 
 <div class="profile-container">
+    <h2>تعديل البيانات</h2>
+    
     <div class="avatar-box">
-        <img id="userImg" src="https://via.placeholder.com/120" alt="Profile">
-        <label for="imgInput" class="upload-label">✎</label>
+        <img id="userImg" src="https://via.placeholder.com/130" alt="Profile">
+        <label for="imgInput" class="upload-label"><i class="fas fa-camera"></i></label>
         <input type="file" id="imgInput" style="display: none;" accept="image/*">
     </div>
 
     <div class="form-group">
-        <label>اسم الشهرة في الموقع:</label>
-        <input type="text" id="nickInput" placeholder="اكتب اسمك">
+        <label><i class="fas fa-user"></i> اسم الشهرة (Nickname):</label>
+        <input type="text" id="nickInput" placeholder="اكتب اسمك اللي هيظهر للناس">
     </div>
 
     <div class="form-group">
-        <label>ID حساب eFootball (مهم جداً):</label>
+        <label><i class="fas fa-fingerprint"></i> eFootball ID:</label>
         <input type="text" id="gameIdInput" placeholder="أدخل ID اللعبة الخاص بك">
     </div>
 
     <button id="saveBtn" class="save-btn" onclick="saveFullProfile()">حفظ كافة التغييرات</button>
+    <a href="index.html" class="back-link">العودة للرئيسية</a>
     <p id="statusMsg"></p>
 </div>
 
 <script>
-    // 1. عرض البيانات المخزنة عند فتح الصفحة
+    // الإعدادات (نفس الموجودة في index)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
+        authDomain: "pes-elite.firebaseapp.com",
+        projectId: "pes-elite",
+        storageBucket: "pes-elite.firebasestorage.app",
+        messagingSenderId: "407069539120",
+        appId: "1:407069539120:web:466249fa7f716266d9e6f5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const storage = firebase.storage();
+
+    // 1. جلب البيانات الحالية
     auth.onAuthStateChanged(user => {
         if (user) {
             db.collection("players").doc(user.uid).get().then(doc => {
@@ -67,56 +92,67 @@
                     const data = doc.data();
                     document.getElementById('nickInput').value = data.nickname || "";
                     document.getElementById('gameIdInput').value = data.efootballId || "";
-                    if (data.profilePic) document.getElementById('userImg').src = data.profilePic;
+                    // استخدام photoURL للتوحيد
+                    if (data.photoURL) document.getElementById('userImg').src = data.photoURL;
                 }
             });
-        } else { window.location.href = "login.html"; }
+        } else {
+            window.location.href = "login.html";
+        }
     });
 
-    // 2. وظيفة الحفظ الكاملة (صورة + بيانات)
+    // 2. وظيفة الحفظ الاحترافية
     async function saveFullProfile() {
         const user = auth.currentUser;
-        const nickname = document.getElementById('nickInput').value;
-        const efootballId = document.getElementById('gameIdInput').value;
+        const nickname = document.getElementById('nickInput').value.trim();
+        const efootballId = document.getElementById('gameIdInput').value.trim();
         const imageFile = document.getElementById('imgInput').files[0];
         const btn = document.getElementById('saveBtn');
         const msg = document.getElementById('statusMsg');
 
-        if (!nickname || !efootballId) return alert("من فضلك ادخل الاسم والـ ID");
+        if (!nickname || !efootballId) {
+            msg.style.color = "#ff4d4d";
+            msg.innerText = "⚠️ من فضلك أكمل البيانات الأساسية";
+            return;
+        }
 
         btn.disabled = true;
-        msg.innerText = "جاري الحفظ والرفع... انتظر لحظة";
+        msg.style.color = "var(--primary)";
+        msg.innerHTML = '<span class="loading-dots">جاري الحفظ والرفع</span>';
 
         try {
-            let photoUrl = document.getElementById('userImg').src;
+            let finalPhotoUrl = document.getElementById('userImg').src;
 
-            // لو اللاعب اختار صورة جديدة نرفعها للـ Storage
+            // رفع الصورة لو تغيرت
             if (imageFile) {
-                const storageRef = firebase.storage().ref(`profiles/${user.uid}/avatar.jpg`);
+                const storageRef = storage.ref(`profiles/${user.uid}/avatar.jpg`);
                 await storageRef.put(imageFile);
-                photoUrl = await storageRef.getDownloadURL();
+                finalPhotoUrl = await storageRef.getDownloadURL();
             }
 
-            // تحديث البيانات في Firestore
+            // تحديث Firestore ببيانات موحدة
             await db.collection("players").doc(user.uid).set({
                 nickname: nickname,
                 efootballId: efootballId,
-                profilePic: photoUrl,
+                photoURL: finalPhotoUrl, // التوحيد هنا
                 lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            msg.style.color = "#e1ff00";
-            msg.innerText = "تم حفظ كل التعديلات بنجاح! ✅";
+            msg.style.color = "#00ff88";
+            msg.innerText = "✅ تم تحديث ملفك الشخصي بنجاح!";
+            
+            // العودة للرئيسية بعد ثانية ونصف
+            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+
         } catch (error) {
             console.error(error);
-            msg.style.color = "red";
-            msg.innerText = "حدث خطأ أثناء الحفظ!";
-        } finally {
+            msg.style.color = "#ff4d4d";
+            msg.innerText = "❌ فشل التحديث: " + error.message;
             btn.disabled = false;
         }
     }
 
-    // معاينة الصورة فور اختيارها
+    // معاينة الصورة الفورية
     document.getElementById('imgInput').onchange = function() {
         if (this.files && this.files[0]) {
             document.getElementById('userImg').src = URL.createObjectURL(this.files[0]);
