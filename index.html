@@ -142,24 +142,29 @@
 
     let uID = null, userData = null;
 
-    // أهم تعديل: السماح للزوار بالدخول
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            uID = user.uid;
-            document.getElementById('mainLoginBtn').style.display = 'none';
-            document.getElementById('navUserInfo').style.display = 'flex';
-            document.getElementById('profileArea').style.display = 'none';
-            document.getElementById('userProfileContent').style.display = 'block';
-            document.getElementById('logoutBtn').style.display = 'flex';
-            document.getElementById('settingsTab').style.display = 'flex';
-            document.getElementById('chatInputArea').style.display = 'flex';
-            document.getElementById('loginToChat').style.display = 'none';
-            syncUser();
-        } else {
-            console.log("زائر جديد يكتشف الموقع");
-            loadApp(); // تحميل البطولات والشات للزوار
-        }
-    });
+  // التعديل النهائي لضمان عدم الطرد
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            console.log("مستخدم مسجل:", user.email);
+            uID = user.uid;
+            // إظهار عناصر المسجلين
+            document.getElementById('mainLoginBtn').style.display = 'none';
+            document.getElementById('navUserInfo').style.display = 'flex';
+            document.getElementById('profileArea').style.display = 'none';
+            document.getElementById('userProfileContent').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'flex';
+            document.getElementById('settingsTab').style.display = 'flex';
+            document.getElementById('chatInputArea').style.display = 'flex';
+            document.getElementById('loginToChat').style.display = 'none';
+            syncUser();
+        } else {
+            console.log("وضع الزائر نشط");
+            // إخفاء عناصر المسجلين وإظهار زر الدخول فقط
+            document.getElementById('mainLoginBtn').style.display = 'block';
+            document.getElementById('navUserInfo').style.display = 'none';
+            loadApp(); 
+        }
+    });
 
     function syncUser() {
         db.collection("players").doc(uID).onSnapshot(doc => {
@@ -256,3 +261,4 @@
 </script>
 </body>
 </html>
+
