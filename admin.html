@@ -176,16 +176,29 @@
         });
     }
 
-    async function addPlayer() {
-        const n = document.getElementById('pName').value;
-        const id = document.getElementById('pID').value;
+   async function addPlayer() {
+        const n = document.getElementById('pName').value; // الاسم
+        const id = document.getElementById('pID').value;   // الـ ID
+
         if(n && id) { 
-            await db.collection("leaguePlayers").doc(id).set({name:n, id:id}); 
-            alert("✅ تم تثبيت اللاعب بنجاح");
-            document.getElementById('pName').value = "";
-            document.getElementById('pID').value = "";
+            try {
+                // هنرفع البيانات للمجموعتين عشان نضمن إنها ظهرت في كل حتة
+                await db.collection("leaguePlayers").doc(id).set({
+                    name: n, 
+                    id: id,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }); 
+                
+                alert("✅ تم التثبيت بنجاح في leaguePlayers");
+                
+                document.getElementById('pName').value = "";
+                document.getElementById('pID').value = "";
+            } catch (error) {
+                console.error("Error:", error);
+                alert("فشل الإضافة: " + error.message);
+            }
         } else {
-            alert("يرجى ملء البيانات");
+            alert("يرجى إدخال الاسم والـ ID");
         }
     }
 
@@ -312,6 +325,7 @@
 </script>
 </body>
 </html>
+
 
 
 
