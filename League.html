@@ -3,108 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | الدوري العام</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>ترتيب الدوري | PES ELITE</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
-        :root { 
-            --primary: #eaff00; 
-            --bg: #020205; 
-            --panel: #0a0a0f; 
-            --border: rgba(255, 255, 255, 0.05); 
-        }
-        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; }
-        
-        .league-container { max-width: 1200px; margin: auto; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px; }
-        .header h1 { font-family: 'Orbitron'; font-style: italic; font-size: 28px; margin: 0; }
-
-        /* ستايل جدول الترتيب */
-        .standings-table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 15px; overflow: hidden; margin-bottom: 40px; border: 1px solid var(--border); }
-        .standings-table th { background: rgba(234, 255, 0, 0.1); color: var(--primary); padding: 15px; text-align: center; font-size: 14px; }
-        .standings-table td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border); font-size: 14px; }
-        .player-info { display: flex; align-items: center; gap: 10px; text-align: right; }
-        .p-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid var(--primary); }
-
-        /* ستايل سجل المواجهات المباشرة */
-        .results-section { margin-bottom: 50px; text-align: center; }
-        .results-section h2 { font-family: 'Orbitron'; color: var(--primary); margin-bottom: 20px; }
-
-        .matches-history-grid { display: grid; gap: 15px; max-width: 800px; margin: auto; }
-        .history-card {
-            background: #111118;
-            padding: 15px 25px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid var(--border);
-            font-family: 'Orbitron', sans-serif;
-            transition: 0.3s;
-        }
-        .history-card:hover { border-color: var(--primary); transform: scale(1.02); }
-        
-        .m-score {
-            background: var(--primary);
-            color: black;
-            padding: 5px 20px;
-            border-radius: 8px;
-            font-weight: 900;
-            font-size: 22px;
-            min-width: 80px;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(234, 255, 0, 0.3);
-        }
-        .m-team { font-size: 16px; font-weight: bold; width: 40%; color: #fff; font-family: 'Cairo'; }
-
-        .btn-back { background: none; border: 1px solid var(--primary); color: var(--primary); padding: 8px 20px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.3s; }
-        .btn-back:hover { background: var(--primary); color: #000; }
+        body { background: #020205; color: white; font-family: sans-serif; padding: 10px; }
+        .table-wrap { overflow-x: auto; background: #111; border-radius: 12px; border: 1px solid #333; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: center; font-size: 0.9rem; }
+        th { background: #eaff00; color: black; }
+        .team-box { display: flex; align-items: center; gap: 10px; text-align: right; }
+        .logo { width: 25px; height: 25px; border-radius: 50%; background: #333; object-fit: cover; }
+        .archive-link { display: block; text-align: center; margin-top: 20px; color: #eaff00; text-decoration: none; border: 1px solid #eaff00; padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-<div class="league-container">
-    <div class="header">
-        <h1><i class="fas fa-trophy"></i> LEAGUE <span>TABLE</span></h1>
-        <a href="index.html" class="btn-back">العودة للرئيسية</a>
-    </div>
+    <h2 style="text-align:center; color:#eaff00">🏆 جدول ترتيب الدوري العام</h2>
 
-    <section class="results-section">
-        <h2>LATEST RESULTS</h2>
-        <div id="matchesHistoryList" class="matches-history-grid">
-            </div>
-    </section>
-
-    <section>
-        <h2 style="margin-bottom: 15px; font-size: 22px; color: var(--primary); text-align: center; font-family: 'Orbitron';">STANDINGS</h2>
-        <table class="standings-table">
+    <div class="table-wrap">
+        <table>
             <thead>
                 <tr>
-                    <th>المركز</th>
-                    <th style="text-align: right;">الفريق</th>
+                    <th>م</th>
+                    <th style="text-align:right">الفريق</th>
                     <th>لعب</th>
-                    <th>فوز</th>
-                    <th>تعادل</th>
-                    <th>خسارة</th>
-                    <th>له</th>
-                    <th>عليه</th>
+                    <th>ف</th>
+                    <th>ت</th>
+                    <th>خ</th>
                     <th>+/-</th>
-                    <th>نقاط</th>
+                    <th>ن</th>
                 </tr>
             </thead>
-            <tbody id="standingsBody"></tbody>
+            <tbody id="leagueBody"></tbody>
         </table>
-    </section>
-</div>
+    </div>
 
-
+    <a href="all-matches.html" class="archive-link">📜 عرض جميع مواجهات الدوري</a>
 
 <script>
     const firebaseConfig = {
@@ -118,64 +53,23 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 1. تحميل جدول الترتيب (الأقوى: نقاط ثم فارق أهداف)
-    function loadStandings() {
-        db.collection("leaguePlayers").orderBy("pts", "desc").orderBy("gd", "desc").onSnapshot(snap => {
-            const tbody = document.getElementById('standingsBody');
-            tbody.innerHTML = "";
-            let rank = 1;
-            snap.forEach(doc => {
-                const p = doc.data();
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-family:'Orbitron'; font-weight:900; color:${rank<=3 ? 'var(--primary)' : '#fff'}">${rank}</td>
-                        <td>
-                            <div class="player-info">
-                                <img class="p-img" src="${p.photoURL || 'https://via.placeholder.com/35'}">
-                                <span>${p.nickname || "فريق غير مسمى"}</span>
-                            </div>
-                        </td>
-                        <td>${p.played || 0}</td>
-                        <td>${p.w || 0}</td>
-                        <td>${p.d || 0}</td>
-                        <td>${p.l || 0}</td>
-                        <td>${p.gf || 0}</td>
-                        <td>${p.ga || 0}</td>
-                        <td style="color:${(p.gd || 0) >= 0 ? '#00ff88' : '#ff4d4d'}">${p.gd || 0}</td>
-                        <td style="font-weight:900; color:var(--primary); font-size:18px;">${p.pts || 0}</td>
-                    </tr>
-                `;
-                rank++;
-            });
+    db.collection("MainLeague").orderBy("pts", "desc").orderBy("gd", "desc").onSnapshot(snap => {
+        let html = ''; let rank = 1;
+        snap.forEach(doc => {
+            const p = doc.data();
+            html += `<tr>
+                <td style="font-weight:bold; color:${rank<=3?'#eaff00':'#fff'}">${rank++}</td>
+                <td><div class="team-box"><img src="${p.logo||''}" class="logo"><span>${p.name}</span></div></td>
+                <td>${p.played || 0}</td>
+                <td>${p.w || 0}</td>
+                <td>${p.d || 0}</td>
+                <td>${p.l || 0}</td>
+                <td style="color:${p.gd>=0?'#0f0':'#f00'}">${p.gd || 0}</td>
+                <td style="font-weight:bold; color:#eaff00">${p.pts || 0}</td>
+            </tr>`;
         });
-    }
-
-    // 2. تحميل سجل المواجهات (Matches History)
-    function loadMatchesHistory() {
-        db.collection("matchesHistory").orderBy("time", "desc").limit(8).onSnapshot(snap => {
-            const list = document.getElementById('matchesHistoryList');
-            list.innerHTML = "";
-            if(snap.empty) {
-                list.innerHTML = "<p style='color:#666'>لا توجد مباريات مسجلة بعد</p>";
-                return;
-            }
-            snap.forEach(doc => {
-                const m = doc.data();
-                list.innerHTML += `
-                    <div class="history-card">
-                        <div class="m-team" style="text-align: left;">${m.team1}</div>
-                        <div class="m-score">${m.score1} - ${m.score2}</div>
-                        <div class="m-team" style="text-align: right;">${m.team2}</div>
-                    </div>
-                `;
-            });
-        });
-    }
-
-    // التشغيل عند فتح الصفحة
-    loadStandings();
-    loadMatchesHistory();
+        document.getElementById('leagueBody').innerHTML = html;
+    });
 </script>
-
 </body>
 </html>
