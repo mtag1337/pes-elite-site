@@ -2,131 +2,153 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>PES ELITE | اللوحة الإدارية الاحترافية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PES ELITE | CENTRAL CONTROL</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+
     <style>
-        :root { --main: #eaff00; --bg: #050507; --card: #111116; --danger: #ff3e3e; }
-        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; display: flex; height: 100vh; }
-        .sidebar { width: 280px; background: var(--card); border-left: 1px solid #222; padding: 20px; display: flex; flex-direction: column; }
-        .nav-btn { padding: 15px; margin: 5px 0; border-radius: 10px; cursor: pointer; border: none; background: none; color: #888; text-align: right; display: flex; align-items: center; width: 100%; font-family: 'Cairo'; }
-        .nav-btn.active, .nav-btn:hover { background: var(--main); color: #000; font-weight: bold; }
-        .nav-btn i { margin-left: 10px; width: 20px; }
-        .workspace { flex: 1; padding: 30px; overflow-y: auto; }
-        .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 20px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-family: 'Cairo'; }
-        .btn-action { background: var(--main); color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
-        .tour-item { background: #1a1a22; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid var(--main); }
-        .status-tag { padding: 2px 8px; border-radius: 5px; font-size: 12px; background: #333; }
+        :root { --admin-primary: #ff007a; --admin-bg: #030305; --card-bg: #0d0d12; }
+        body { background: var(--admin-bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; display: none; }
+        
+        .header { background: #000; padding: 20px; border-bottom: 2px solid var(--admin-primary); display: flex; justify-content: space-between; align-items: center; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
+        .stat-card { background: var(--card-bg); padding: 25px; border-radius: 15px; border-right: 5px solid var(--admin-primary); }
+        .stat-card i { font-size: 30px; color: var(--admin-primary); margin-bottom: 15px; }
+        .stat-card h3 { margin: 0; color: #888; font-size: 14px; }
+        .stat-card p { font-size: 28px; font-weight: 900; margin: 10px 0 0; font-family: 'Orbitron'; }
+
+        .admin-main { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding: 20px; }
+        .action-card { background: var(--card-bg); border-radius: 15px; padding: 20px; border: 1px solid #222; }
+        
+        .btn-action { width: 100%; padding: 12px; margin-bottom: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: #fff; text-align: right; }
+        .btn-p { background: #00bfff; }
+        .btn-l { background: #e1ff00; color: #000; }
+        .btn-danger { background: #ff4d4d; }
+
+        input, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-<aside class="sidebar">
-    <h2 style="color: var(--main); text-align: center;">إدارة PES ELITE</h2>
-    <button class="nav-btn active" onclick="showSec('tourSec')"><i class="fas fa-trophy"></i> التحكم بالبطولات</button>
-    <button class="nav-btn" onclick="showSec('leagueSec')"><i class="fas fa-list-ol"></i> إدارة الدوري</button>
-    <button class="nav-btn" onclick="showSec('reqSec')"><i class="fas fa-user-plus"></i> طلبات الانضمام</button>
-</aside>
+<div class="header">
+    <h2 style="font-family:'Orbitron';"><i class="fas fa-user-shield"></i> PES ELITE <span>ADMIN</span></h2>
+    <button onclick="window.location.href='index.html'" style="background:none; color:#fff; border:1px solid #fff; padding:5px 15px; border-radius:5px;">خروج</button>
+</div>
 
-<main class="workspace">
-    <div id="tourSec" class="section">
-        <div class="card">
-            <h3>🆕 إنشاء بطولة (حل مشكلة Undefined)</h3>
-            <input type="text" id="t_name" placeholder="اسم البطولة">
-            <input type="text" id="t_prize" placeholder="الجائزة">
-            <input type="number" id="t_max" placeholder="العدد الأقصى للمشاركين">
-            <select id="t_type">
-                <option value="خروج مغلوب">خروج مغلوب</option>
-                <option value="ذهاب وإياب">ذهاب وإياب</option>
-            </select>
-            <button class="btn-action" onclick="createTour()">نشر البطولة للمستخدمين</button>
-        </div>
+<div class="stats-grid">
+    <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <h3>إجمالي اللاعبين</h3>
+        <p id="totalPlayers">0</p>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-gamepad"></i>
+        <h3>مباريات الدوري</h3>
+        <p id="totalMatches">0</p>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-comment-dots"></i>
+        <h3>رسائل الشات</h3>
+        <p id="totalMsgs">0</p>
+    </div>
+</div>
 
-        <div class="card">
-            <h3>🏆 البطولات النشطة في الأدمن</h3>
-            <div id="adminTourList">جاري التحميل...</div>
+<div class="admin-main">
+    <div class="action-card">
+        <h3 style="color: var(--admin-primary); margin-bottom: 20px;"><i class="fas fa-plus-circle"></i> إضافة نتيجة مباراة دوري</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <select id="player1Select"><option>اختر اللاعب الأول</option></select>
+            <select id="player2Select"><option>اختر اللاعب الثاني</option></select>
+            <input type="number" id="p1Score" placeholder="أهداف الأول">
+            <input type="number" id="p2Score" placeholder="أهداف الثاني">
         </div>
+        <button class="btn-action btn-l" onclick="addMatchResult()">حفظ النتيجة وتحديث الجدول</button>
     </div>
 
-    <div id="leagueSec" class="section" style="display:none;">
-        <div class="card">
-            <h3>⚽ إدارة الـ 15 فريق</h3>
-            <div id="leagueManager"></div>
-        </div>
+    <div class="action-card">
+        <h3>روابط سريعة</h3>
+        <button class="btn-action btn-p" onclick="window.location.href='players.html'"><i class="fas fa-user-cog"></i> إدارة بيانات اللاعبين</button>
+        <button class="btn-action btn-p" onclick="window.location.href='League.html'"><i class="fas fa-table"></i> معاينة جدول الدوري</button>
+        <button class="btn-action btn-danger" onclick="clearGlobalChat()"><i class="fas fa-trash"></i> مسح سجل الشات</button>
     </div>
-</main>
+</div>
 
 <script>
-    // --- إعداد الفايربيز ---
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
-        projectId: "pes-elite",
         authDomain: "pes-elite.firebaseapp.com",
+        projectId: "pes-elite",
+        storageBucket: "pes-elite.firebasestorage.app",
+        messagingSenderId: "407069539120",
+        appId: "1:407069539120:web:466249fa7f716266d9e6f5"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
-    // --- وظيفة النشر الصحيحة (تنسيق البيانات) ---
-    async function createTour() {
-        const name = document.getElementById('t_name').value;
-        const prize = document.getElementById('t_prize').value;
-        const max = document.getElementById('t_max').value;
-        const type = document.getElementById('t_type').value;
+    const ADMIN_EMAIL = "mtag1337@gmail.com";
 
-        if(!name || !max) return alert("املى البيانات ياريس!");
-
-        try {
-            await db.collection("tournaments").add({
-                tournamentName: name, // تأكد إن الاسم ده هو اللي بتستدعيه عند المستخدم
-                prize: prize,
-                maxPlayers: parseInt(max),
-                type: type,
-                joinedCount: 0,
-                joinedPlayers: [],
-                status: "active",
-                createdAt: Date.now()
-            });
-            alert("تم النشر بنجاح!");
-            // مسح الحقول بعد النشر
-            document.getElementById('t_name').value = "";
-        } catch(e) { console.error(e); }
-    }
-
-    // --- عرض البطولات في الأدمن (Real-time) ---
-    db.collection("tournaments").orderBy("createdAt", "desc").onSnapshot(snap => {
-        const list = document.getElementById('adminTourList');
-        list.innerHTML = "";
-        if(snap.empty) list.innerHTML = "لا يوجد بطولات حالياً.";
-        
-        snap.forEach(doc => {
-            const t = doc.data();
-            list.innerHTML += `
-                <div class="tour-item">
-                    <div>
-                        <b>${t.tournamentName || "بدون اسم"}</b> <br>
-                        <small>النوع: ${t.type} | المشاركين: ${t.joinedCount}/${t.maxPlayers}</small>
-                    </div>
-                    <div>
-                        <button class="btn-action" style="background:var(--danger); color:white; width:auto;" onclick="deleteTour('${doc.id}')">إلغاء</button>
-                    </div>
-                </div>
-            `;
-        });
+    auth.onAuthStateChanged(user => {
+        if (user && user.email === ADMIN_EMAIL) {
+            document.body.style.display = "block";
+            fetchStats();
+            fillPlayersSelect();
+        } else {
+            window.location.href = "index.html";
+        }
     });
 
-    // --- حذف البطولة (عشان متظهرش عند المستخدم) ---
-    async function deleteTour(id) {
-        if(confirm("عايز تمسح البطولة دي نهائياً؟")) {
-            await db.collection("tournaments").doc(id).delete();
-        }
+    async function fetchStats() {
+        db.collection("players").get().then(snap => document.getElementById('totalPlayers').innerText = snap.size);
+        db.collection("leagueMatches").get().then(snap => document.getElementById('totalMatches').innerText = snap.size);
+        db.collection("global_chat").get().then(snap => document.getElementById('totalMsgs').innerText = snap.size);
     }
 
-    function showSec(id) {
-        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
+    async function fillPlayersSelect() {
+        const snap = await db.collection("players").get();
+        const s1 = document.getElementById('player1Select');
+        const s2 = document.getElementById('player2Select');
+        snap.forEach(doc => {
+            let opt = `<option value="${doc.id}">${doc.data().nickname}</option>`;
+            s1.innerHTML += opt;
+            s2.innerHTML += opt;
+        });
+    }
+
+    async function addMatchResult() {
+        const p1Id = document.getElementById('player1Select').value;
+        const p2Id = document.getElementById('player2Select').value;
+        const s1 = parseInt(document.getElementById('p1Score').value);
+        const s2 = parseInt(document.getElementById('p2Score').value);
+
+        if(!p1Id || !p2Id || isNaN(s1)) return alert("أكمل البيانات");
+
+        await db.collection("leagueMatches").add({
+            p1Name: document.getElementById('player1Select').options[document.getElementById('player1Select').selectedIndex].text,
+            p2Name: document.getElementById('player2Select').options[document.getElementById('player2Select').selectedIndex].text,
+            p1Score: s1,
+            p2Score: s2,
+            status: "finished",
+            time: Date.now()
+        });
+
+        alert("تمت إضافة النتيجة بنجاح!");
+        location.reload();
+    }
+
+    async function clearGlobalChat() {
+        if(confirm("هل أنت متأكد من مسح كل رسائل الشات؟")) {
+            const snap = await db.collection("global_chat").get();
+            snap.forEach(doc => doc.ref.delete());
+            alert("تم تنظيف الشات.");
+        }
     }
 </script>
 </body>
