@@ -3,50 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | Admin</title>
+    <title>PES ELITE | Admin Dashboard</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #eaff00; --bg: #050508; --c: #12121a; }
-        body { background: var(--bg); color: white; font-family: sans-serif; padding: 20px; }
-        .panel { background: var(--c); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; max-width: 600px; margin-right: auto; margin-left: auto; }
-        h2, h3 { color: var(--p); text-align: center; }
-        select, input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; font-size: 1rem; box-sizing: border-box; }
-        button { background: var(--p); color: black; font-weight: bold; cursor: pointer; }
-        .danger { background: #ff3333; color: white; margin-top: 40px; }
+        :root { --main: #eaff00; --bg: #050508; --card: #12121a; --error: #ff3333; }
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; }
+        .wrapper { max-width: 900px; margin: auto; }
+        
+        /* تصميم الكروت */
+        .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: var(--main); border-right: 4px solid var(--main); padding-right: 15px; font-weight: 900; }
+        
+        /* عناصر التحكم */
+        label { display: block; margin-bottom: 8px; color: #888; font-size: 0.9rem; }
+        select, input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-family: 'Cairo'; outline: none; }
+        select:focus, input:focus { border-color: var(--main); }
+
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; font-family: 'Cairo'; }
+        .btn-save { background: var(--main); color: #000; }
+        .btn-save:hover { background: #c8d900; transform: scale(1.02); }
+        .btn-danger { background: none; border: 1px solid var(--error); color: var(--error); margin-top: 50px; }
+        .btn-danger:hover { background: var(--error); color: #fff; }
+
+        .nav-links { display: flex; gap: 10px; margin-bottom: 20px; }
+        .nav-links a { text-decoration: none; color: #aaa; border: 1px solid #333; padding: 8px 15px; border-radius: 5px; font-size: 0.8rem; }
+        .nav-links a:hover { color: var(--main); border-color: var(--main); }
     </style>
 </head>
 <body>
 
-    <div class="panel">
-        <h2>🎮 لوحة تحكم PES ELITE</h2>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <a href="league.html" style="color: var(--p); text-decoration: none;">🔍 معاينة جدول الترتيب</a>
-        </div>
-        
-        <h3>⚽ تسجيل نتيجة</h3>
-        <select id="t1"></select>
-        <select id="t2"></select>
-        <div style="display: flex; gap: 10px;">
-            <input type="number" id="s1" placeholder="أهداف 1">
-            <input type="number" id="s2" placeholder="أهداف 2">
-        </div>
-        <button onclick="recordMatch()">حفظ النتيجة</button>
+<div class="wrapper">
+    <div class="nav-links">
+        <a href="league.html" target="_blank">🌐 فتح صفحة الدوري العام</a>
+        <a href="all-matches.html" target="_blank">📜 أرشيف المواجهات</a>
     </div>
 
-    <div class="panel">
-        <h3>📝 إعداد أسماء الفرق</h3>
+    <div class="card">
+        <h2>⚽ تسجيل نتيجة مباراة</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <label>الفريق الأول (صاحب الأرض)</label>
+                <select id="t1"></select>
+            </div>
+            <div>
+                <label>الفريق الثاني (الضيف)</label>
+                <select id="t2"></select>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <input type="number" id="s1" placeholder="أهداف الفريق 1">
+            <input type="number" id="s2" placeholder="أهداف الفريق 2">
+        </div>
+        <button class="btn btn-save" onclick="recordMatch()">إرسال النتيجة للجدول الحقيقي ✅</button>
+    </div>
+
+    <div class="card">
+        <h2>📝 إدارة هوية اللاعبين</h2>
+        <label>اختر الخانة المراد تعديلها</label>
         <select id="editSelect"></select>
-        <input type="text" id="newName" placeholder="الاسم الجديد">
-        <button style="background: white;" onclick="updateTeam()">تحديث الاسم</button>
+        <label>الاسم الجديد للاعب أو الفريق</label>
+        <input type="text" id="newName" placeholder="مثلاً: محمد صلاح">
+        <button class="btn" style="background: white; color: #000;" onclick="updateTeam()">تحديث الاسم الآن 🔄</button>
     </div>
 
-    <div class="panel" style="border-color: red;">
-        <h3>🚨 تصفير الدوري</h3>
-        <button class="danger" onclick="setupNewLeague()">إنشاء دوري جديد (15 خانة)</button>
-    </div>
+    <button class="btn btn-danger" onclick="setupNewLeague()">تصفير الدوري بالكامل (دوري جديد) ⚠️</button>
+</div>
+
+
 
 <script>
+    // إعدادات Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -58,37 +86,48 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function load() {
+    // تحديث القوائم تلقائياً
+    function init() {
         db.collection("MainLeague").orderBy("id").onSnapshot(snap => {
-            let options = '<option value="">اختر فريق...</option>';
-            snap.forEach(doc => { options += `<option value="${doc.id}">${doc.data().name}</option>`; });
-            document.getElementById('t1').innerHTML = options;
-            document.getElementById('t2').innerHTML = options;
-            document.getElementById('editSelect').innerHTML = options;
+            let html = '<option value="">-- اختر من القائمة --</option>';
+            snap.forEach(doc => {
+                html += `<option value="${doc.id}">${doc.data().name}</option>`;
+            });
+            document.getElementById('t1').innerHTML = html;
+            document.getElementById('t2').innerHTML = html;
+            document.getElementById('editSelect').innerHTML = html;
         });
     }
 
     async function recordMatch() {
         const id1 = document.getElementById('t1').value, id2 = document.getElementById('t2').value;
         const s1 = parseInt(document.getElementById('s1').value), s2 = parseInt(document.getElementById('s2').value);
-        if(!id1 || !id2 || isNaN(s1)) return alert("أكمل البيانات");
         
+        if(!id1 || !id2 || isNaN(s1)) return alert("يا بطل، لازم تختار الفرق وتحط النتيجة الأول!");
+        if(id1 === id2) return alert("مينفعش الفريق يلعب ضد نفسه!");
+
         const n1 = document.querySelector(`#t1 option[value="${id1}"]`).text;
         const n2 = document.querySelector(`#t2 option[value="${id2}"]`).text;
 
-        await db.collection("AllMatches").add({ t1: n1, t2: n2, s1, s2, time: Date.now() });
-        await updateStats(id1, s1, s2);
-        await updateStats(id2, s2, s1);
-        alert("تم الحفظ!");
+        try {
+            // 1. تسجيل الماتش
+            await db.collection("AllMatches").add({ t1: n1, t2: n2, s1, s2, time: Date.now() });
+            // 2. تحديث الإحصائيات
+            await updateStats(id1, s1, s2);
+            await updateStats(id2, s2, s1);
+            
+            alert("تم الحفظ وتحديث الترتيب بنجاح! 🏆");
+            document.getElementById('s1').value = ''; document.getElementById('s2').value = '';
+        } catch(e) { alert("في مشكلة في النت، جرب تاني."); }
     }
 
     async function updateStats(id, gf, ga) {
         const ref = db.collection("MainLeague").doc(id);
         const d = (await ref.get()).data();
-        let w = gf > ga ? 1 : 0, dr = gf === ga ? 1 : 0;
+        let win = gf > ga ? 1 : 0, draw = gf === ga ? 1 : 0;
         await ref.update({
             played: (d.played || 0) + 1,
-            pts: (d.pts || 0) + (w * 3 + dr),
+            pts: (d.pts || 0) + (win * 3 + draw),
             gd: (d.gd || 0) + (gf - ga)
         });
     }
@@ -96,26 +135,26 @@
     async function updateTeam() {
         const id = document.getElementById('editSelect').value;
         const name = document.getElementById('newName').value;
-        if(!id || !name) return alert("اختر الفريق واكتب الاسم");
+        if(!id || !name) return alert("اختر الفريق واكتب الاسم الجديد.");
         await db.collection("MainLeague").doc(id).update({ name: name });
-        alert("تم التحديث");
+        alert("تم تغيير الاسم بنجاح! ✨");
+        document.getElementById('newName').value = '';
     }
 
     async function setupNewLeague() {
-        if(!confirm("سيمسح كل شيء! هل أنت متأكد؟")) return;
+        if(!confirm("أنت كدة بتمسح كل الماتشات والترتيب عشان تبدأ دوري جديد.. متأكد؟")) return;
         const oldL = await db.collection("MainLeague").get();
         for(let doc of oldL.docs) await db.collection("MainLeague").doc(doc.id).delete();
         const oldH = await db.collection("AllMatches").get();
         for(let doc of oldH.docs) await db.collection("AllMatches").doc(doc.id).delete();
         
         for(let i=1; i<=15; i++) {
-            await db.collection("MainLeague").doc("team"+i).set({
-                id: i, name: "فريق " + i, played: 0, pts: 0, gd: 0
-            });
+            await db.collection("MainLeague").doc("team"+i).set({ id: i, name: "فريق " + i, played: 0, pts: 0, gd: 0 });
         }
-        alert("الدوري جاهز!");
+        alert("مبروك! دوري جديد فاضي جاهز للاستخدام.");
     }
-    load();
+
+    init();
 </script>
 </body>
 </html>
