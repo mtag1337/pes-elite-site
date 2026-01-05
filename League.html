@@ -3,54 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جدول الترتيب | PES ELITE</title>
+    <title>PES ELITE | جدول الترتيب</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #eaff00; --bg: #020205; }
-        body { background: var(--bg); color: white; font-family: sans-serif; padding: 10px; margin: 0; }
-        .container { max-width: 800px; margin: auto; }
-        .table-wrap { overflow-x: auto; background: #111; border-radius: 12px; border: 1px solid #333; }
-        table { width: 100%; border-collapse: collapse; min-width: 550px; }
-        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: center; }
-        th { background: var(--p); color: black; font-size: 0.8rem; }
-        .team-box { display: flex; align-items: center; gap: 10px; text-align: right; }
-        .logo { width: 25px; height: 25px; border-radius: 50%; background: #333; object-fit: cover; }
-        .btn { display: inline-block; padding: 10px 20px; border: 1px solid var(--p); color: var(--p); text-decoration: none; border-radius: 5px; margin: 10px 5px; font-size: 0.9rem; }
+        :root { --main: #eaff00; --bg: #050508; --card: #12121a; }
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        h1 { text-align: center; color: var(--main); font-weight: 900; text-transform: uppercase; margin-bottom: 30px; }
+        
+        .table-wrapper { background: var(--card); border-radius: 15px; border: 1px solid #222; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        table { width: 100%; border-collapse: collapse; text-align: center; }
+        th { background: var(--main); color: #000; padding: 15px; font-weight: 900; font-size: 0.9rem; }
+        td { padding: 15px; border-bottom: 1px solid #222; font-weight: 700; }
+        tr:last-child td { border: none; }
+        
+        .rank-cell { width: 50px; color: var(--main); font-size: 1.1rem; }
+        .team-cell { text-align: right; font-size: 1rem; color: #fff; }
+        .pts-cell { color: var(--main); font-size: 1.2rem; }
+        .gd-cell { direction: ltr; }
+
+        .loader { text-align: center; padding: 50px; color: var(--main); }
+        .nav-btn { display: inline-block; margin-top: 20px; color: #888; text-decoration: none; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; transition: 0.3s; }
+        .nav-btn:hover { color: var(--main); border-color: var(--main); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align:center; color:var(--p)">🏆 جدول ترتيب الدوري العام</h2>
+    <h1>🏆 ترتيب دوري PES ELITE</h1>
 
-    <div class="table-wrap">
+    <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
                     <th>م</th>
-                    <th style="text-align:right">الفريق</th>
+                    <th style="text-align: right;">اللاعب / الفريق</th>
                     <th>لعب</th>
-                    <th>ف</th>
-                    <th>ت</th>
-                    <th>خ</th>
                     <th>+/-</th>
-                    <th>ن</th>
+                    <th>النقاط</th>
                 </tr>
             </thead>
-            <tbody id="leagueBody"></tbody>
+            <tbody id="league-data">
+                <tr><td colspan="5" class="loader">جاري تحميل البيانات...</td></tr>
+            </tbody>
         </table>
     </div>
 
-    <div style="text-align:center; margin-top:20px;">
-        <a href="index.html" class="btn">🏠 الرئيسية</a>
-        <a href="all-matches.html" class="btn" style="background:var(--p); color:#000;">📜 أرشيف المواجهات</a>
+    <div style="text-align: center;">
+        <a href="all-matches.html" class="nav-btn">📜 عرض سجل المواجهات</a>
     </div>
 </div>
 
-
-
 <script>
+    // نفس إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -62,22 +69,31 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // جلب البيانات وترتيبها حسب النقاط ثم فارق الأهداف
     db.collection("MainLeague").orderBy("pts", "desc").orderBy("gd", "desc").onSnapshot(snap => {
-        let html = ''; let rank = 1;
+        const tbody = document.getElementById('league-data');
+        if (snap.empty) {
+            tbody.innerHTML = '<tr><td colspan="5" class="loader">لا توجد بيانات.. ابدأ بتهيئة الدوري من صفحة الإدارة.</td></tr>';
+            return;
+        }
+
+        let rows = '';
+        let rank = 1;
         snap.forEach(doc => {
-            const p = doc.data();
-            html += `<tr>
-                <td style="font-weight:bold; color:${rank<=4?'var(--p)':'#fff'}">${rank++}</td>
-                <td><div class="team-box"><img src="${p.logo||''}" class="logo"><span>${p.name}</span></div></td>
-                <td>${p.played || 0}</td>
-                <td>${p.w || 0}</td>
-                <td>${p.d || 0}</td>
-                <td>${p.l || 0}</td>
-                <td style="color:${p.gd>=0?'#0f0':'#f00'}">${p.gd || 0}</td>
-                <td style="font-weight:bold; color:var(--p)">${p.pts || 0}</td>
-            </tr>`;
+            const data = doc.data();
+            rows += `
+                <tr>
+                    <td class="rank-cell">${rank++}</td>
+                    <td class="team-cell">${data.name || 'مجهول'}</td>
+                    <td>${data.played || 0}</td>
+                    <td class="gd-cell" style="color: ${data.gd > 0 ? '#00ff00' : (data.gd < 0 ? '#ff3333' : '#fff')}">
+                        ${data.gd > 0 ? '+' : ''}${data.gd || 0}
+                    </td>
+                    <td class="pts-cell">${data.pts || 0}</td>
+                </tr>
+            `;
         });
-        document.getElementById('leagueBody').innerHTML = html;
+        tbody.innerHTML = rows;
     });
 </script>
 </body>
