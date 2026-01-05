@@ -349,6 +349,79 @@
     async function deleteDoc(col, id) {
         if(confirm("حذف نهائي؟")) await db.collection(col).doc(id).delete();
     }
+<div id="tourManager" class="section">
+    <div class="card">
+        <h3>🚀 إنشاء بطولة احترافية</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+            <div>
+                <label>صورة البطولة (رابط):</label>
+                <input type="text" id="tImg" placeholder="ضع رابط الصورة هنا">
+            </div>
+            <div>
+                <label>اسم البطولة:</label>
+                <input type="text" id="tName" placeholder="مثلاً: كأس أبطال العرب">
+            </div>
+            <div>
+                <label>الحد الأقصى للاعبين:</label>
+                <input type="number" id="tMaxPlayers" value="16">
+            </div>
+            <div>
+                <label>تاريخ البداية:</label>
+                <input type="date" id="tStartDate">
+            </div>
+        </div>
+        <button class="btn btn-main" style="width:100%; margin-top:15px;" onclick="createAdvancedTour()">إنشاء البطولة ونشرها</button>
+    </div>
+
+    <div id="activeToursContainer"></div>
+</div>
+
+<script>
+// وظيفة إنشاء البطولة
+async function createAdvancedTour() {
+    const tourData = {
+        img: document.getElementById('tImg').value || 'https://via.placeholder.com/150',
+        name: document.getElementById('tName').value,
+        max: parseInt(document.getElementById('tMaxPlayers').value),
+        startDate: document.getElementById('tStartDate').value,
+        status: "open", // open, started, finished
+        participants: [], // الـ IDs الخاصة باللاعبين المقبولين
+        matches: [], // جدول المباريات
+        standings: [], // جدول الترتيب
+        createdAt: Date.now()
+    };
+
+    await db.collection("tournaments").add(tourData);
+    alert("تم إنشاء البطولة بنجاح!");
+}
+
+// عرض البطولات للأدمن للتحكم في الجداول
+function loadToursForAdmin() {
+    db.collection("tournaments").onSnapshot(snap => {
+        const container = document.getElementById('activeToursContainer');
+        container.innerHTML = "<h3>البطولات الحالية</h3>";
+        snap.forEach(doc => {
+            const t = doc.data();
+            container.innerHTML += `
+                <div class="card" style="border-left: 5px solid var(--main)">
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <img src="${t.img}" style="width:80px; height:80px; border-radius:10px; object-fit:cover;">
+                        <div>
+                            <h4>${t.name}</h4>
+                            <p>المشاركين: ${t.participants.length} / ${t.max}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button class="btn btn-main" onclick="manageMatches('${doc.id}')">إدارة الجدول والنتائج</button>
+                        <button class="btn" style="background:#444" onclick="showParticipants('${doc.id}')">قائمة المشاركين</button>
+                        <button class="btn btn-danger" onclick="deleteDoc('tournaments','${doc.id}')">حذف</button>
+                    </div>
+                </div>
+            `;
+        });
+    });
+}
 </script>
 </body>
 </html>
+
