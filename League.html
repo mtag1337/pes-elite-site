@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ترتيب الدوري | PES ELITE</title>
+    <title>جدول الترتيب | PES ELITE</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
-        body { background: #020205; color: white; font-family: sans-serif; padding: 10px; }
+        :root { --p: #eaff00; --bg: #020205; }
+        body { background: var(--bg); color: white; font-family: sans-serif; padding: 10px; margin: 0; }
+        .container { max-width: 800px; margin: auto; }
         .table-wrap { overflow-x: auto; background: #111; border-radius: 12px; border: 1px solid #333; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: center; font-size: 0.9rem; }
-        th { background: #eaff00; color: black; }
+        table { width: 100%; border-collapse: collapse; min-width: 550px; }
+        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: center; }
+        th { background: var(--p); color: black; font-size: 0.8rem; }
         .team-box { display: flex; align-items: center; gap: 10px; text-align: right; }
         .logo { width: 25px; height: 25px; border-radius: 50%; background: #333; object-fit: cover; }
-        .archive-link { display: block; text-align: center; margin-top: 20px; color: #eaff00; text-decoration: none; border: 1px solid #eaff00; padding: 10px; border-radius: 5px; }
+        .btn { display: inline-block; padding: 10px 20px; border: 1px solid var(--p); color: var(--p); text-decoration: none; border-radius: 5px; margin: 10px 5px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align:center; color:#eaff00">🏆 جدول ترتيب الدوري العام</h2>
+<div class="container">
+    <h2 style="text-align:center; color:var(--p)">🏆 جدول ترتيب الدوري العام</h2>
 
     <div class="table-wrap">
         <table>
@@ -39,7 +42,13 @@
         </table>
     </div>
 
-    <a href="all-matches.html" class="archive-link">📜 عرض جميع مواجهات الدوري</a>
+    <div style="text-align:center; margin-top:20px;">
+        <a href="index.html" class="btn">🏠 الرئيسية</a>
+        <a href="all-matches.html" class="btn" style="background:var(--p); color:#000;">📜 أرشيف المواجهات</a>
+    </div>
+</div>
+
+
 
 <script>
     const firebaseConfig = {
@@ -58,14 +67,14 @@
         snap.forEach(doc => {
             const p = doc.data();
             html += `<tr>
-                <td style="font-weight:bold; color:${rank<=3?'#eaff00':'#fff'}">${rank++}</td>
+                <td style="font-weight:bold; color:${rank<=4?'var(--p)':'#fff'}">${rank++}</td>
                 <td><div class="team-box"><img src="${p.logo||''}" class="logo"><span>${p.name}</span></div></td>
                 <td>${p.played || 0}</td>
                 <td>${p.w || 0}</td>
                 <td>${p.d || 0}</td>
                 <td>${p.l || 0}</td>
                 <td style="color:${p.gd>=0?'#0f0':'#f00'}">${p.gd || 0}</td>
-                <td style="font-weight:bold; color:#eaff00">${p.pts || 0}</td>
+                <td style="font-weight:bold; color:var(--p)">${p.pts || 0}</td>
             </tr>`;
         });
         document.getElementById('leagueBody').innerHTML = html;
