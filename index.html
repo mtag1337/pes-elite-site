@@ -311,6 +311,22 @@
             alert("تم إرسال طلبك!");
         }
     }
+  // كود عرض الإشعارات في الصفحة الرئيسية
+function loadMyNotifications() {
+    if(!uID) return;
+    // جلب الإشعارات الخاصة بي + الإشعارات العامة (all)
+    db.collection("notifications")
+      .where("to", "in", [uID, "all"])
+      .orderBy("time", "desc").limit(5).onSnapshot(snap => {
+        // يمكنك صنع Modal أو Div بسيط لعرضها
+        snap.forEach(doc => {
+            const n = doc.data();
+            console.log("إشعار جديد: ", n.text);
+            // هنا يمكنك إضافة كود ليظهر تنبيه (Toast) للاعب
+        });
+    });
+}  
 </script>
 </body>
 </html>
+
