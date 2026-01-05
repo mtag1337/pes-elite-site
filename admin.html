@@ -188,6 +188,65 @@
             });
         });
     }
+    <div class="card">
+    <h2><i class="fas fa-edit"></i> تحديث نقاط لاعب في الدوري</h2>
+    <p style="font-size: 12px; color: #888;">اختر اللاعب وتعديل أرقامه مباشرة في الجدول</p>
+    
+    <select id="targetPlayer">
+        <option value="">اختر اللاعب من الـ 15 فريق</option>
+    </select>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+        <input type="number" id="plusW" placeholder="+ فوز">
+        <input type="number" id="plusD" placeholder="+ تعادل">
+        <input type="number" id="plusL" placeholder="+ خسارة">
+        <input type="number" id="plusGF" placeholder="+ أهداف له">
+        <input type="number" id="plusGA" placeholder="+ أهداف عليه">
+    </div>
+    
+    <button class="btn-add" onclick="updatePlayerStats()">تحديث ترتيبه في الجدول</button>
+</div>
+
+<script>
+// وظيفة تحديث الإحصائيات التراكمية
+async function updatePlayerStats() {
+    const uid = document.getElementById('targetPlayer').value;
+    const w = parseInt(document.getElementById('plusW').value) || 0;
+    const d = parseInt(document.getElementById('plusD').value) || 0;
+    const l = parseInt(document.getElementById('plusL').value) || 0;
+    const gf = parseInt(document.getElementById('plusGF').value) || 0;
+    const ga = parseInt(document.getElementById('plusGA').value) || 0;
+
+    if(!uid) return alert("اختر لاعب أولاً");
+
+    const ref = db.collection("leaguePlayers").doc(uid);
+    const doc = await ref.get();
+    
+    let current = doc.exists ? doc.data() : { pts:0, w:0, d:0, l:0, gf:0, ga:0, played:0, nickname: "" };
+
+    // الحسابات الجديدة
+    const newW = current.w + w;
+    const newD = current.d + d;
+    const newL = current.l + l;
+    const newPts = (newW * 3) + (newD * 1);
+    
+    await ref.set({
+        nickname: document.getElementById('targetPlayer').options[document.getElementById('targetPlayer').selectedIndex].text,
+        played: current.played + (w + d + l),
+        w: newW,
+        d: newD,
+        l: newL,
+        gf: current.gf + gf,
+        ga: current.ga + ga,
+        pts: newPts,
+        gd: (current.gf + gf) - (current.ga + ga)
+    }, { merge: true });
+
+    alert("تم تحديث ترتيب اللاعب في الدوري!");
+    location.reload();
+}
+
 </script>
 </body>
 </html>
+
