@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>إدارة PES ELITE | التحكم الشامل</title>
+    <title>إدارة PES ELITE | التحكم الاحترافي</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -25,21 +25,13 @@
 </head>
 <body>
 
-<h1><i class="fas fa-user-shield"></i> لوحة تحكم القائد</h1>
+<h1><i class="fas fa-user-shield"></i> لوحة التحكم النهائية</h1>
 
 <div class="admin-grid">
 
     <div class="card">
-        <h2><i class="fas fa-trophy"></i> البطولات</h2>
-        <input type="text" id="tTitle" placeholder="اسم البطولة">
-        <input type="text" id="tPrize" placeholder="الجائزة">
-        <button class="btn-add" onclick="createT()">إنشاء بطولة</button>
-        <div id="tList" class="item-list"></div>
-    </div>
-
-    <div class="card">
-        <h2><i class="fas fa-edit"></i> تحديث نقاط الدوري</h2>
-        <select id="targetPlayer"><option value="">اختر فريقاً...</option></select>
+        <h2><i class="fas fa-edit"></i> إدارة نقاط الدوري</h2>
+        <select id="targetPlayer"><option value="">اختر الفريق...</option></select>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
             <input type="number" id="plusW" placeholder="+ فوز">
             <input type="number" id="plusD" placeholder="+ تعادل">
@@ -47,8 +39,16 @@
             <input type="number" id="plusGF" placeholder="+ له">
             <input type="number" id="plusGA" placeholder="+ عليه">
         </div>
-        <button class="btn-add" style="background:#00bfff; color:white;" onclick="updatePlayerStats()">تحديث النتائج</button>
-        <button style="background:#444; font-size:10px;" onclick="setupProLeague()">تهيئة الـ 15 فريق الأصليين</button>
+        <button class="btn-add" onclick="updatePlayerStats()">تحديث النتائج</button>
+        <button style="background:#444; color:#fff; font-size:11px;" onclick="setupProLeague()">تهيئة الـ 15 فريق (بدون تكرار)</button>
+    </div>
+
+    <div class="card">
+        <h2><i class="fas fa-user-edit"></i> تعديل اسم/لوجو الفريق</h2>
+        <select id="editTeamSelect"><option value="">اختر الفريق...</option></select>
+        <input type="text" id="newName" placeholder="الاسم الجديد">
+        <input type="text" id="newPhoto" placeholder="رابط اللوجو الجديد">
+        <button class="btn-add" style="background:white; color:black;" onclick="updateTeamIdentity()">حفظ الهوية الجديدة</button>
     </div>
 
     <div class="card">
@@ -57,13 +57,11 @@
     </div>
 
     <div class="card">
-        <h2><i class="fas fa-id-card"></i> طلبات معلقة</h2>
-        <div id="reqs" class="item-list"></div>
-        <hr style="border-color:#333">
-        <h2><i class="fas fa-user-tag"></i> إسناد فريق للاعب</h2>
-        <select id="allPlayersList"></select>
-        <input type="text" id="teamName" placeholder="اسم النادي">
-        <button class="btn-add" style="background:white; color:black;" onclick="assignTeam()">حفظ التعديل</button>
+        <h2><i class="fas fa-trophy"></i> البطولات</h2>
+        <input type="text" id="tTitle" placeholder="اسم البطولة">
+        <input type="text" id="tPrize" placeholder="الجائزة">
+        <button class="btn-add" onclick="createT()">نشر بطولة</button>
+        <div id="tList" class="item-list"></div>
     </div>
 
 </div>
@@ -81,57 +79,43 @@
     const db = firebase.firestore();
 
     window.onload = () => {
-        loadTournaments();
-        loadPlayers();
-        loadRequests();
         loadLeaguePlayers();
         loadMatchesLog();
+        loadTournaments();
     };
 
-    // وظائف البطولات
-    async function createT() {
-        const title = document.getElementById('tTitle').value;
-        const prize = document.getElementById('tPrize').value;
-        if (title) {
-            await db.collection("tournaments").add({ title, prize, status: "open", time: Date.now() });
-            alert("تم النشر");
-        }
-    }
-
-    function loadTournaments() {
-        db.collection("tournaments").onSnapshot(snap => {
-            const container = document.getElementById('tList');
-            container.innerHTML = "";
-            snap.forEach(doc => {
-                container.innerHTML += `<div class="list-entry"><span>${doc.data().title}</span><button class="btn-del" onclick="deleteDoc('tournaments', '${doc.id}')">حذف</button></div>`;
-            });
-        });
-    }
-
-    // تهيئة الدوري (مرة واحدة فقط)
+    // 1. تهيئة احترافية بالـ Batch لتجنب التكرار
     async function setupProLeague() {
-        if(!confirm("سيتم إنشاء الـ 15 فريق الأساسيين، هل أنت متأكد؟")) return;
+        if(!confirm("سيتم ضبط الـ 15 فريق الأساسيين بهوية ثابتة. هل أنت متأكد؟")) return;
         const names = ["الأهلي", "الزمالك", "ريال مدريد", "مان سيتي", "برشلونة", "بايرن", "ليفربول", "أرسنال", "انتر", "باريس", "النصر", "الهلال", "الاتحاد", "روما", "ميلان"];
-        for(let name of names) {
-            await db.collection("leaguePlayers").add({
+        const batch = db.batch();
+        
+        names.forEach((name, i) => {
+            const teamId = "team_" + (i + 1);
+            const ref = db.collection("leaguePlayers").doc(teamId);
+            batch.set(ref, {
                 nickname: name, photoURL: "https://via.placeholder.com/50",
-                pts: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, played: 0, gd: 0
-            });
-        }
-        alert("تمت التهيئة");
+                pts: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, played: 0, gd: 0, order: i
+            }, { merge: true });
+        });
+        
+        await batch.commit();
+        alert("تمت التهيئة بنجاح!");
     }
 
+    // 2. تحميل الفرق في القوائم
     function loadLeaguePlayers() {
-        db.collection("leaguePlayers").onSnapshot(snap => {
-            const select = document.getElementById('targetPlayer');
-            select.innerHTML = '<option value="">اختر الفريق...</option>';
-            snap.forEach(doc => {
-                select.innerHTML += `<option value="${doc.id}">${doc.data().nickname}</option>`;
-            });
+        db.collection("leaguePlayers").orderBy("order").onSnapshot(snap => {
+            const s1 = document.getElementById('targetPlayer');
+            const s2 = document.getElementById('editTeamSelect');
+            const options = '<option value="">اختر الفريق...</option>' + 
+                snap.docs.map(doc => `<option value="${doc.id}">${doc.data().nickname}</option>`).join('');
+            s1.innerHTML = options;
+            s2.innerHTML = options;
         });
     }
 
-    // تحديث النقاط وحفظ المباراة في السجل
+    // 3. تحديث النقاط وحفظ السجل
     async function updatePlayerStats() {
         const uid = document.getElementById('targetPlayer').value;
         const w = parseInt(document.getElementById('plusW').value) || 0;
@@ -146,46 +130,58 @@
         const doc = await ref.get();
         const cur = doc.data();
 
-        // تحديث الجدول
+        const nw = cur.w + w, nd = cur.d + d, nl = cur.l + l;
+        const ngf = cur.gf + gf, nga = cur.ga + ga;
+
         await ref.update({
             played: cur.played + (w + d + l),
-            w: cur.w + w, d: cur.d + d, l: cur.l + l,
-            gf: cur.gf + gf, ga: cur.ga + ga,
-            pts: ((cur.w + w) * 3) + ((cur.d + d) * 1),
-            gd: (cur.gf + gf) - (cur.ga + ga)
+            w: nw, d: nd, l: nl,
+            gf: ngf, ga: nga,
+            pts: (nw * 3) + (nd * 1),
+            gd: ngf - nga
         });
 
-        // حفظ في السجل (عشان نعرف نمسحها لو غلطنا)
         await db.collection("leagueMatches").add({
-            pName: cur.nickname, pId: uid,
-            w, d, l, gf, ga, time: Date.now()
+            pName: cur.nickname, pId: uid, w, d, l, gf, ga, time: Date.now()
         });
 
         alert("تم التحديث");
-        location.reload();
+        ["plusW","plusD","plusL","plusGF","plusGA"].forEach(id => document.getElementById(id).value = "");
     }
 
-    // عرض سجل العمليات وحذفها
+    // 4. تعديل الهوية (الاسم والصورة)
+    async function updateTeamIdentity() {
+        const id = document.getElementById('editTeamSelect').value;
+        const name = document.getElementById('newName').value;
+        const photo = document.getElementById('newPhoto').value;
+        if(!id) return alert("اختر الفريق");
+        
+        let data = {};
+        if(name) data.nickname = name;
+        if(photo) data.photoURL = photo;
+        
+        await db.collection("leaguePlayers").doc(id).update(data);
+        alert("تم تحديث بيانات الفريق");
+    }
+
+    // 5. السجل والتراجع
     function loadMatchesLog() {
         db.collection("leagueMatches").orderBy("time", "desc").limit(10).onSnapshot(snap => {
             const log = document.getElementById('matchesLog');
-            log.innerHTML = "";
-            snap.forEach(doc => {
+            log.innerHTML = snap.docs.map(doc => {
                 const m = doc.data();
-                log.innerHTML += `<div class="list-entry">
-                    <span style="font-size:11px;">تعديل لـ: ${m.pName}</span>
-                    <button class="btn-del" onclick="undoMatch('${doc.id}', '${m.pId}', ${m.w}, ${m.d}, ${m.l}, ${m.gf}, ${m.ga})">تراجع</button>
+                return `<div class="list-entry">
+                    <span style="font-size:11px;">${m.pName}: +${m.w}ف / +${m.d}ت</span>
+                    <button class="btn-del" onclick="undoMatch('${doc.id}','${m.pId}',${m.w},${m.d},${m.l},${m.gf},${m.ga})">تراجع</button>
                 </div>`;
-            });
+            }).join('');
         });
     }
 
     async function undoMatch(mId, pId, w, d, l, gf, ga) {
-        if(!confirm("هل تريد التراجع عن هذه العملية؟")) return;
+        if(!confirm("تراجع عن هذه العملية؟")) return;
         const ref = db.collection("leaguePlayers").doc(pId);
-        const doc = await ref.get();
-        const cur = doc.data();
-
+        const cur = (await ref.get()).data();
         await ref.update({
             played: cur.played - (w + d + l),
             w: cur.w - w, d: cur.d - d, l: cur.l - l,
@@ -193,40 +189,21 @@
             pts: ((cur.w - w) * 3) + ((cur.d - d) * 1),
             gd: (cur.gf - gf) - (cur.ga - ga)
         });
-
         await db.collection("leagueMatches").doc(mId).delete();
-        alert("تم التراجع");
     }
 
-    // وظائف اللاعبين والطلبات
-    function loadPlayers() {
-        db.collection("players").get().then(snap => {
-            const s = document.getElementById('allPlayersList');
-            snap.forEach(doc => { s.innerHTML += `<option value="${doc.id}">${doc.data().nickname || doc.data().name}</option>`; });
+    // وظائف إضافية
+    async function createT() {
+        const title = document.getElementById('tTitle').value;
+        if (title) await db.collection("tournaments").add({ title, prize: document.getElementById('tPrize').value, time: Date.now() });
+    }
+
+    function loadTournaments() {
+        db.collection("tournaments").onSnapshot(snap => {
+            document.getElementById('tList').innerHTML = snap.docs.map(doc => 
+                `<div class="list-entry"><span>${doc.data().title}</span><button class="btn-del" onclick="db.collection('tournaments').doc('${doc.id}').delete()">حذف</button></div>`
+            ).join('');
         });
-    }
-
-    async function assignTeam() {
-        const uid = document.getElementById('allPlayersList').value;
-        const team = document.getElementById('teamName').value;
-        if(uid && team) {
-            await db.collection("players").doc(uid).update({ assignedTeam: team });
-            alert("تم الحفظ");
-        }
-    }
-
-    function loadRequests() {
-        db.collection("playerRequests").onSnapshot(snap => {
-            const c = document.getElementById('reqs');
-            c.innerHTML = "";
-            snap.forEach(doc => {
-                c.innerHTML += `<div class="list-entry"><span>${doc.data().playerName}</span><button class="btn-del" style="background:green" onclick="deleteDoc('playerRequests', '${doc.id}')">قبول</button></div>`;
-            });
-        });
-    }
-
-    function deleteDoc(col, id) {
-        if(confirm("متأكد؟")) db.collection(col).doc(id).delete();
     }
 </script>
 </body>
