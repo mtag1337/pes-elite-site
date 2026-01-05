@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/ads2google.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PES ELITE | THE FINAL EMPIRE</title>
@@ -11,7 +8,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    
+    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -19,9 +18,7 @@
         :root { 
             --primary: #eaff00; 
             --accent: #ff007a; 
-            --gold: #ffd700;
-            --silver: #c0c0c0;
-            --bronze: #cd7f32;
+            --gold: #ffd700; --silver: #c0c0c0; --bronze: #cd7f32;
             --bg-deep: #000525; 
             --panel: rgba(0, 10, 60, 0.9); 
             --border: rgba(255, 255, 255, 0.1); 
@@ -40,10 +37,7 @@
 
         .app-container { display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px; padding: 20px; max-width: 1600px; margin: auto; }
 
-        /* Player Card */
-        .player-card { background: linear-gradient(135deg, #222, #000); border: 2px solid var(--primary); border-radius: 20px; position: relative; padding: 20px; text-align: center; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .player-card::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, var(--primary), transparent 30%); animation: rotate 4s linear infinite; z-index: 1; opacity: 0.3; }
-        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        .player-card { background: linear-gradient(135deg, #222, #000); border: 2px solid var(--primary); border-radius: 20px; position: relative; padding: 20px; text-align: center; overflow: hidden; }
         .card-inner { position: relative; z-index: 2; background: rgba(0,0,0,0.9); border-radius: 15px; padding: 15px; }
 
         .avatar-box { width: 100px; height: 100px; margin: auto; border: 3px solid var(--primary); border-radius: 50%; overflow: hidden; margin-bottom: 10px; }
@@ -51,40 +45,35 @@
         
         .verified-badge { color: #00bfff; margin-right: 5px; font-size: 14px; }
 
-        /* Podium Top 3 */
         .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 15px; margin: 40px 0; min-height: 300px; }
-        .podium-card { position: relative; background: rgba(0, 10, 60, 0.8); border-radius: 20px; padding: 20px; text-align: center; transition: 0.3s; }
+        .podium-card { position: relative; background: rgba(0, 10, 60, 0.8); border-radius: 20px; padding: 20px; text-align: center; transition: 0.3s; border: 1px solid var(--border); }
         
-        .rank-1 { width: 200px; height: 280px; border: 3px solid var(--gold); box-shadow: 0 0 25px rgba(255, 215, 0, 0.3); z-index: 3; transform: scale(1.1); }
-        .rank-1 .crown { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 30px; filter: drop-shadow(0 0 5px var(--gold)); }
-        .rank-1 .podium-img { width: 100px; height: 100px; border: 4px solid var(--gold); }
+        .rank-1 { width: 200px; height: 280px; border: 3px solid var(--gold); transform: scale(1.1); z-index: 3; }
+        .rank-1 .crown { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 30px; }
         .rank-2 { width: 170px; height: 230px; border: 2px solid var(--silver); }
         .rank-3 { width: 170px; height: 210px; border: 2px solid var(--bronze); }
         .podium-img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 10px; object-fit: cover; }
 
-        /* Top List Items */
         .top-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .top-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border); }
         .rank-number { font-family: 'Orbitron'; font-size: 20px; color: var(--primary); width: 40px; }
 
-        /* Chat Styles */
+        /* Chat */
         .msg-bubble { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; border-right: 4px solid var(--primary); margin-bottom: 10px; }
-        .msg-user-box { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
-        .msg-user-box img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary); object-fit: cover; }
-        .msg-user-info b { font-size: 13px; color: var(--primary); display: block; }
-        .msg-user-info span { font-size: 9px; color: #777; }
-        .msg-text { font-size: 14px; color: #eee; padding-top: 5px; word-break: break-word; }
+        .msg-user-box { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .msg-user-box img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid var(--primary); }
+        .msg-text { font-size: 14px; color: #eee; word-break: break-word; }
 
-        .section-view { display: none; animation: fadeIn 0.5s; }
-        .active { display: block; }
+        .section-view { display: none; }
+        .active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .btn-join { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; }
-        .btn-join:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .btn-join { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
+        .btn-join:hover { transform: scale(1.02); filter: brightness(1.1); }
 
         .tour-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border: 1px solid var(--border); }
 
-        @media (max-width: 1000px) { .app-container { grid-template-columns: 1fr; } aside { display: none; } }
+        @media (max-width: 1000px) { .app-container { grid-template-columns: 1fr; } aside { order: 2; } main { order: 1; } }
     </style>
 </head>
 <body>
@@ -96,10 +85,10 @@
 <nav>
     <div class="logo">eFootball <span>ELITE</span></div>
     <div id="navUserInfo" style="display: none; align-items: center;">
-        <span id="navGP" style="color: var(--primary); font-weight: 900; margin-left: 15px;">0 GP</span>
-        <img id="navUserImg" src="" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover;">
+        <span id="navGP" style="color: var(--primary); font-weight: 900; margin-left: 15px; font-family: 'Orbitron';">0 GP</span>
+        <img id="navUserImg" src="" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; cursor: pointer;" onclick="window.location.href='profile.html'">
     </div>
-    <button id="mainLoginBtn" onclick="window.location.href='login.html'" class="btn-join">LOGIN</button>
+    <button id="mainLoginBtn" onclick="window.location.href='login.html'" class="btn-join" style="width: auto; margin: 0; padding: 8px 25px;">LOGIN</button>
 </nav>
 
 <div class="app-container">
@@ -120,8 +109,9 @@
                 
                 <div class="menu-nav" style="margin-top: 20px; text-align: right;">
                     <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="tab('dash')"><i class="fas fa-home"></i> الرئيسية</div>
-                    <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="tab('tours')"><i class="fas fa-trophy"></i> البطولات</div>
+                    <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="window.location.href='League.html'"><i class="fas fa-trophy"></i> الدوري العام</div>
                     <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="tab('top')"><i class="fas fa-crown"></i> توب 30 لاعب</div>
+                    <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="window.location.href='profile.html'"><i class="fas fa-user-edit"></i> تعديل البروفايل</div>
                     <div style="cursor:pointer; padding:10px; color: #ff4d4d;" onclick="logout()"><i class="fas fa-power-off"></i> خروج</div>
                 </div>
             </div>
@@ -139,20 +129,15 @@
             <div class="podium-container" id="podiumArea"></div>
             <div class="top-list" id="otherRanks"></div>
         </section>
-
-        <section id="tours-sec" class="section-view">
-            <h2>مركز البطولات الشامل</h2>
-            <div id="fullTourGrid" style="margin-top: 20px;"></div>
-        </section>
     </main>
 
     <aside>
         <div class="chat-area" style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 15px; height: 550px; display: flex; flex-direction: column;">
             <div style="padding: 15px; border-bottom: 1px solid #222; font-weight: 900; font-size: 14px;">الدردشة العامة</div>
             <div class="messages" id="globalChat" style="flex:1; overflow-y:auto; padding:10px;"></div>
-            <div id="chatInputArea" style="display: none; padding: 10px; background: #000;">
+            <div id="chatInputArea" style="display: none; padding: 10px; background: #000; border-radius: 0 0 15px 15px;">
                 <input type="text" id="chatInp" placeholder="ارسل رسالة.." style="width:100%; background:#111; border:1px solid #333; color:white; padding:10px; border-radius:5px; margin-bottom:5px;">
-                <button onclick="sendMsg()" class="btn-join" style="width:100%;">ارسال</button>
+                <button onclick="sendMsg()" class="btn-join">ارسال</button>
             </div>
         </div>
     </aside>
@@ -173,24 +158,20 @@
 
     let uID = null, userData = null;
 
-    // إصلاح مشكلة Loop تسجيل الدخول
     auth.onAuthStateChanged(user => {
         if(user) {
             uID = user.uid;
-            // تحديث الواجهة فوراً للمستخدم المسجل
             document.getElementById('navUserInfo').style.display = 'flex';
             document.getElementById('userProfileContent').style.display = 'block';
             document.getElementById('chatInputArea').style.display = 'block';
             document.getElementById('mainLoginBtn').style.display = 'none';
             syncUser();
         } else {
-            // إخفاء بيانات المستخدم عند تسجيل الخروج
             document.getElementById('mainLoginBtn').style.display = 'block';
             document.getElementById('navUserInfo').style.display = 'none';
             document.getElementById('userProfileContent').style.display = 'none';
             document.getElementById('chatInputArea').style.display = 'none';
             uID = null;
-            userData = null;
         }
         loadPublicData();
     });
@@ -203,23 +184,24 @@
             document.getElementById('myName').innerText = userData.nickname || "لاعب جديد";
             const gp = userData.gpPoints || 0;
             const rank = userData.rank || 1000;
+            const avatar = userData.photoURL || 'https://via.placeholder.com/100';
+            
             document.getElementById('myGP').innerText = gp;
             document.getElementById('navGP').innerText = gp + " GP";
             document.getElementById('myRating').innerText = rank;
             document.getElementById('myPower').innerText = Math.floor(rank + (gp * 0.1));
-            
-            const avatar = userData.photoURL || 'https://via.placeholder.com/100';
             document.getElementById('myAvatar').src = avatar;
             document.getElementById('navUserImg').src = avatar;
         });
     }
 
     function loadPublicData() {
+        // شريط الأخبار
         db.collection("settings").doc("ticker").onSnapshot(doc => {
             if(doc.exists) document.getElementById('newsTicker').innerText = doc.data().msg;
         });
 
-        // جلب التوب 30
+        // توب 30
         db.collection("players").orderBy("rank", "desc").limit(30).onSnapshot(snap => {
             const podium = document.getElementById('podiumArea');
             const other = document.getElementById('otherRanks');
@@ -252,10 +234,9 @@
                     other.innerHTML += `
                         <div class="top-item">
                             <div class="rank-number">${i+4}</div>
-                            <img src="${p.photoURL || 'https://via.placeholder.com/45'}" style="width:45px; height:45px; border-radius:50%; border:1px solid #444; object-fit:cover;">
+                            <img src="${p.photoURL || 'https://via.placeholder.com/45'}" style="width:45px; height:45px; border-radius:50%; object-fit:cover;">
                             <div style="flex:1">
                                 <b>${p.isVerified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}${p.nickname}</b>
-                                <div style="font-size:10px; color:#666;">ID: #${p.playerID || '0000'}</div>
                             </div>
                             <div style="color:var(--primary); font-family:'Orbitron'">${p.rank || 1000}</div>
                         </div>
@@ -264,8 +245,8 @@
             }
         });
 
-        // الشات العام
-        db.collection("global_chat").orderBy("time", "desc").limit(25).onSnapshot(snap => {
+        // الشات
+        db.collection("global_chat").orderBy("time", "desc").limit(20).onSnapshot(snap => {
             const box = document.getElementById('globalChat'); box.innerHTML = "";
             let msgs = [];
             snap.forEach(d => msgs.push(d.data()));
@@ -275,8 +256,7 @@
                         <div class="msg-user-box">
                             <img src="${m.photo || 'https://via.placeholder.com/35'}">
                             <div class="msg-user-info">
-                                <b>${m.isVerified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}${m.sender}</b>
-                                <span>ID: #${m.playerID || '0000'}</span>
+                                <b style="font-size:12px; color:var(--primary);">${m.sender}</b>
                             </div>
                         </div>
                         <div class="msg-text">${m.text}</div>
@@ -286,13 +266,17 @@
             box.scrollTop = box.scrollHeight;
         });
 
+        // البطولات
         db.collection("tournaments").onSnapshot(snap => {
-            const h = document.getElementById('homeTourGrid'), f = document.getElementById('fullTourGrid');
-            h.innerHTML = f.innerHTML = "";
+            const h = document.getElementById('homeTourGrid');
+            h.innerHTML = "";
             snap.forEach(doc => {
                 const t = doc.data();
-                const html = `<div class="tour-item"><div><h3>${t.title}</h3><p style="color:var(--gold); font-size:12px;">جائزة: ${t.prize}</p></div><button class="btn-join" onclick="joinReq('${t.title}')">انضمام</button></div>`;
-                h.innerHTML += html; f.innerHTML += html;
+                h.innerHTML += `
+                    <div class="tour-item">
+                        <div><h3>${t.title}</h3><p style="color:var(--gold); font-size:12px;">جائزة: ${t.prize}</p></div>
+                        <button class="btn-join" style="width:auto;" onclick="joinReq('${t.title}')">انضمام</button>
+                    </div>`;
             });
         });
     }
@@ -300,13 +284,11 @@
     async function sendMsg() {
         const i = document.getElementById('chatInp');
         if(i.value.trim() && uID && userData) {
-            const text = i.value; i.value = "";
+            const txt = i.value; i.value = "";
             await db.collection("global_chat").add({
                 sender: userData.nickname || "لاعب",
-                text: text,
-                playerID: userData.playerID || "0000",
+                text: txt,
                 photo: userData.photoURL || "",
-                isVerified: userData.isVerified || false,
                 time: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
@@ -317,23 +299,16 @@
         document.getElementById(id + '-sec').classList.add('active');
     }
 
-    function logout() {
-        auth.signOut().then(() => {
-            window.location.reload();
-        });
-    }
+    function logout() { auth.signOut().then(() => window.location.reload()); }
 
     async function joinReq(tName) {
         if(!uID) return alert("سجل دخولك أولاً!");
-        if(confirm(`هل ترغب في طلب الانضمام لبطولة: ${tName}؟`)) {
+        if(confirm(`طلب انضمام لبطولة: ${tName}؟`)) {
             await db.collection("playerRequests").add({ 
-                uid: uID, 
-                playerName: userData.nickname, 
-                tournamentName: tName, 
-                status: "pending", 
-                time: Date.now() 
+                uid: uID, playerName: userData.nickname, 
+                tournamentName: tName, status: "pending", time: Date.now() 
             });
-            alert("تم إرسال طلبك للإدارة!");
+            alert("تم إرسال طلبك!");
         }
     }
 </script>
