@@ -1,255 +1,244 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | THE NEXT GEN</title>
+    <title>PES ELITE | THE FINAL EMPIRE</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --primary: #e1ff00; --bg: #050508; --panel: #0d0d12; --accent: #00f2ff; }
-        
-        body { 
-            background: var(--bg); color: white; font-family: 'Cairo', sans-serif; 
-            margin: 0; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #050508 80%);
-        }
-
-        /* تأثير التوهج في الخلفية */
-        .glow-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(600px circle at var(--x) var(--y), rgba(225,255,0,0.05), transparent 40%);
-            z-index: -1; pointer-events: none;
-        }
-
-        header {
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000;
-        }
-
-        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 26px; letter-spacing: 2px; }
+        :root { --primary: #00f2ff; --accent: #bc13fe; --bg-deep: #020205; --panel: rgba(15, 15, 25, 0.98); --border: rgba(255, 255, 255, 0.08); --gold: #ffcc00; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        body { background: var(--bg-deep); color: #fff; font-family: 'Cairo', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+        #star-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        nav { height: 85px; background: rgba(0,0,0,0.95); border-bottom: 2px solid var(--primary); display: flex; align-items: center; justify-content: space-between; padding: 0 5%; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900; }
         .logo span { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
-
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .nav-links a { color: #888; text-decoration: none; font-weight: bold; transition: 0.3s; font-size: 14px; }
-        .nav-links a:hover { color: var(--primary); }
-
-        /* News Ticker */
-        .ticker-wrap { background: var(--primary); color: black; padding: 8px 0; overflow: hidden; font-weight: 900; }
-        .ticker { display: inline-block; animation: marquee 25s linear infinite; white-space: nowrap; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        .container { display: grid; grid-template-columns: 1fr 380px; gap: 30px; padding: 40px 5%; }
-        @media (max-width: 1000px) { .container { grid-template-columns: 1fr; } }
-
-        /* Cards Style */
-        .card { 
-            background: var(--panel); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
-            padding: 25px; position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);
-        }
-
-        h2 { font-family: 'Orbitron'; font-size: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
-        h2 i { color: var(--primary); }
-
-        /* Top 30 List */
-        .player-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 10px;
-            transition: 0.3s; border: 1px solid transparent;
-        }
-        .player-row:hover { transform: scale(1.02); border-color: var(--primary); background: rgba(225,255,0,0.05); }
-        .p-info { display: flex; align-items: center; gap: 15px; }
-        .rank-tag { font-family: 'Orbitron'; font-weight: 900; color: var(--primary); font-size: 18px; width: 30px; }
-        .p-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #222; }
-        
-        /* Chat Design */
-        .chat-area { height: 500px; display: flex; flex-direction: column; }
-        #chatMessages { flex: 1; overflow-y: auto; padding-right: 10px; }
-        .msg-bubble { 
-            background: #1a1a24; padding: 12px; border-radius: 15px; border-top-right-radius: 2px;
-            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .msg-bubble b { color: var(--primary); font-size: 12px; display: block; margin-bottom: 5px; }
-
-        /* Buttons */
-        .btn-main {
-            background: var(--primary); color: black; border: none; padding: 12px 25px;
-            border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s;
-        }
-        .btn-main:hover { box-shadow: 0 0 20px rgba(225,255,0,0.4); }
-
+        .app-container { display: grid; grid-template-columns: 340px 1fr 340px; gap: 25px; padding: 25px; max-width: 1850px; margin: auto; }
+        .glass-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 24px; padding: 25px; margin-bottom: 25px; transition: 0.4s ease; position: relative; overflow: hidden; }
+        .glass-panel:hover { border-color: var(--primary); box-shadow: 0 10px 40px rgba(0,242,255,0.1); }
+        .avatar-ring { width: 145px; height: 145px; margin: 0 auto 15px; position: relative; padding: 5px; border-radius: 50%; background: linear-gradient(45deg, var(--primary), var(--accent)); }
+        .avatar-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--bg-deep); }
+        .xp-bar-bg { height: 12px; background: #111; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        .xp-bar-fill { height: 100%; background: linear-gradient(to right, var(--primary), var(--accent)); width: 0%; transition: 1.5s; }
+        .menu-nav { display: flex; flex-direction: column; gap: 8px; }
+        .menu-link { padding: 16px 22px; border-radius: 16px; color: #777; text-decoration: none; cursor: pointer; display: flex; align-items: center; gap: 18px; transition: 0.3s; }
+        .menu-link:hover, .menu-link.active { background: rgba(0,242,255,0.1); color: var(--primary); }
+        .top-legends-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 25px 0; }
+        .legend-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px 10px; border-radius: 20px; text-align: center; border-top: 3px solid #333; }
+        .tour-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .tour-item { background: #08080c; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; transition: 0.3s; }
+        .btn-league-mega { background: linear-gradient(135deg, #6200ea, #bc13fe); padding: 28px; border-radius: 28px; text-align: center; cursor: pointer; border: none; width: 100%; color: white; margin-bottom: 25px; }
+        .chat-box { height: 350px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column-reverse; }
+        .btn-save { width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 12px; font-weight: 900; cursor: pointer; color: #000; }
+        .section-view { display: none; }
+        .section-view.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div class="glow-bg" id="glow"></div>
+<canvas id="star-canvas"></canvas>
 
-<header>
-    <div class="logo">PES <span>ELITE</span></div>
-    <div class="nav-links">
-        <a href="League.html">الدوري العام</a>
-        <a href="profile.html" id="navProfile"><i class="fas fa-user-circle fa-2x"></i></a>
-    </div>
-</header>
-
-<div class="ticker-wrap">
-    <div class="ticker" id="tickerMsg">تحميل الأخبار...</div>
-</div>
-
-<div class="container">
-    
-    <div class="main-content">
-        <div class="card" style="margin-bottom: 30px; background: linear-gradient(45deg, #0d0d12, #1a1a2e);">
-            <h2><i class="fas fa-bolt"></i> البطولات النشطة</h2>
-            <div id="tourList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
-                </div>
+<nav>
+    <div class="logo">PES<span>ELITE</span></div>
+    <div style="display: flex; gap: 25px; align-items: center;">
+        <div>
+            <div style="font-size: 10px; color: #444;">RATING SCORE</div>
+            <div id="navRating" style="font-family: 'Orbitron'; color: var(--primary); font-size: 20px; font-weight: 900;">1000</div>
         </div>
-
-        <div class="card">
-            <h2><i class="fas fa-trophy"></i> قاعة المشاهير - TOP 30</h2>
-            <div id="top30List">
-                </div>
-        </div>
+        <img id="navUserImg" src="https://via.placeholder.com/55" style="width: 55px; height: 55px; border-radius: 15px; border: 2px solid var(--primary);">
     </div>
+</nav>
 
-    <div class="sidebar">
-        <div class="card chat-area">
-            <h2><i class="fas fa-comments"></i> غرفة الدردشة</h2>
-            <div id="chatMessages"></div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <input type="text" id="chatInput" placeholder="تحدث مع النخبة..." style="flex:1; background:#000; border:1px solid #333; color:white; padding:12px; border-radius:10px;">
-                <button onclick="sendMessage()" class="btn-main"><i class="fas fa-paper-plane"></i></button>
+<div class="app-container">
+    <aside>
+        <div class="glass-panel" style="text-align: center;">
+            <div class="avatar-ring">
+                <img id="myAvatar" src="https://via.placeholder.com/145">
+                <label for="imgFile" style="position: absolute; bottom: 0; left: 10px; background: var(--primary); color: #000; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="fas fa-camera"></i></label>
+                <input type="file" id="imgFile" style="display:none" onchange="handleImg(this)">
+            </div>
+            <h2 id="myName">تحميل...</h2>
+            <div id="myID" style="color: var(--primary); font-family: 'Orbitron';">#00000000</div>
+            
+            <div class="xp-bar-wrap">
+                <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <span>LEVEL <b id="myLvl">1</b></span>
+                    <span id="myXP">0/1000 XP</span>
+                </div>
+                <div class="xp-bar-bg"><div class="xp-bar-fill" id="xpFill"></div></div>
             </div>
         </div>
-    </div>
 
+        <div class="glass-panel">
+            <div class="menu-nav">
+                <div class="menu-link active" onclick="tab('dash', this)"><i class="fas fa-th-large"></i> لوحة التحكم</div>
+                <div class="menu-link" onclick="tab('tours', this)"><i class="fas fa-trophy"></i> مركز البطولات</div>
+                <div class="menu-link" onclick="tab('acc', this)"><i class="fas fa-user-cog"></i> الإعدادات</div>
+                <div class="menu-link" style="color: #ff4d4d;" onclick="auth.signOut()"><i class="fas fa-sign-out-alt"></i> خروج</div>
+            </div>
+        </div>
+    </aside>
+
+    <main>
+        <section id="dash-sec" class="section-view active">
+            <h2><i class="fas fa-crown" style="color: gold;"></i> أساطير الشهر</h2>
+            <div class="top-legends-grid" id="topGrid"></div>
+
+            <div class="glass-panel" style="background: rgba(0,242,255,0.02);">
+                <input type="text" id="searchInput" onkeyup="liveSearch(this.value)" placeholder="ابحث عن لاعب..." style="width:100%; background:#000; border:1px solid #222; color:white; padding:12px; border-radius:12px;">
+                <div id="searchRes" style="margin-top:10px;"></div>
+            </div>
+
+            <h3><i class="fas fa-bolt" style="color: gold;"></i> البطولات المفتوحة</h3>
+            <div id="homeTourGrid" class="tour-grid" style="margin-top:15px;"></div>
+        </section>
+
+        <section id="tours-sec" class="section-view">
+            <h2>مركز البطولات الكامل</h2>
+            <div id="fullTourGrid" class="tour-grid" style="margin-top: 20px;"></div>
+        </section>
+
+        <section id="acc-sec" class="section-view">
+            <h2>إعدادات الحساب</h2>
+            <div class="glass-panel" style="margin-top: 20px;">
+                <input type="text" id="editName" placeholder="الاسم الجديد" style="width:100%; padding:14px; background:#000; border:1px solid #222; border-radius:12px; color:#fff; margin-bottom:15px;">
+                <button class="btn-save" onclick="updateProfile()">تحديث الملف</button>
+            </div>
+        </section>
+    </main>
+
+    <aside>
+        <button class="btn-league-mega" onclick="window.location.href='league.html'">
+            <i class="fas fa-shield-halved" style="font-size: 40px;"></i>
+            <h3>LEAGUE HUB</h3>
+        </button>
+        <div class="glass-panel">
+            <h3>الدردشة العامة</h3>
+            <div class="chat-box" id="globalChat"></div>
+            <div style="display: flex; gap: 5px; margin-top: 10px;">
+                <input type="text" id="chatInp" placeholder="اكتب رسالة..." style="flex:1; background:#000; border:1px solid #222; color:white; border-radius:8px; padding:8px;">
+                <button onclick="sendMsg()" style="background:var(--primary); border:none; padding:8px 12px; border-radius:8px;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </aside>
 </div>
 
 <script>
-    // إعدادات الماوس المتوهج
-    window.addEventListener('mousemove', e => {
-        document.getElementById('glow').style.setProperty('--x', e.clientX + 'px');
-        document.getElementById('glow').style.setProperty('--y', e.clientY + 'px');
-    });
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
-        authDomain: "pes-elite.firebaseapp.com",
-        projectId: "pes-elite",
-        storageBucket: "pes-elite.firebasestorage.app",
-        messagingSenderId: "407069539120",
-        appId: "1:407069539120:web:466249fa7f716266d9e6f5"
-    };
+    const firebaseConfig = { apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow", authDomain: "pes-elite.firebaseapp.com", projectId: "pes-elite", storageBucket: "pes-elite.firebasestorage.app", messagingSenderId: "407069539120", appId: "1:407069539120:web:466249fa7f716266d9e6f5" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
 
+    let uID, userData;
+
     auth.onAuthStateChanged(user => {
-        if (user) {
-            loadTop30();
-            loadChat();
-            loadTours();
-            loadTicker();
-        } else {
-            window.location.href = "login.html";
-        }
+        if(user) { uID = user.uid; syncUser(); } 
+        else { window.location.href = "login.html"; }
     });
 
-    function loadTop30() {
-        db.collection("players").orderBy("rank", "desc").limit(30).onSnapshot(snap => {
-            const list = document.getElementById('top30List');
-            list.innerHTML = "";
-            let i = 1;
-            snap.forEach(doc => {
-                const p = doc.data();
-                list.innerHTML += `
-                    <div class="player-row">
-                        <div class="p-info">
-                            <div class="rank-tag">#${i}</div>
-                            <img src="${p.photoURL || 'https://via.placeholder.com/45'}" class="p-img">
-                            <div>
-                                <div style="font-weight:900;">${p.nickname || 'لاعب'} ${p.isVerified ? '<i class="fas fa-check-circle" style="color:#00f2ff; font-size:12px;"></i>' : ''}</div>
-                                <div style="font-size:11px; color:#666;">ID: ${p.efootballId || '---'}</div>
-                            </div>
-                        </div>
-                        <div style="font-family:'Orbitron'; font-weight:900; color:var(--primary); font-size:20px;">${p.rank || 1000}</div>
-                    </div>
-                `;
-                i++;
+    function syncUser() {
+        db.collection("players").doc(uID).onSnapshot(doc => {
+            if(!doc.exists) return;
+            userData = doc.data();
+            document.getElementById('myName').innerText = userData.nickname || "بدون اسم";
+            document.getElementById('myID').innerText = "#" + (userData.playerID || "0000");
+            document.getElementById('navRating').innerText = userData.gpPoints || 1000;
+            if(userData.photoURL) {
+                document.getElementById('myAvatar').src = userData.photoURL;
+                document.getElementById('navUserImg').src = userData.photoURL;
+            }
+            const xp = userData.xp || 0;
+            document.getElementById('myLvl').innerText = Math.floor(xp/1000) + 1;
+            document.getElementById('xpFill').style.width = (xp % 1000 / 10) + "%";
+            document.getElementById('myXP').innerText = `${xp % 1000}/1000 XP`;
+        });
+        loadApp();
+    }
+
+    async function joinReq(tName) {
+        if(!userData) return;
+        if(confirm(`هل تريد الانضمام لبطولة: ${tName}؟`)) {
+            await db.collection("playerRequests").add({
+                uid: uID,
+                playerName: userData.nickname,
+                playerPhoto: userData.photoURL || "",
+                tournamentName: tName,
+                status: "pending",
+                time: Date.now()
             });
-        });
+            alert("تم إرسال طلبك بنجاح!");
+        }
     }
 
-    function loadChat() {
-        db.collection("global_chat").orderBy("time", "asc").limitToLast(15).onSnapshot(snap => {
-            const box = document.getElementById('chatMessages');
-            box.innerHTML = "";
-            snap.forEach(doc => {
-                const m = doc.data();
-                box.innerHTML += `<div class="msg-bubble"><b>${m.sender}</b>${m.text}</div>`;
-            });
-            box.scrollTop = box.scrollHeight;
-        });
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('chatInput');
-        if(!input.value.trim()) return;
-        const userDoc = await db.collection("players").doc(auth.currentUser.uid).get();
-        await db.collection("global_chat").add({
-            sender: userDoc.data().nickname || "لاعب",
-            text: input.value,
-            time: Date.now()
-        });
-        input.value = "";
-    }
-
-    function loadTours() {
+    function loadApp() {
+        // البطولات
         db.collection("tournaments").onSnapshot(snap => {
-            const container = document.getElementById('tourList');
-            container.innerHTML = "";
+            const h = document.getElementById('homeTourGrid'), f = document.getElementById('fullTourGrid');
+            h.innerHTML = f.innerHTML = "";
             snap.forEach(doc => {
                 const t = doc.data();
-                container.innerHTML += `
-                    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; border:1px solid rgba(255,255,255,0.1);">
-                        <div style="font-weight:900; color:var(--primary); margin-bottom:5px;">${t.title}</div>
-                        <div style="font-size:12px; color:#888; margin-bottom:15px;">الجائزة: ${t.prize}</div>
-                        <button onclick="joinTour('${doc.id}', '${t.title}')" class="btn-main" style="width:100%; padding:8px;">انضمام الآن</button>
-                    </div>
-                `;
+                const card = `<div class="tour-item"><div style="padding:15px;"><h4>${t.title}</h4><p style="font-size:11px;color:#777">الجائزة: ${t.prize}</p><button class="btn-save" style="margin-top:10px" onclick="joinReq('${t.title}')">انضمام</button></div></div>`;
+                f.innerHTML += card; h.innerHTML += card;
+            });
+        });
+
+        // الشات
+        db.collection("global_chat").orderBy("time", "desc").limit(20).onSnapshot(snap => {
+            const box = document.getElementById('globalChat'); box.innerHTML = "";
+            snap.forEach(d => {
+                const m = d.data();
+                box.innerHTML += `<div style="margin-bottom:8px; background:rgba(255,255,255,0.03); padding:8px; border-radius:8px;"><b style="color:var(--primary)">${m.sender}:</b><br>${m.text}</div>`;
             });
         });
     }
 
-    async function joinTour(id, name) {
-        const userDoc = await db.collection("players").doc(auth.currentUser.uid).get();
-        await db.collection("playerRequests").add({
-            uid: auth.currentUser.uid,
-            playerName: userDoc.data().nickname,
-            tournamentName: name,
-            status: "pending",
-            time: Date.now()
-        });
-        alert("تم إرسال طلبك للأدمن!");
+    async function sendMsg() {
+        const inp = document.getElementById('chatInp');
+        if(!inp.value.trim()) return;
+        await db.collection("global_chat").add({ sender: userData.nickname, text: inp.value, time: firebase.firestore.FieldValue.serverTimestamp() });
+        inp.value = "";
     }
 
-    function loadTicker() {
-        db.collection("settings").doc("ticker").onSnapshot(doc => {
-            if(doc.exists) document.getElementById('tickerMsg').innerText = doc.data().msg;
+    function liveSearch(val) {
+        if(val.length < 2) { document.getElementById('searchRes').innerHTML = ""; return; }
+        db.collection("players").where("nickname", ">=", val).limit(5).get().then(snap => {
+            let h = '';
+            snap.forEach(d => { h += `<div class="glass-panel" style="padding:10px; margin-bottom:5px;">${d.data().nickname} - LVL: ${Math.floor((d.data().xp||0)/1000)+1}</div>`; });
+            document.getElementById('searchRes').innerHTML = h;
         });
     }
+
+    function tab(id, el) {
+        document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+        document.getElementById(id + '-sec').classList.add('active');
+        document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // Star Animation
+    const canvas = document.getElementById('star-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    let stars = [];
+    for(let i=0; i<100; i++) stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.5});
+    function draw() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = "#00f2ff55";
+        stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill(); s.y -= 0.3; if(s.y < 0) s.y = canvas.height; });
+        requestAnimationFrame(draw);
+    }
+    draw();
 </script>
-
 </body>
 </html>
