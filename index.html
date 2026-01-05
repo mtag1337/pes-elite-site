@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | الصفحة الرئيسية</title>
+    <title>PES ELITE | THE NEXT GEN</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -13,89 +13,136 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --primary: #e1ff00; --bg: #050508; --panel: #111118; }
-        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; overflow-x: hidden; }
+        :root { --primary: #e1ff00; --bg: #050508; --panel: #0d0d12; --accent: #00f2ff; }
+        
+        body { 
+            background: var(--bg); color: white; font-family: 'Cairo', sans-serif; 
+            margin: 0; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #050508 80%);
+        }
 
-        /* Header & Navigation */
-        header { background: #000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); sticky: top; z-index: 1000; }
-        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 24px; }
-        .logo span { color: var(--primary); }
-        .user-nav { display: flex; align-items: center; gap: 15px; }
-        .user-nav img { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid var(--primary); cursor: pointer; }
+        /* تأثير التوهج في الخلفية */
+        .glow-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(600px circle at var(--x) var(--y), rgba(225,255,0,0.05), transparent 40%);
+            z-index: -1; pointer-events: none;
+        }
+
+        header {
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 26px; letter-spacing: 2px; }
+        .logo span { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
+
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { color: #888; text-decoration: none; font-weight: bold; transition: 0.3s; font-size: 14px; }
+        .nav-links a:hover { color: var(--primary); }
 
         /* News Ticker */
-        .ticker-wrap { background: #1a1a1a; padding: 10px 0; overflow: hidden; white-space: nowrap; border-bottom: 1px solid #333; }
-        .ticker { display: inline-block; animation: marquee 20s linear infinite; color: var(--primary); font-weight: bold; }
+        .ticker-wrap { background: var(--primary); color: black; padding: 8px 0; overflow: hidden; font-weight: 900; }
+        .ticker { display: inline-block; animation: marquee 25s linear infinite; white-space: nowrap; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* Main Content Grid */
-        .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; padding: 20px 5%; }
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        .container { display: grid; grid-template-columns: 1fr 380px; gap: 30px; padding: 40px 5%; }
+        @media (max-width: 1000px) { .container { grid-template-columns: 1fr; } }
 
-        .card { background: var(--panel); border-radius: 15px; padding: 20px; border: 1px solid #222; margin-bottom: 20px; }
-        h2 { color: var(--primary); font-size: 18px; margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        /* Cards Style */
+        .card { 
+            background: var(--panel); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
+            padding: 25px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);
+        }
 
-        /* Top 30 Table */
-        .top-table { width: 100%; border-collapse: collapse; }
-        .top-table tr { border-bottom: 1px solid #222; }
-        .top-table td { padding: 10px; font-size: 14px; }
-        .rank-num { font-family: 'Orbitron'; font-weight: 900; color: #555; width: 30px; }
-        .v-badge { color: #00bfff; font-size: 12px; margin-right: 5px; }
+        h2 { font-family: 'Orbitron'; font-size: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        h2 i { color: var(--primary); }
 
-        /* Chat Box */
-        .chat-box { height: 400px; display: flex; flex-direction: column; }
-        #chatMessages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { background: #222; padding: 8px 12px; border-radius: 12px; max-width: 80%; font-size: 13px; position: relative; }
-        .msg b { color: var(--primary); display: block; font-size: 11px; margin-bottom: 3px; }
-        .chat-input { display: flex; gap: 10px; margin-top: 10px; }
-        .chat-input input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; }
+        /* Top 30 List */
+        .player-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 10px;
+            transition: 0.3s; border: 1px solid transparent;
+        }
+        .player-row:hover { transform: scale(1.02); border-color: var(--primary); background: rgba(225,255,0,0.05); }
+        .p-info { display: flex; align-items: center; gap: 15px; }
+        .rank-tag { font-family: 'Orbitron'; font-weight: 900; color: var(--primary); font-size: 18px; width: 30px; }
+        .p-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #222; }
+        
+        /* Chat Design */
+        .chat-area { height: 500px; display: flex; flex-direction: column; }
+        #chatMessages { flex: 1; overflow-y: auto; padding-right: 10px; }
+        .msg-bubble { 
+            background: #1a1a24; padding: 12px; border-radius: 15px; border-top-right-radius: 2px;
+            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .msg-bubble b { color: var(--primary); font-size: 12px; display: block; margin-bottom: 5px; }
 
-        /* Tournaments */
-        .tour-item { background: #1a1a24; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .btn-join { background: var(--primary); color: #000; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        /* Buttons */
+        .btn-main {
+            background: var(--primary); color: black; border: none; padding: 12px 25px;
+            border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s;
+        }
+        .btn-main:hover { box-shadow: 0 0 20px rgba(225,255,0,0.4); }
+
     </style>
 </head>
 <body>
 
+<div class="glow-bg" id="glow"></div>
+
 <header>
     <div class="logo">PES <span>ELITE</span></div>
-    <div class="user-nav">
-        <a href="League.html" style="color:#fff; text-decoration:none; font-size:14px;">الدوري</a>
-        <a href="profile.html"><img id="headerAvatar" src="https://via.placeholder.com/35" alt="Profile"></a>
+    <div class="nav-links">
+        <a href="League.html">الدوري العام</a>
+        <a href="profile.html" id="navProfile"><i class="fas fa-user-circle fa-2x"></i></a>
     </div>
 </header>
 
 <div class="ticker-wrap">
-    <div class="ticker" id="tickerMsg">مرحباً بكم في PES ELITE.. ترقبوا انطلاق الموسم الجديد قريباً!</div>
+    <div class="ticker" id="tickerMsg">تحميل الأخبار...</div>
 </div>
 
-<div class="main-grid">
-    <div class="content-left">
-        <div class="card">
-            <h2><i class="fas fa-trophy"></i> البطولات المتاحة</h2>
-            <div id="tourList">جاري تحميل البطولات...</div>
+<div class="container">
+    
+    <div class="main-content">
+        <div class="card" style="margin-bottom: 30px; background: linear-gradient(45deg, #0d0d12, #1a1a2e);">
+            <h2><i class="fas fa-bolt"></i> البطولات النشطة</h2>
+            <div id="tourList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                </div>
         </div>
 
         <div class="card">
-            <h2><i class="fas fa-star"></i> أفضل 30 لاعب (TOP 30)</h2>
-            <table class="top-table" id="top30Table">
-                </table>
+            <h2><i class="fas fa-trophy"></i> قاعة المشاهير - TOP 30</h2>
+            <div id="top30List">
+                </div>
         </div>
     </div>
 
-    <div class="content-right">
-        <div class="card chat-box">
-            <h2><i class="fas fa-comments"></i> الدردشة الجماعية</h2>
+    <div class="sidebar">
+        <div class="card chat-area">
+            <h2><i class="fas fa-comments"></i> غرفة الدردشة</h2>
             <div id="chatMessages"></div>
-            <div class="chat-input">
-                <input type="text" id="chatInput" placeholder="اكتب رسالتك...">
-                <button onclick="sendMessage()" style="background:var(--primary); border:none; border-radius:8px; padding:0 15px;"><i class="fas fa-paper-plane"></i></button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <input type="text" id="chatInput" placeholder="تحدث مع النخبة..." style="flex:1; background:#000; border:1px solid #333; color:white; padding:12px; border-radius:10px;">
+                <button onclick="sendMessage()" class="btn-main"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
+
 </div>
 
 <script>
+    // إعدادات الماوس المتوهج
+    window.addEventListener('mousemove', e => {
+        document.getElementById('glow').style.setProperty('--x', e.clientX + 'px');
+        document.getElementById('glow').style.setProperty('--y', e.clientY + 'px');
+    });
+
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -108,12 +155,8 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    let currentUser = null;
-
     auth.onAuthStateChanged(user => {
         if (user) {
-            currentUser = user;
-            loadUserData();
             loadTop30();
             loadChat();
             loadTours();
@@ -123,52 +166,38 @@
         }
     });
 
-    // 1. تحميل بيانات المستخدم (الصورة)
-    function loadUserData() {
-        db.collection("players").doc(currentUser.uid).onSnapshot(doc => {
-            if(doc.exists && doc.data().photoURL) {
-                document.getElementById('headerAvatar').src = doc.data().photoURL;
-            }
-        });
-    }
-
-    // 2. تحميل توب 30
     function loadTop30() {
         db.collection("players").orderBy("rank", "desc").limit(30).onSnapshot(snap => {
-            const table = document.getElementById('top30Table');
-            table.innerHTML = "";
+            const list = document.getElementById('top30List');
+            list.innerHTML = "";
             let i = 1;
             snap.forEach(doc => {
                 const p = doc.data();
-                table.innerHTML += `
-                    <tr>
-                        <td class="rank-num">${i}</td>
-                        <td style="display:flex; align-items:center; gap:10px;">
-                            <img src="${p.photoURL || 'https://via.placeholder.com/30'}" style="width:30px; height:30px; border-radius:50%;">
-                            <b>${p.nickname || 'لاعب'}</b>
-                            ${p.isVerified ? '<i class="fas fa-check-circle v-badge"></i>' : ''}
-                        </td>
-                        <td style="text-align:left; font-family:'Orbitron'; font-weight:bold; color:var(--primary);">${p.rank || 1000}</td>
-                    </tr>
+                list.innerHTML += `
+                    <div class="player-row">
+                        <div class="p-info">
+                            <div class="rank-tag">#${i}</div>
+                            <img src="${p.photoURL || 'https://via.placeholder.com/45'}" class="p-img">
+                            <div>
+                                <div style="font-weight:900;">${p.nickname || 'لاعب'} ${p.isVerified ? '<i class="fas fa-check-circle" style="color:#00f2ff; font-size:12px;"></i>' : ''}</div>
+                                <div style="font-size:11px; color:#666;">ID: ${p.efootballId || '---'}</div>
+                            </div>
+                        </div>
+                        <div style="font-family:'Orbitron'; font-weight:900; color:var(--primary); font-size:20px;">${p.rank || 1000}</div>
+                    </div>
                 `;
                 i++;
             });
         });
     }
 
-    // 3. الدردشة
     function loadChat() {
-        db.collection("global_chat").orderBy("time", "asc").limitToLast(20).onSnapshot(snap => {
+        db.collection("global_chat").orderBy("time", "asc").limitToLast(15).onSnapshot(snap => {
             const box = document.getElementById('chatMessages');
             box.innerHTML = "";
             snap.forEach(doc => {
                 const m = doc.data();
-                box.innerHTML += `
-                    <div class="msg">
-                        <b>${m.sender}</b>
-                        ${m.text}
-                    </div>
-                `;
+                box.innerHTML += `<div class="msg-bubble"><b>${m.sender}</b>${m.text}</div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
@@ -177,49 +206,44 @@
     async function sendMessage() {
         const input = document.getElementById('chatInput');
         if(!input.value.trim()) return;
-        const userData = await db.collection("players").doc(currentUser.uid).get();
+        const userDoc = await db.collection("players").doc(auth.currentUser.uid).get();
         await db.collection("global_chat").add({
-            sender: userData.data().nickname || "لاعب",
+            sender: userDoc.data().nickname || "لاعب",
             text: input.value,
-            time: Date.now(),
-            uid: currentUser.uid
+            time: Date.now()
         });
         input.value = "";
     }
 
-    // 4. تحميل البطولات والاشتراك
     function loadTours() {
         db.collection("tournaments").onSnapshot(snap => {
-            const list = document.getElementById('tourList');
-            list.innerHTML = "";
+            const container = document.getElementById('tourList');
+            container.innerHTML = "";
             snap.forEach(doc => {
                 const t = doc.data();
-                list.innerHTML += `
-                    <div class="tour-item">
-                        <div>
-                            <strong>${t.title}</strong><br>
-                            <small style="color:#888;">الجائزة: ${t.prize}</small>
-                        </div>
-                        <button class="btn-join" onclick="joinTour('${doc.id}', '${t.title}')">انضمام</button>
+                container.innerHTML += `
+                    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; border:1px solid rgba(255,255,255,0.1);">
+                        <div style="font-weight:900; color:var(--primary); margin-bottom:5px;">${t.title}</div>
+                        <div style="font-size:12px; color:#888; margin-bottom:15px;">الجائزة: ${t.prize}</div>
+                        <button onclick="joinTour('${doc.id}', '${t.title}')" class="btn-main" style="width:100%; padding:8px;">انضمام الآن</button>
                     </div>
                 `;
             });
         });
     }
 
-    async function joinTour(tID, tTitle) {
-        const userData = await db.collection("players").doc(currentUser.uid).get();
+    async function joinTour(id, name) {
+        const userDoc = await db.collection("players").doc(auth.currentUser.uid).get();
         await db.collection("playerRequests").add({
-            uid: currentUser.uid,
-            playerName: userData.data().nickname,
-            tournamentName: tTitle,
+            uid: auth.currentUser.uid,
+            playerName: userDoc.data().nickname,
+            tournamentName: name,
             status: "pending",
             time: Date.now()
         });
-        alert("تم إرسال طلب الانضمام للأدمن!");
+        alert("تم إرسال طلبك للأدمن!");
     }
 
-    // 5. شريط الأخبار
     function loadTicker() {
         db.collection("settings").doc("ticker").onSnapshot(doc => {
             if(doc.exists) document.getElementById('tickerMsg').innerText = doc.data().msg;
