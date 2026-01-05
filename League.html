@@ -50,6 +50,27 @@
         .live { background: #ff007a; color: #fff; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
+<style>
+    .match-card {
+        background: #111118;
+        padding: 15px 25px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(255,255,255,0.05);
+        font-family: 'Orbitron', sans-serif;
+    }
+    .m-score {
+        background: var(--primary);
+        color: black;
+        padding: 5px 15px;
+        border-radius: 5px;
+        font-weight: 900;
+        font-size: 20px;
+    }
+    .m-team { font-size: 16px; font-weight: bold; width: 40%; }
+</style>
 </head>
 <body>
 
@@ -58,6 +79,18 @@
         <h1><i class="fas fa-trophy"></i> LEAGUE <span>TABLE</span></h1>
         <a href="index.html" class="btn-back">العودة للرئيسية</a>
     </div>
+
+    <div class="header-title" style="margin-top: 50px;">
+    <h1>LATEST RESULTS</h1>
+    <p>نتائج آخر المواجهات المباشرة</p>
+</div>
+
+<div id="matchesHistoryList" style="display: grid; gap: 15px; max-width: 800px; margin: auto;">
+    </div>
+
+
+
+
 
     <section>
         <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--primary);">ترتيب الدوري</h2>
@@ -166,7 +199,26 @@
     // التشغيل
     loadStandings();
     loadMatches();
+    // أضف هذا الجزء داخل الـ Script في صفحة League.html
+function loadMatchesHistory() {
+    db.collection("matchesHistory").orderBy("time", "desc").limit(10).onSnapshot(snap => {
+        const list = document.getElementById('matchesHistoryList');
+        list.innerHTML = "";
+        snap.forEach(doc => {
+            const m = doc.data();
+            list.innerHTML += `
+                <div class="match-card">
+                    <div class="m-team" style="text-align: left;">${m.team1}</div>
+                    <div class="m-score">${m.score1} - ${m.score2}</div>
+                    <div class="m-team" style="text-align: right;">${m.team2}</div>
+                </div>
+            `;
+        });
+    });
+}
+loadMatchesHistory();
 </script>
 
 </body>
 </html>
+
