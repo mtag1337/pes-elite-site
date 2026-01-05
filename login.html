@@ -64,38 +64,47 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        function login() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then((result) => {
-                const user = result.user;
-                const userRef = db.collection("players").doc(user.uid);
+function login() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then((result) => {
+        const user = result.user;
+        const userRef = db.collection("players").doc(user.uid);
 
-                userRef.get().then((doc) => {
-                    if (!doc.exists) {
-                        return userRef.set({
-                            nickname: user.displayName,
-                            photoURL: user.photoURL,
-                            email: user.email,
-                            playerID: Math.floor(100000 + Math.random() * 900000),
-                            rank: 1000,
-                            xp: 0,
-                            role: "player",
-                            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    } else {
-                        return userRef.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
-                    }
-                }).then(() => {
-                    // التوجيه الصحيح بعد النجاح
-                    if (user.email === "mtag1337@gmail.com") {
-                        window.location.href = "admin.html";
-                    } else {
-                        window.location.href = "index.html"; 
-                    }
+        userRef.get().then((doc) => {
+            if (!doc.exists) {
+                // إنشاء بروفايل جديد
+                return userRef.set({
+                    nickname: user.displayName,
+                    photoURL: user.photoURL,
+                    email: user.email,
+                    playerID: Math.floor(100000 + Math.random() * 900000),
+                    rank: 1000,
+                    xp: 0,
+                    role: "player",
+                    joinedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-            }).catch((err) => { alert("خطأ: " + err.message); });
-        }
+            } else {
+                return userRef.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
+            }
+        }).then(() => {
+            // --- السطر السحري للتوجيه ---
+            console.log("Success! Redirecting...");
+            
+            // تأكد من الإيميل الخاص بك كأدمن
+            if (user.email === "mtag1337@gmail.com") {
+                window.location.replace("admin.html");
+            } else {
+                // استخدام replace بدلاً من href لضمان عدم الرجوع للخلف
+                window.location.replace("index.html"); 
+            }
+        });
+    }).catch((err) => { 
+        console.error(err);
+        alert("حدث خطأ أثناء الدخول: " + err.message); 
+    });
+}
     </script>
 </body>
 </html>
+
 
