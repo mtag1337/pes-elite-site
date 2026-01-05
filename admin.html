@@ -151,63 +151,57 @@
     }
 
     // --- إدارة اللاعبين ---
-    let playersCache = [];
+   let playersCache = [];
+
     function loadPlayers() {
+        // تأكد من استخدام اسم المجموعة الصحيح كما هو في الصورة عندك (leaguePlayers)
         db.collection("leaguePlayers").onSnapshot(snap => {
             const list = document.getElementById('playersList');
-            document.getElementById('countPlayers').innerText = snap.size;
+            const countEl = document.getElementById('countPlayers');
+            
+            if (countEl) countEl.innerText = snap.size;
+            if (!list) return;
+
             list.innerHTML = "";
             playersCache = [];
+            
+            // خيارات القائمة المنسدلة للجدول وللأبطال
             let opts = '<option value="">-- اختر لاعب --</option>';
+
             snap.forEach(doc => {
                 const p = doc.data();
                 playersCache.push(p);
                 opts += `<option value="${p.name}">${p.name}</option>`;
+                
                 list.innerHTML += `
                     <div class="card" style="margin-bottom:5px; padding:10px; display:flex; justify-content:space-between; align-items:center; border-right:4px solid var(--main)">
                         <span><strong>${p.name}</strong> (ID: ${p.id})</span>
                         <button onclick="delDoc('leaguePlayers','${doc.id}')" class="btn-danger">حذف 🗑️</button>
                     </div>`;
             });
-            document.getElementById('top1').innerHTML = opts;
-            document.getElementById('top2').innerHTML = opts;
-            document.getElementById('top3').innerHTML = opts;
-            buildMatchTable();
+
+            // تحديث القوائم في قسم الأبطال
+            if(document.getElementById('top1')) document.getElementById('top1').innerHTML = opts;
+            if(document.getElementById('top2')) document.getElementById('top2').innerHTML = opts;
+            if(document.getElementById('top3')) document.getElementById('top3').innerHTML = opts;
+
+            // أهم خطوة: إعادة بناء جدول المباريات بالقائمة الجديدة
+            console.log("تم تحديث قائمة اللاعبين، جاري بناء الجدول...");
+            buildMatchTable(); 
         });
     }
 
-   async function addPlayer() {
-        const n = document.getElementById('pName').value; // الاسم
-        const id = document.getElementById('pID').value;   // الـ ID
-
-        if(n && id) { 
-            try {
-                // هنرفع البيانات للمجموعتين عشان نضمن إنها ظهرت في كل حتة
-                await db.collection("leaguePlayers").doc(id).set({
-                    name: n, 
-                    id: id,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }); 
-                
-                alert("✅ تم التثبيت بنجاح في leaguePlayers");
-                
-                document.getElementById('pName').value = "";
-                document.getElementById('pID').value = "";
-            } catch (error) {
-                console.error("Error:", error);
-                alert("فشل الإضافة: " + error.message);
-            }
-        } else {
-            alert("يرجى إدخال الاسم والـ ID");
-        }
-    }
-
-    // --- جدول المباريات ---
     function buildMatchTable() {
         const table = document.getElementById('matchTable');
         if(!table) return;
+        
         table.innerHTML = "";
-        let playerOpts = '<option value="">-- لاعب --</option>' + playersCache.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        
+        // بناء خيارات اللاعبين بناءً على المتاح في الكاش
+        let playerOpts = '<option value="">-- لاعب --</option>';
+        if (playersCache.length > 0) {
+            playerOpts += playersCache.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        }
         
         for(let i=1; i<=60; i++) {
             table.innerHTML += `<tr>
@@ -325,6 +319,7 @@
 </script>
 </body>
 </html>
+
 
 
 
