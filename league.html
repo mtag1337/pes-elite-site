@@ -3,55 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ترتيب دوري PES ELITE</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>الدوري العام</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
-        :root { --p: #eaff00; --bg: #020205; --card: #0a0a0f; }
-        body { background: var(--bg); color: white; font-family: 'Cairo'; margin: 0; padding: 10px; }
-        .container { max-width: 900px; margin: auto; }
-        h1 { color: var(--p); text-align: center; font-size: 1.5rem; text-shadow: 0 0 10px rgba(234, 255, 0, 0.3); }
-        
-        /* النتائج المباشرة */
-        .match-card { background: var(--card); border: 1px solid #222; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 10px; }
-        .score { background: var(--p); color: #000; padding: 2px 12px; border-radius: 5px; font-weight: 900; }
-        
-        /* الجدول المتجاوب */
-        .table-wrap { overflow-x: auto; background: var(--card); border-radius: 12px; border: 1px solid #222; }
+        body { background: #020205; color: white; font-family: sans-serif; padding: 10px; }
+        .table-wrap { overflow-x: auto; background: #111; border-radius: 12px; border: 1px solid #333; }
         table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th { background: #111; color: var(--p); font-size: 0.8rem; padding: 12px; }
-        td { padding: 10px; border-bottom: 1px solid #111; text-align: center; font-size: 0.9rem; }
-        .team-cell { display: flex; align-items: center; gap: 8px; text-align: right; }
-        .logo { width: 25px; height: 25px; border-radius: 50%; background: #222; object-fit: cover; }
+        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: center; }
+        th { background: #eaff00; color: black; font-size: 0.8rem; }
+        .team-box { display: flex; align-items: center; gap: 10px; text-align: right; }
+        .logo { width: 30px; height: 30px; border-radius: 50%; background: #333; }
+        .archive-btn { display: block; width: 200px; margin: 20px auto; padding: 12px; background: none; border: 1px solid #eaff00; color: #eaff00; text-align: center; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🏆 PES ELITE LEAGUE</h1>
-    
-    <h3 style="color: #666; font-size: 0.9rem; border-right: 3px solid var(--p); padding-right: 10px;">آخر النتائج</h3>
-    <div id="matchesHistoryList"></div>
+    <h1 style="text-align:center; color:#eaff00">🏆 ترتيب الدوري</h1>
 
-    <h3 style="color: #666; font-size: 0.9rem; border-right: 3px solid var(--p); padding-right: 10px; margin-top: 20px;">جدول الترتيب</h3>
     <div class="table-wrap">
         <table>
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th style="text-align: right;">الفريق</th>
+                    <th>م</th>
+                    <th style="text-align:right">الفريق</th>
                     <th>لعب</th>
                     <th>+/-</th>
-                    <th>النقاط</th>
+                    <th>نقاط</th>
                 </tr>
             </thead>
-            <tbody id="standingsBody"></tbody>
+            <tbody id="leagueBody"></tbody>
         </table>
     </div>
-</div>
 
-
+    <a href="matches.html" class="archive-btn">📜 عرض كل المواجهات</a>
 
 <script>
     const firebaseConfig = {
@@ -65,38 +50,20 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function loadData() {
-        // جلب الترتيب
-        db.collection("leaguePlayers").orderBy("pts", "desc").orderBy("gd", "desc").onSnapshot(snap => {
-            const tbody = document.getElementById('standingsBody');
-            tbody.innerHTML = ""; let i = 1;
-            snap.forEach(doc => {
-                const p = doc.data();
-                tbody.innerHTML += `<tr>
-                    <td style="color:${i<=3?'var(--p)':'#fff'}">${i++}</td>
-                    <td><div class="team-cell"><img src="${p.photoURL || 'https://via.placeholder.com/30'}" class="logo"><span>${p.nickname}</span></div></td>
-                    <td>${p.played || 0}</td>
-                    <td style="color:${(p.gd||0)>=0?'#0f0':'#f00'}">${p.gd || 0}</td>
-                    <td style="font-weight:900; color:var(--p)">${p.pts || 0}</td>
-                </tr>`;
-            });
+    db.collection("league").orderBy("pts", "desc").orderBy("gd", "desc").onSnapshot(snap => {
+        let html = ''; let rank = 1;
+        snap.forEach(doc => {
+            const p = doc.data();
+            html += `<tr>
+                <td style="font-weight:bold; color:${rank<=3?'#eaff00':'#fff'}">${rank++}</td>
+                <td><div class="team-box"><img src="${p.logo||''}" class="logo"><span>${p.name}</span></div></td>
+                <td>${p.played}</td>
+                <td style="color:${p.gd>=0?'#0f0':'#f00'}">${p.gd}</td>
+                <td style="font-weight:bold; color:#eaff00">${p.pts}</td>
+            </tr>`;
         });
-
-        // جلب النتائج
-        db.collection("matchesHistory").orderBy("time", "desc").limit(5).onSnapshot(snap => {
-            const list = document.getElementById('matchesHistoryList');
-            list.innerHTML = "";
-            snap.forEach(doc => {
-                const m = doc.data();
-                list.innerHTML += `<div class="match-card">
-                    <span style="width:35%; font-size:0.8rem">${m.team1}</span>
-                    <span class="score">${m.score1} - ${m.score2}</span>
-                    <span style="width:35%; text-align:left; font-size:0.8rem">${m.team2}</span>
-                </div>`;
-            });
-        });
-    }
-    loadData();
+        document.getElementById('leagueBody').innerHTML = html;
+    });
 </script>
 </body>
 </html>
