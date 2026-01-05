@@ -6,23 +6,12 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;900&display=swap" rel="stylesheet">
     
     <style>
         :root { --main: #00ff88; --bg: #050507; --card: #111116; --danger: #ff3e3e; --accent: #00f2ff; }
-        /* إخفاء الصفحة تماماً حتى يتم التأكد من الهوية */
-        body { 
-            background: var(--bg); 
-            color: white; 
-            font-family: 'Cairo', sans-serif; 
-            margin: 0; 
-            display: flex; 
-            height: 100vh; 
-            opacity: 0; 
-            transition: opacity 0.5s;
-        }
+        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; display: flex; height: 100vh; opacity: 0; transition: opacity 0.5s; }
         .sidebar { width: 260px; background: var(--card); border-left: 1px solid #222; padding: 20px; display: flex; flex-direction: column; }
         .nav-btn { padding: 15px; margin: 5px 0; border-radius: 12px; cursor: pointer; border: 1px solid transparent; background: none; color: #888; text-align: right; font-size: 16px; font-weight: bold; transition: 0.3s; width: 100%; }
         .nav-btn.active { background: rgba(0, 255, 136, 0.1); color: var(--main); border-color: var(--main); }
@@ -33,7 +22,7 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-family: 'Cairo'; box-sizing: border-box; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.3s; }
         .btn-main { background: var(--main); color: #000; }
-        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; border-radius: 5px; padding: 5px 10px; cursor: pointer; }
         table { width: 100%; border-collapse: collapse; background: #000; border-radius: 10px; overflow: hidden; }
         th { background: #111; color: var(--main); padding: 12px; }
         td { padding: 10px; border-bottom: 1px solid #222; text-align: center; }
@@ -86,7 +75,7 @@
 
     <div id="matchSec" class="section">
         <div class="card" style="max-height: 80vh; overflow-y: auto;">
-            <h3>جدول الدوري الرئيسي</h3>
+            <h3>جدول الدوري الرئيسي (60 مباراة)</h3>
             <table>
                 <thead><tr><th>#</th><th>لاعب 1</th><th>النتيجة</th><th>لاعب 2</th><th>حفظ</th></tr></thead>
                 <tbody id="matchTable"></tbody>
@@ -116,7 +105,6 @@
 </main>
 
 <script>
-    // --- بيانات الاعتماد ---
     const firebaseConfig = {
         apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
         authDomain: "pes-elite.firebaseapp.com",
@@ -129,32 +117,23 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // --- نظام حماية الأدمن المزدوج ---
     const ADMIN_EMAIL = "mtag1337@gmail.com";
     const MASTER_PASS = "mtag1337@010#@010#";
 
     auth.onAuthStateChanged(user => {
         if (user && user.email === ADMIN_EMAIL) {
-            // الطبقة الثانية: الباسورد
             let pass = prompt("الرجاء إدخال رمز الدخول السري للمسؤول:");
             if (pass === MASTER_PASS) {
-                document.body.style.opacity = "1"; // إظهار الصفحة
-                console.log("Access Granted, Admin Verified.");
+                document.body.style.opacity = "1";
                 startAdminApp();
             } else {
-                alert("رمز خاطئ! سيتم تسجيل خروجك.");
+                alert("رمز خاطئ!");
                 auth.signOut();
             }
         } else {
-            window.location.href = "login.html"; // طرد أي مستخدم غريب
+            window.location.href = "login.html";
         }
     });
-
-    // وضع كل الدوال داخل وظيفة واحدة تبدأ بعد التأكد من الهوية
-    function startAdminApp() {
-        loadStats();
-        // باقي الدوال الأصلية هنا...
-    }
 
     function openSec(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active-sec'));
@@ -163,12 +142,25 @@
         btn.classList.add('active');
     }
 
-    // --- إدارة اللاعبين ---
+    // دالة حذف أي وثيقة
+    async function delDoc(col, id) {
+        if(confirm("هل أنت متأكد من الحذف النهائي؟")) {
+            await db.collection(col).doc(id).delete();
+            alert("تم الحذف بنجاح");
+        }
+    }
+
+    function startAdminApp() {
+        loadPlayers();
+        loadTournaments();
+        loadRequests();
+        loadSettings();
+    }
+
     let playersCache = [];
-    function loadStats() {
+    function loadPlayers() {
         db.collection("leaguePlayers").onSnapshot(snap => {
             const list = document.getElementById('playersList');
-            const s1 = document.getElementById('top1'), s2 = document.getElementById('top2'), s3 = document.getElementById('top3');
             document.getElementById('countPlayers').innerText = snap.size;
             list.innerHTML = "";
             playersCache = [];
@@ -177,31 +169,57 @@
                 const p = doc.data();
                 playersCache.push(p);
                 opts += `<option value="${p.name}">${p.name}</option>`;
-                list.innerHTML += `<div class="card" style="margin-bottom:5px; padding:10px; display:flex; justify-content:space-between;">
+                list.innerHTML += `<div class="card" style="margin-bottom:5px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
                     <span>${p.name} (ID: ${p.id})</span>
-                    <button onclick="delDoc('leaguePlayers','${doc.id}')" class="btn-danger" style="width:auto; padding:5px 10px;">حذف</button>
+                    <button onclick="delDoc('leaguePlayers','${doc.id}')" class="btn-danger">حذف</button>
                 </div>`;
             });
-            if(s1) s1.innerHTML = s2.innerHTML = s3.innerHTML = opts;
+            document.getElementById('top1').innerHTML = opts;
+            document.getElementById('top2').innerHTML = opts;
+            document.getElementById('top3').innerHTML = opts;
             buildMatchTable();
         });
     }
 
-    // --- جدول المباريات (60) ---
+    async function addPlayer() {
+        const n = document.getElementById('pName').value, id = document.getElementById('pID').value;
+        if(n && id) { 
+            await db.collection("leaguePlayers").doc(id).set({name:n, id:id}); 
+            alert("تم إضافة اللاعب");
+            document.getElementById('pName').value = "";
+            document.getElementById('pID').value = "";
+        }
+    }
+
     function buildMatchTable() {
         const table = document.getElementById('matchTable');
-        if(!table) return;
         table.innerHTML = "";
         let playerOpts = playersCache.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        
         for(let i=1; i<=60; i++) {
             table.innerHTML += `<tr>
                 <td>${i}</td>
                 <td><select id="m${i}p1"><option value="">لاعب 1</option>${playerOpts}</select></td>
-                <td><input type="number" id="m${i}s1" style="width:40px; padding:5px;"> : <input type="number" id="m${i}s2" style="width:40px; padding:5px;"></td>
+                <td><input type="number" id="m${i}s1" style="width:50px;"> : <input type="number" id="m${i}s2" style="width:50px;"></td>
                 <td><select id="m${i}p2"><option value="">لاعب 2</option>${playerOpts}</select></td>
-                <td><button onclick="saveMatch(${i})" style="background:var(--main); border:none; border-radius:5px; cursor:pointer;">💾</button></td>
+                <td><button onclick="saveMatch(${i})" style="background:var(--main); border:none; padding:5px 10px; cursor:pointer; border-radius:5px;">💾</button></td>
             </tr>`;
         }
+        loadExistingMatches();
+    }
+
+    async function loadExistingMatches() {
+        const snap = await db.collection("leagueMatches").get();
+        snap.forEach(doc => {
+            const m = doc.data();
+            const n = m.matchNum;
+            if(document.getElementById(`m${n}p1`)) {
+                document.getElementById(`m${n}p1`).value = m.player1;
+                document.getElementById(`m${n}p2`).value = m.player2;
+                document.getElementById(`m${n}s1`).value = m.score1;
+                document.getElementById(`m${n}s2`).value = m.score2;
+            }
+        });
     }
 
     async function saveMatch(n) {
@@ -212,7 +230,21 @@
             score2: document.getElementById(`m${n}s2`).value || 0,
             matchNum: n
         });
-        alert("تم حفظ المباراة " + n);
+        alert("تم حفظ المباراة رقم " + n);
+    }
+
+    function loadTournaments() {
+        db.collection("tournaments").orderBy("date","desc").onSnapshot(snap => {
+            const list = document.getElementById('activeToursList');
+            document.getElementById('countTours').innerText = snap.size;
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                list.innerHTML += `<div class="card" style="margin-bottom:5px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span>${doc.data().title}</span>
+                    <button onclick="delDoc('tournaments','${doc.id}')" class="btn-danger">حذف</button>
+                </div>`;
+            });
+        });
     }
 
     async function addTour() {
@@ -225,22 +257,30 @@
             platform: document.getElementById('tPlatform').value,
             date: Date.now()
         });
-        alert("تم نشر البطولة بنجاح!");
+        alert("تم النشر!");
     }
 
-    db.collection("tournaments").orderBy("date","desc").onSnapshot(snap => {
-        const list = document.getElementById('activeToursList');
-        if(list) {
-            document.getElementById('countTours').innerText = snap.size;
+    function loadRequests() {
+        db.collection("playerRequests").onSnapshot(snap => {
+            document.getElementById('reqBadge').innerText = snap.size;
+            document.getElementById('countReqs').innerText = snap.size;
+            const list = document.getElementById('requestsList');
             list.innerHTML = "";
             snap.forEach(doc => {
-                list.innerHTML += `<div class="card" style="margin-bottom:5px; padding:10px; display:flex; justify-content:space-between;">
-                    <span>${doc.data().title}</span>
-                    <button onclick="delDoc('tournaments','${doc.id}')" class="btn-danger" style="width:auto; padding:5px 10px;">حذف</button>
+                const r = doc.data();
+                list.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>${r.playerName} (ID: ${r.playerID}) - ${r.tournamentName}</span>
+                    <button class="btn btn-main" style="width:auto;" onclick="approve('${doc.id}','${r.playerName}','${r.playerID}')">قبول</button>
                 </div>`;
             });
-        }
-    });
+        });
+    }
+
+    async function approve(docId, name, playerId) {
+        await db.collection("leaguePlayers").doc(playerId).set({name: name, id: playerId});
+        await db.collection("playerRequests").doc(docId).delete();
+        alert("تم قبول اللاعب وإضافته بنجاح");
+    }
 
     async function saveTop3() {
         await db.collection("settings").doc("top3").set({
@@ -248,45 +288,22 @@
             second: document.getElementById('top2').value,
             third: document.getElementById('top3').value
         });
-        alert("تم تحديث قائمة الأبطال");
+        alert("تم تحديث الأبطال");
     }
 
     async function saveNews() {
         await db.collection("settings").doc("leagueConfig").set({ news: document.getElementById('newsInput').value }, {merge:true});
-        alert("تم تحديث شريط الأخبار");
+        alert("تم تحديث الأخبار");
     }
 
-    db.collection("playerRequests").onSnapshot(snap => {
-        const badge = document.getElementById('reqBadge');
-        if(badge) {
-            badge.innerText = snap.size;
-            document.getElementById('countReqs').innerText = snap.size;
-            const list = document.getElementById('requestsList');
-            list.innerHTML = "";
-            snap.forEach(doc => {
-                const r = doc.data();
-                list.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>${r.playerName} (ID: ${r.playerID}) - بطولة: ${r.tournamentName}</span>
-                    <button class="btn-main" style="width:auto; padding:5px 10px;" onclick="approve('${doc.id}','${r.playerName}','${r.playerID}')">قبول</button>
-                </div>`;
-            });
-        }
-    });
-
-    async function approve(did, n, id) {
-        await db.collection("leaguePlayers").doc(id).set({name:n, id:id});
-        await db.collection("playerRequests").doc(did).delete();
-    }
-
-    async function delDoc(col, id) { if(confirm("حذف نهائي؟")) await db.collection(col).doc(id).delete(); }
-
-    async function addPlayer() {
-        const n = document.getElementById('pName').value, id = document.getElementById('pID').value;
-        if(n && id) { await db.collection("leaguePlayers").doc(id).set({name:n, id:id}); alert("تم الإضافة"); }
+    async function loadSettings() {
+        const newsDoc = await db.collection("settings").doc("leagueConfig").get();
+        if(newsDoc.exists) document.getElementById('newsInput').value = newsDoc.data().news || "";
     }
 </script>
 </body>
 </html>
+
 
 
 
