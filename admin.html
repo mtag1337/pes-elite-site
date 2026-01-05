@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | نظام الإدارة الشامل</title>
+    <title>PES ELITE | اللوحة الإدارية العليا</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -14,90 +14,109 @@
     
     <style>
         :root { --main: #eaff00; --bg: #050507; --card: #111116; --danger: #ff3e3e; --success: #00ff88; --accent: #00f2ff; }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; transition: 0.3s; }
         body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 280px; background: var(--card); border-left: 1px solid #222; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
-        .sidebar h2 { color: var(--main); text-align: center; font-weight: 900; margin-bottom: 25px; border-bottom: 2px solid #222; padding-bottom: 10px; }
-        .nav-btn { padding: 12px 15px; margin: 5px 0; border-radius: 10px; cursor: pointer; border: none; background: none; color: #888; text-align: right; font-size: 14px; transition: 0.3s; width: 100%; font-family: 'Cairo'; display: flex; align-items: center; }
-        .nav-btn i { margin-left: 12px; width: 20px; font-size: 18px; }
-        .nav-btn:hover, .nav-btn.active { background: var(--main); color: #000; font-weight: bold; }
+        .sidebar { width: 300px; background: var(--card); border-left: 1px solid #222; padding: 25px; display: flex; flex-direction: column; }
+        .sidebar h2 { color: var(--main); text-align: center; font-weight: 900; letter-spacing: 2px; border-bottom: 2px solid #222; padding-bottom: 15px; }
+        .nav-btn { padding: 15px; margin: 5px 0; border-radius: 12px; cursor: pointer; border: none; background: none; color: #888; text-align: right; font-size: 15px; font-family: 'Cairo'; display: flex; align-items: center; }
+        .nav-btn i { margin-left: 15px; width: 25px; font-size: 18px; }
+        .nav-btn:hover, .nav-btn.active { background: var(--main); color: #000; font-weight: 900; box-shadow: 0 5px 15px rgba(234, 255, 0, 0.2); }
 
         /* Workspace */
-        .workspace { flex: 1; padding: 25px; overflow-y: auto; background: radial-gradient(circle at top right, #0d0d15, #050507); }
+        .workspace { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top right, #0d0d15, #050507); }
         .section { display: none; }
-        .active-sec { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .active-sec { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* UI Elements */
-        .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-family: 'Cairo'; }
-        .btn-action { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-action:hover { transform: scale(1.05); }
+        /* Modern UI */
+        .card { background: var(--card); border: 1px solid #222; border-radius: 20px; padding: 25px; margin-bottom: 25px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #000; }
-        th { background: #1a1a1a; color: var(--main); padding: 12px; border: 1px solid #222; }
-        td { padding: 10px; border: 1px solid #222; text-align: center; }
-        .badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-right: auto; }
-        .p-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--main); object-fit: cover; }
+        input, select, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 10px; font-family: 'Cairo'; }
+        input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(234, 255, 0, 0.1); }
+        
+        .btn-action { background: var(--main); color: #000; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 900; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-action:active { transform: scale(0.95); }
+        .btn-danger { background: var(--danger); color: white; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; border-radius: 15px; overflow: hidden; }
+        th { background: #1a1a1a; color: var(--main); padding: 15px; font-size: 14px; }
+        td { padding: 15px; border: 1px solid #222; text-align: center; background: #0c0c11; }
+        
+        .user-row { display: flex; align-items: center; gap: 15px; padding: 15px; background: #1a1a1a; border-radius: 15px; margin-bottom: 10px; }
+        .p-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--main); }
+        .badge { background: var(--danger); color: white; padding: 3px 10px; border-radius: 8px; font-size: 12px; margin-right: auto; }
     </style>
 </head>
 <body>
 
 <aside class="sidebar">
-    <h2>ADMIN PANEL</h2>
-    <button class="nav-btn active" onclick="openSec('statSec', this)"><i class="fas fa-home"></i> الإحصائيات العامة</button>
-    <button class="nav-btn" onclick="openSec('tourSec', this)"><i class="fas fa-trophy"></i> إدارة البطولات والقرعة</button>
-    <button class="nav-btn" onclick="openSec('reqSec', this)"><i class="fas fa-user-plus"></i> الطلبات <span id="badgeReq" class="badge">0</span></button>
-    <button class="nav-btn" onclick="openSec('leagueSec', this)"><i class="fas fa-star"></i> التحكم بالدوري (15 فريق)</button>
-    <button class="nav-btn" onclick="openSec('playerSec', this)"><i class="fas fa-search"></i> البحث واللاعبين</button>
-    <button class="nav-btn" onclick="openSec('chatSec', this)"><i class="fas fa-shield-alt"></i> رقابة الشات</button>
-    <button class="btn-action" onclick="logout()" style="margin-top:auto; background:var(--danger); color:white;">خروج</button>
+    <h2>ADMIN PRO</h2>
+    <button class="nav-btn active" onclick="openSec('statSec', this)"><i class="fas fa-th-large"></i> الإحصائيات</button>
+    <button class="nav-btn" onclick="openSec('tourSec', this)"><i class="fas fa-trophy"></i> إدارة البطولات</button>
+    <button class="nav-btn" onclick="openSec('reqSec', this)"><i class="fas fa-user-clock"></i> طلبات الانضمام <span id="badgeReq" class="badge">0</span></button>
+    <button class="nav-btn" onclick="openSec('leagueSec', this)"><i class="fas fa-table"></i> التحكم بالدوري (15)</button>
+    <button class="nav-btn" onclick="openSec('playerSec', this)"><i class="fas fa-search-users"></i> بحث اللاعبين</button>
+    <button class="nav-btn" onclick="openSec('chatSec', this)"><i class="fas fa-comment-slash"></i> رقابة الشات</button>
+    <button class="btn-action btn-danger" onclick="logout()" style="margin-top:auto;"><i class="fas fa-power-off"></i> خروج</button>
 </aside>
 
 <main class="workspace">
     
     <div id="statSec" class="section active-sec">
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
-            <div class="card" style="border-bottom: 4px solid var(--main);"><h3>المستخدمين</h3><p id="countP" style="font-size:30px;">0</p></div>
-            <div class="card" style="border-bottom: 4px solid var(--accent);"><h3>البطولات</h3><p id="countT" style="font-size:30px;">0</p></div>
-            <div class="card" style="border-bottom: 4px solid var(--danger);"><h3>طلبات معلقة</h3><p id="countR" style="font-size:30px;">0</p></div>
+        <h2 style="color: var(--main);">نظرة عامة على الإمبراطورية</h2>
+        <div class="grid-3">
+            <div class="card"><h3>إجمالي اللاعبين</h3><p id="totalP" style="font-size:40px; color:var(--main)">0</p></div>
+            <div class="card"><h3>البطولات</h3><p id="totalT" style="font-size:40px; color:var(--accent)">0</p></div>
+            <div class="card"><h3>طلبات الانتظار</h3><p id="totalR" style="font-size:40px; color:var(--danger)">0</p></div>
         </div>
     </div>
 
     <div id="tourSec" class="section">
         <div class="card">
-            <h3>🚀 إنشاء بطولة جديدة</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input id="t_name" placeholder="اسم البطولة">
-                <input id="t_img" placeholder="رابط صورة البطولة">
-                <input id="t_prize" placeholder="الجائزة">
-                <select id="t_type">
-                    <option value="knockout">خروج مغلوب (جولة واحدة)</option>
+            <h3>إنشاء بطولة احترافية</h3>
+            <div class="grid-3" style="grid-template-columns: 1fr 1fr;">
+                <input id="tName" placeholder="اسم البطولة">
+                <input id="tImg" placeholder="رابط صورة البوستر">
+                <input id="tPrize" placeholder="الجائزة المالية">
+                <select id="tType">
+                    <option value="knockout">خروج مغلوب</option>
                     <option value="home_away">ذهاب وإياب</option>
                 </select>
-                <input type="number" id="t_max" placeholder="العدد الأقصى">
+                <input type="number" id="tMax" placeholder="الحد الأقصى للاعبين">
             </div>
-            <button class="btn-action" onclick="publishTour()" style="width:100%; margin-top:10px;">نشر البطولة</button>
+            <button class="btn-action" onclick="createTournament()"><i class="fas fa-plus"></i> نشر البطولة فوراً</button>
         </div>
-        <div id="activeToursContainer"></div>
+        <div id="activeTours"></div>
     </div>
 
     <div id="reqSec" class="section">
-        <h3>📩 طلبات تحتاج مراجعة</h3>
-        <div id="reqListContainer"></div>
+        <h3>📩 مراجعة طلبات الالتحاق</h3>
+        <div id="reqList"></div>
     </div>
 
     <div id="leagueSec" class="section">
         <div class="card">
-            <h3>⚽ ترتيب الدوري الحالي (15 فريق)</h3>
+            <h3>⚽ جدول الدوري الممتاز</h3>
             <div style="overflow-x:auto;">
-                <table>
+                <table id="leagueTable">
                     <thead>
-                        <tr><th>المركز</th><th>اللاعب</th><th>نقاط</th><th>له</th><th>عليه</th><th>تعديل</th></tr>
+                        <tr>
+                            <th>#</th>
+                            <th>اللاعب</th>
+                            <th>لعب</th>
+                            <th>فوز</th>
+                            <th>تعادل</th>
+                            <th>خسارة</th>
+                            <th>أهداف له</th>
+                            <th>أهداف عليه</th>
+                            <th>النقاط</th>
+                            <th>التحكم</th>
+                        </tr>
                     </thead>
-                    <tbody id="leagueTableBody"></tbody>
+                    <tbody id="leagueBody"></tbody>
                 </table>
             </div>
         </div>
@@ -105,20 +124,20 @@
 
     <div id="playerSec" class="section">
         <div class="card">
-            <h3>🔍 البحث المتقدم عن لاعب</h3>
+            <h3>🔍 محرك البحث عن اللاعبين</h3>
             <div style="display:flex; gap:10px;">
-                <input id="searchInp" placeholder="اكتب اسم اللاعب بالكامل...">
-                <button class="btn-action" onclick="searchForPlayer()">بحث</button>
+                <input id="pSearchInp" placeholder="ادخل اسم اللاعب بالكامل...">
+                <button class="btn-action" onclick="searchPlayer()"><i class="fas fa-search"></i></button>
             </div>
         </div>
-        <div id="playerSearchResult"></div>
+        <div id="playerResult"></div>
     </div>
 
     <div id="chatSec" class="section">
         <div class="card">
-            <h3>💬 التحكم بالشات</h3>
-            <div id="chatMonitor" style="height:300px; overflow-y:auto; background:#000; padding:15px; border-radius:10px; border:1px solid #333;"></div>
-            <button class="btn-action" style="background:var(--danger); color:white; margin-top:10px;" onclick="clearGlobalChat()">مسح كافة الرسائل 🗑️</button>
+            <h3>💬 غرفة المراقبة</h3>
+            <div id="chatBox" style="height:350px; overflow-y:auto; background:#000; padding:15px; border-radius:15px; border:1px solid #222;"></div>
+            <button class="btn-action btn-danger" style="margin-top:15px;" onclick="clearAllChat()">حذف كافة الرسائل</button>
         </div>
     </div>
 
@@ -140,114 +159,126 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active-sec');
         btn.classList.add('active');
+        if(id === 'leagueSec') loadLeague();
     }
 
-    // --- 1. إدارة البطولات والقرعة ---
-    async function publishTour() {
-        const data = {
-            name: document.getElementById('t_name').value,
-            img: document.getElementById('t_img').value,
-            prize: document.getElementById('t_prize').value,
-            type: document.getElementById('t_type').value,
-            max: parseInt(document.getElementById('t_max').value),
+    // --- 1. إدارة البطولات ---
+    async function createTournament() {
+        const t = {
+            name: document.getElementById('tName').value,
+            img: document.getElementById('tImg').value,
+            prize: document.getElementById('tPrize').value,
+            type: document.getElementById('tType').value,
+            max: parseInt(document.getElementById('tMax').value),
             joined: [],
-            status: "open",
             time: Date.now()
         };
-        await db.collection("tournaments").add(data);
-        alert("تم النشر بنجاح!");
+        await db.collection("tournaments").add(t);
+        alert("تم إنشاء البطولة!");
     }
 
     db.collection("tournaments").onSnapshot(snap => {
-        const cont = document.getElementById('activeToursContainer');
-        cont.innerHTML = "<h3>البطولات القائمة</h3>";
+        const cont = document.getElementById('activeTours');
+        cont.innerHTML = "<h3>البطولات الحالية</h3>";
         snap.forEach(doc => {
             const t = doc.data();
             cont.innerHTML += `
-                <div class="card" style="border-right:5px solid var(--main)">
-                    <b>${t.name}</b> (${t.joined.length}/${t.max}) - نظام ${t.type}
-                    <button class="btn-action" style="float:left;" onclick="deleteT('${doc.id}')">حذف</button>
-                    <button class="btn-action" style="float:left; margin-left:5px; background:cyan" onclick="makeShuffle('${doc.id}')">إجراء القرعة</button>
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span><b>${t.name}</b> (${t.joined.length}/${t.max})</span>
+                    <div>
+                        <button class="btn-action" style="background:cyan" onclick="makeShuffle('${doc.id}')">قرعة عشوائية</button>
+                        <button class="btn-action btn-danger" onclick="deleteT('${doc.id}')">حذف</button>
+                    </div>
                 </div>`;
         });
-        document.getElementById('countT').innerText = snap.size;
+        document.getElementById('totalT').innerText = snap.size;
     });
 
-    async function deleteT(id) { if(confirm("حذف؟")) await db.collection("tournaments").doc(id).delete(); }
-
-    // --- 2. نظام طلبات الانضمام ---
+    // --- 2. إدارة الطلبات ---
     db.collection("playerRequests").where("status","==","pending").onSnapshot(snap => {
-        const cont = document.getElementById('reqListContainer');
+        const cont = document.getElementById('reqList');
         cont.innerHTML = "";
         snap.forEach(doc => {
             const r = doc.data();
             cont.innerHTML += `
-                <div class="card">
-                    ${r.playerName} يطلب الانضمام لـ ${r.tournamentName}
-                    <button class="btn-action" onclick="acceptR('${doc.id}','${r.uid}','${r.tournamentId}')">قبول</button>
-                    <button class="btn-action" style="background:red; color:white" onclick="rejectR('${doc.id}')">رفض</button>
+                <div class="card" style="border-right: 5px solid var(--main)">
+                    <p>اللاعب <b>${r.playerName}</b> يطلب الانضمام لبطولة <b>${r.tournamentName}</b></p>
+                    <button class="btn-action" onclick="approvePlayer('${doc.id}', '${r.uid}', '${r.playerName}', '${r.tournamentId}')">موافقة وإضافة</button>
+                    <button class="btn-action btn-danger" onclick="rejectPlayer('${doc.id}')">رفض</button>
                 </div>`;
         });
-        document.getElementById('countR').innerText = snap.size;
+        document.getElementById('totalR').innerText = snap.size;
         document.getElementById('badgeReq').innerText = snap.size;
     });
 
-    async function acceptR(reqId, uid, tourId) {
-        await db.collection("tournaments").doc(tourId).update({ joined: firebase.firestore.FieldValue.arrayUnion(uid) });
+    async function approvePlayer(reqId, uid, name, tId) {
+        // إضافة للبطولة
+        await db.collection("tournaments").doc(tId).update({ joined: firebase.firestore.FieldValue.arrayUnion(uid) });
+        // إضافة للدوري تلقائياً
+        await db.collection("league").doc(uid).set({ name: name, points: 0, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 });
+        // تحديث الطلب
         await db.collection("playerRequests").doc(reqId).update({ status: "accepted" });
-        alert("تم القبول!");
+        alert("تم القبول وإضافة اللاعب للدوري!");
     }
 
-    // --- 3. نظام الدوري (15 فريق) ---
-    function loadLeague() {
-        const tbody = document.getElementById('leagueTableBody');
+    // --- 3. نظام الدوري (15 لاعب) ---
+    async function loadLeague() {
+        const snap = await db.collection("league").get();
+        const tbody = document.getElementById('leagueBody');
         tbody.innerHTML = "";
-        for(let i=1; i<=15; i++) {
-            tbody.innerHTML += `<tr><td>${i}</td><td>---</td><td>0</td><td>0</td><td>0</td><td><button class="btn-action">✍️</button></td></tr>`;
-        }
+        let i = 1;
+        snap.forEach(doc => {
+            const l = doc.data();
+            tbody.innerHTML += `
+                <tr>
+                    <td>${i++}</td>
+                    <td style="color:var(--main)">${l.name}</td>
+                    <td>${l.p}</td><td>${l.w}</td><td>${l.d}</td><td>${l.l}</td>
+                    <td>${l.gf}</td><td>${l.ga}</td>
+                    <td style="font-weight:900">${l.points}</td>
+                    <td><button onclick="editStats('${doc.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer;"><i class="fas fa-edit"></i></button></td>
+                </tr>`;
+        });
     }
 
-    // --- 4. البحث الحقيقي عن اللاعبين ---
-    async function searchForPlayer() {
-        const name = document.getElementById('searchInp').value;
-        const res = document.getElementById('playerSearchResult');
-        res.innerHTML = "جاري البحث...";
+    // --- 4. البحث عن اللاعبين ---
+    async function searchPlayer() {
+        const name = document.getElementById('pSearchInp').value;
+        const resDiv = document.getElementById('playerResult');
+        resDiv.innerHTML = "جاري البحث...";
         
-        const snap = await db.collection("players").where("nickname","==",name).get();
-        if(snap.empty) { res.innerHTML = "لا يوجد لاعب بهذا الاسم"; return; }
+        const snap = await db.collection("players").where("nickname", "==", name).get();
+        if(snap.empty) { resDiv.innerHTML = "❌ لا يوجد لاعب بهذا الاسم"; return; }
         
-        res.innerHTML = "";
+        resDiv.innerHTML = "";
         snap.forEach(doc => {
             const p = doc.data();
-            res.innerHTML += `
-                <div class="card" style="display:flex; align-items:center; gap:20px;">
-                    <img src="${p.photo || 'https://via.placeholder.com/100'}" class="p-img">
+            resDiv.innerHTML += `
+                <div class="user-row">
+                    <img src="${p.photo || 'https://via.placeholder.com/60'}" class="p-img">
                     <div>
-                        <h3>${p.nickname}</h3>
-                        <p>ID: ${doc.id} | GP: ${p.gpPoints || 0}</p>
-                        <button class="btn-action" onclick="alert('سوف يتم عرض التشكيلة قريباً')">عرض التشكيلة</button>
+                        <h4 style="margin:0">${p.nickname}</h4>
+                        <small>ID: ${doc.id} | GP: ${p.gp || 0}</small>
                     </div>
+                    <button class="btn-action" style="margin-right:auto" onclick="alert('سجل بطولاته: ${p.history || 0}')">التفاصيل</button>
                 </div>`;
         });
     }
 
-    // --- 5. رقابة الشات ---
-    db.collection("chat").orderBy("time","desc").limit(20).onSnapshot(snap => {
-        const mon = document.getElementById('chatMonitor');
-        mon.innerHTML = "";
+    // --- 5. الرقابة ---
+    db.collection("chat").orderBy("time","desc").limit(15).onSnapshot(snap => {
+        const box = document.getElementById('chatBox');
+        box.innerHTML = "";
         snap.forEach(doc => {
             const m = doc.data();
-            mon.innerHTML += `<p style="font-size:12px; border-bottom:1px solid #111; padding:5px;"><b>${m.name}:</b> ${m.msg} <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteMsg('${doc.id}')"></i></p>`;
+            box.innerHTML += `<p style="border-bottom:1px solid #222; padding:5px;"><b>${m.name}:</b> ${m.msg} <i class="fas fa-trash-alt" style="color:red; float:left; cursor:pointer;" onclick="deleteMsg('${doc.id}')"></i></p>`;
         });
     });
 
     async function deleteMsg(id) { await db.collection("chat").doc(id).delete(); }
-
+    
+    db.collection("players").onSnapshot(s => document.getElementById('totalP').innerText = s.size);
     function logout() { firebase.auth().signOut().then(() => location.reload()); }
-
-    loadLeague();
-    db.collection("players").onSnapshot(s => document.getElementById('countP').innerText = s.size);
-
 </script>
 </body>
 </html>
