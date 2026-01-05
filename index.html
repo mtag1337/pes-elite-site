@@ -1,161 +1,242 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <script src="https://pl28403518.effectivegatecpm.com/b5/4a/ca/b54aca8d89bd7e6d783f504a9c4ead80.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/ads2google.js?client=ca-pub-1262927411271648" crossorigin="anonymous"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | THE FINAL EMPIRE</title>
+    <title>PES ELITE | ADMIN COMMAND CENTER</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { 
-            --primary: #eaff00; 
-            --accent: #ff007a; 
+        :root {
+            --primary: #00f2ff;
+            --accent: #ff007a;
             --gold: #ffd700;
-            --silver: #c0c0c0;
-            --bronze: #cd7f32;
-            --bg-deep: #000525; 
-            --panel: rgba(0, 10, 60, 0.9); 
-            --border: rgba(255, 255, 255, 0.1); 
+            --bg: #05050a;
+            --panel: rgba(15, 15, 25, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg-deep); color: #fff; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
 
-        /* شريط الأخبار */
-        .news-ticker { background: linear-gradient(90deg, var(--accent), var(--bg-deep)); height: 40px; display: flex; align-items: center; overflow: hidden; border-bottom: 1px solid var(--primary); }
-        .ticker-content { display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker 25s linear infinite; font-weight: bold; color: #fff; }
-        @keyframes ticker { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+        body {
+            background: var(--bg);
+            background-image: radial-gradient(circle at 50% 50%, #101020 0%, #05050a 100%);
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            min-height: 100vh;
+        }
 
-        nav { height: 70px; background: #000; border-bottom: 2px solid var(--primary); display: flex; align-items: center; justify-content: space-between; padding: 0 5%; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 900; font-style: italic; }
-        .logo span { color: var(--primary); }
+        /* لوحة الإحصائيات العلوية */
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
 
-        .app-container { display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px; padding: 20px; max-width: 1600px; margin: auto; }
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
 
-        /* كارت اللاعب */
-        .player-card { background: linear-gradient(135deg, #222, #000); border: 2px solid var(--primary); border-radius: 20px; position: relative; padding: 20px; text-align: center; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .player-card::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, var(--primary), transparent 30%); animation: rotate 4s linear infinite; z-index: 1; opacity: 0.3; }
-        @keyframes rotate { 100% { transform: rotate(360deg); } }
-        .card-inner { position: relative; z-index: 2; background: rgba(0,0,0,0.9); border-radius: 15px; padding: 15px; }
+        .stat-card i { font-size: 24px; color: var(--primary); margin-bottom: 10px; }
+        .stat-card h4 { margin: 5px 0; font-size: 14px; color: #888; }
+        .stat-card div { font-family: 'Orbitron'; font-size: 22px; font-weight: 900; color: #fff; }
 
-        .avatar-box { width: 100px; height: 100px; margin: auto; border: 3px solid var(--primary); border-radius: 50%; overflow: hidden; margin-bottom: 10px; }
-        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        /* الهيدر */
+        .header-main {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header-main h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px var(--primary);
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper { position: relative; width: 400px; }
+        .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
         
-        .verified-badge { color: #00bfff; margin-right: 5px; font-size: 14px; }
+        .search-box {
+            width: 100%;
+            background: var(--panel);
+            border: 2px solid var(--border);
+            padding: 12px 15px 12px 45px;
+            border-radius: 30px;
+            color: #fff;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-box:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
 
-        /* منصة التتويج Top 3 */
-        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 15px; margin: 40px 0; min-height: 300px; }
-        .podium-card { position: relative; background: rgba(0, 10, 60, 0.8); border-radius: 20px; padding: 20px; text-align: center; transition: 0.3s; }
+        /* شبكة اللاعبين */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            max-width: 1300px;
+            margin: auto;
+        }
+
+        .player-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .player-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            background: rgba(20, 20, 40, 0.9);
+        }
+
+        .card-top { display: flex; align-items: center; gap: 20px; }
+
+        .player-img-container {
+            position: relative;
+            width: 90px;
+            height: 90px;
+        }
+
+        .player-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            padding: 3px;
+        }
+
+        .level-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-family: 'Orbitron';
+        }
+
+        .info-main h3 { margin: 0; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+        .info-main p { margin: 5px 0; font-size: 13px; color: #aaa; }
         
-        .rank-1 { width: 200px; height: 280px; border: 3px solid var(--gold); box-shadow: 0 0 25px rgba(255, 215, 0, 0.3); z-index: 3; transform: scale(1.1); }
-        .rank-1 .crown { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 30px; filter: drop-shadow(0 0 5px var(--gold)); }
-        .rank-1 .podium-img { width: 100px; height: 100px; border: 4px solid var(--gold); }
+        .verified-check { color: #00bfff; font-size: 16px; }
 
-        .rank-2 { width: 170px; height: 230px; border: 2px solid var(--silver); }
-        .rank-3 { width: 170px; height: 210px; border: 2px solid var(--bronze); }
-        .podium-img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 10px; object-fit: cover; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 12px;
+        }
 
-        /* قائمة باقي التوب */
-        .top-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .top-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border); }
-        .rank-number { font-family: 'Orbitron'; font-size: 20px; color: var(--primary); width: 40px; }
+        .stat-box { text-align: center; }
+        .stat-label { font-size: 9px; color: #666; display: block; margin-bottom: 2px; }
+        .stat-val { font-family: 'Orbitron'; font-size: 14px; color: var(--primary); }
+        .power-val { color: var(--gold); }
 
-        /* الشات المطور */
-        .msg-bubble { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; border-right: 4px solid var(--primary); margin-bottom: 10px; }
-        .msg-user-box { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
-        .msg-user-box img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary); }
-        .msg-user-info b { font-size: 13px; color: var(--primary); display: block; }
-        .msg-user-info span { font-size: 9px; color: #777; }
-        .msg-text { font-size: 14px; color: #eee; padding-top: 5px; }
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
 
-        .section-view { display: none; animation: fadeIn 0.5s; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .btn-action {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
 
-        .btn-join { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+        .btn-verify { background: rgba(0, 191, 255, 0.1); color: #00bfff; border: 1px solid #00bfff; }
+        .btn-verify:hover { background: #00bfff; color: #fff; }
 
-        @media (max-width: 1000px) { .app-container { grid-template-columns: 1fr; } aside { display: none; } }
+        .btn-ban { background: rgba(255, 0, 122, 0.1); color: var(--accent); border: 1px solid var(--accent); }
+        .btn-ban:hover { background: var(--accent); color: #fff; }
+
+        /* انيميشن الظهور */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .player-card { animation: fadeInUp 0.5s ease forwards; }
     </style>
 </head>
 <body>
 
-<div class="news-ticker">
-    <div class="ticker-content" id="newsTicker">جاري جلب آخر تحديثات PES ELITE...</div>
-</div>
-
-<nav>
-    <div class="logo">eFootball <span>ELITE</span></div>
-    <div id="navUserInfo" style="display: none; align-items: center;">
-        <span id="navGP" style="color: var(--primary); font-weight: 900; margin-left: 15px;">0 GP</span>
-        <img id="navUserImg" src="" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary);">
+<div class="header-main">
+    <h1>PES ELITE <span style="color: var(--primary);">COMMAND CENTER</span></h1>
+    <div class="controls-row">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="search-box" placeholder="ابحث باسم اللاعب، الـ ID، أو البريد الإلكتروني..." onkeyup="search()">
+        </div>
     </div>
-    <button id="mainLoginBtn" onclick="window.location.href='login.html'" class="btn-join">LOGIN</button>
-</nav>
-
-<div class="app-container">
-    <aside>
-        <div id="userProfileContent" class="player-card" style="display: none;">
-            <div class="card-inner">
-                <div class="avatar-box"><img id="myAvatar" src=""></div>
-                <h3 id="myName">---</h3>
-                <div style="background: rgba(255,215,0,0.1); padding: 5px; border-radius: 5px; margin: 10px 0; border: 1px solid gold;">
-                    <span style="font-size: 10px; color: gold;">POWER LEVEL</span>
-                    <div id="myPower" style="font-family:'Orbitron'; font-size: 18px; color: gold;">0</div>
-                </div>
-                
-                <div class="stat-grid">
-                    <div class="stat-item"><span class="stat-value" id="myGP">0</span><span class="stat-label">GP POINTS</span></div>
-                    <div class="stat-item"><span class="stat-value" id="myRating">1000</span><span class="stat-label">RATING</span></div>
-                    <div class="stat-item"><span class="stat-value" id="myID">#0000</span><span class="stat-label">USER ID</span></div>
-                </div>
-                
-                <div class="menu-nav" style="margin-top: 20px; text-align: right;">
-                    <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="tab('dash')"><i class="fas fa-home"></i> الرئيسية</div>
-                    <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="tab('tours')"><i class="fas fa-trophy"></i> البطولات</div>
-                    <div style="cursor:pointer; padding:10px; border-bottom:1px solid #222;" onclick="tab('top')"><i class="fas fa-crown"></i> توب 30 لاعب</div>
-                    <div style="cursor:pointer; padding:10px; color: #ff4d4d;" onclick="auth.signOut()"><i class="fas fa-power-off"></i> خروج</div>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <main>
-        <section id="dash-sec" class="section-view active">
-            <h2 style="margin-bottom: 20px;"><i class="fas fa-fire" style="color: var(--accent);"></i> البطولات النشطة</h2>
-            <div id="homeTourGrid"></div>
-        </section>
-
-        <section id="top-sec" class="section-view">
-            <h2 style="text-align: center; color: var(--gold);"><i class="fas fa-medal"></i> صدارة النخبة - TOP 30</h2>
-            <div class="podium-container" id="podiumArea"></div>
-            <div class="top-list" id="otherRanks"></div>
-        </section>
-
-        <section id="tours-sec" class="section-view">
-            <h2>مركز البطولات الشامل</h2>
-            <div id="fullTourGrid" style="margin-top: 20px;"></div>
-        </section>
-    </main>
-
-    <aside>
-        <div class="chat-area" style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 15px; height: 550px; display: flex; flex-direction: column;">
-            <div style="padding: 15px; border-bottom: 1px solid #222; font-weight: 900; font-size: 14px;">الدردشة العامة</div>
-            <div class="messages" id="globalChat" style="flex:1; overflow-y:auto; padding:10px;"></div>
-            <div id="chatInputArea" style="display: none; padding: 10px; background: #000;">
-                <input type="text" id="chatInp" placeholder="ارسل رسالة.." style="width:100%; background:#111; border:1px solid #333; color:white; padding:10px; border-radius:5px; margin-bottom:5px;">
-                <button onclick="sendMsg()" class="btn-join" style="width:100%;">ارسال</button>
-            </div>
-        </div>
-    </aside>
 </div>
+
+<div class="admin-dashboard">
+    <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <h4>إجمالي المحاربين</h4>
+        <div id="totalPlayers">0</div>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-check-double"></i>
+        <h4>حسابات موثقة</h4>
+        <div id="verifiedPlayers">0</div>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-coins"></i>
+        <h4>إجمالي GP المتداول</h4>
+        <div id="totalGP">0</div>
+    </div>
+</div>
+
+<div class="players-grid" id="playersContainer">
+    </div>
 
 <script>
     const firebaseConfig = {
@@ -170,156 +251,111 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    let uID = null, userData = null;
+    const ADMIN_EMAIL = "mtag1337@gmail.com"; 
+    const MASTER_PASS = "mtag1337@010#@010#";
 
     auth.onAuthStateChanged(user => {
-        if(user) {
-            uID = user.uid;
-            document.getElementById('navUserInfo').style.display = 'flex';
-            document.getElementById('userProfileContent').style.display = 'block';
-            document.getElementById('chatInputArea').style.display = 'block';
-            document.getElementById('mainLoginBtn').style.display = 'none';
-            syncUser();
+        if (user && user.email === ADMIN_EMAIL) {
+            let pass = sessionStorage.getItem('admin_session') || prompt("🔐 نظام الحماية المركزية - أدخل كلمة المرور:");
+            if (pass === MASTER_PASS) {
+                sessionStorage.setItem('admin_session', MASTER_PASS);
+                document.body.style.opacity = "1";
+                loadPlayers();
+            } else {
+                alert("❌ وصول مرفوض! سيتم تحويلك.");
+                window.location.href = "home.html";
+            }
         } else {
-            document.getElementById('mainLoginBtn').style.display = 'block';
-            loadPublicData();
+            window.location.href = "login.html";
         }
     });
 
-    function syncUser() {
-        db.collection("players").doc(uID).onSnapshot(doc => {
-            if(!doc.exists) return;
-            userData = doc.data();
-            document.getElementById('myName').innerText = userData.nickname;
-            document.getElementById('myID').innerText = "#" + (userData.playerID || '0000');
-            const gp = userData.gpPoints || 0;
-            const rank = userData.rank || 1000;
-            document.getElementById('myGP').innerText = gp;
-            document.getElementById('navGP').innerText = gp + " GP";
-            document.getElementById('myRating').innerText = rank;
-            document.getElementById('myPower').innerText = Math.floor(rank + (gp * 0.1));
-            if(userData.photoURL) {
-                document.getElementById('myAvatar').src = userData.photoURL;
-                document.getElementById('navUserImg').src = userData.photoURL;
-            }
-        });
-        loadPublicData();
-    }
+    function loadPlayers() {
+        db.collection("players").orderBy("rank", "desc").onSnapshot(snap => {
+            const container = document.getElementById('playersContainer');
+            let totalGP = 0;
+            let verifiedCount = 0;
+            
+            document.getElementById('totalPlayers').innerText = snap.size;
+            container.innerHTML = "";
 
-    function loadPublicData() {
-        db.collection("settings").doc("ticker").onSnapshot(doc => {
-            if(doc.exists) document.getElementById('newsTicker').innerText = doc.data().msg;
-        });
-
-        // جلب التوب 30
-        db.collection("players").orderBy("rank", "desc").limit(30).onSnapshot(snap => {
-            const podium = document.getElementById('podiumArea');
-            const other = document.getElementById('otherRanks');
-            podium.innerHTML = other.innerHTML = "";
-            let players = [];
-            snap.forEach(d => players.push(d.data()));
-
-            if(players.length > 0) {
-                const p1 = players[0], p2 = players[1], p3 = players[2];
-                podium.innerHTML = `
-                    <div class="podium-card rank-2">
-                        <img class="podium-img" src="${p2?.photoURL || ''}">
-                        <h4>${p2?.nickname || '---'}</h4>
-                        <div style="color:var(--silver); font-size:12px;">SILVER ELITE</div>
-                    </div>
-                    <div class="podium-card rank-1">
-                        <i class="fas fa-crown crown"></i>
-                        <img class="podium-img" src="${p1?.photoURL || ''}">
-                        <h3>${p1.isVerified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}${p1.nickname}</h3>
-                        <div style="color:var(--gold); font-weight:900;">KING OF EMPIRE</div>
-                    </div>
-                    <div class="podium-card rank-3">
-                        <img class="podium-img" src="${p3?.photoURL || ''}">
-                        <h4>${p3?.nickname || '---'}</h4>
-                        <div style="color:var(--bronze); font-size:12px;">BRONZE ELITE</div>
-                    </div>
-                `;
-
-                players.slice(3).forEach((p, i) => {
-                    other.innerHTML += `
-                        <div class="top-item">
-                            <div class="rank-number">${i+4}</div>
-                            <img src="${p.photoURL}" style="width:45px; height:45px; border-radius:50%; border:1px solid #444;">
-                            <div style="flex:1">
-                                <b>${p.isVerified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}${p.nickname}</b>
-                                <div style="font-size:10px; color:#666;">ID: #${p.playerID}</div>
-                            </div>
-                            <div style="color:var(--primary); font-family:'Orbitron'">${p.rank}</div>
-                        </div>
-                    `;
-                });
-            }
-        });
-
-        // الشات المطور
-        db.collection("global_chat").orderBy("time", "desc").limit(20).onSnapshot(snap => {
-            const box = document.getElementById('globalChat'); box.innerHTML = "";
-            let msgs = [];
-            snap.forEach(d => msgs.push(d.data()));
-            msgs.reverse().forEach(m => {
-                box.innerHTML += `
-                    <div class="msg-bubble">
-                        <div class="msg-user-box">
-                            <img src="${m.photo || 'https://via.placeholder.com/35'}">
-                            <div class="msg-user-info">
-                                <b>${m.isVerified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}${m.sender}</b>
-                                <span>ID: #${m.playerID || '0000'}</span>
-                            </div>
-                        </div>
-                        <div class="msg-text">${m.text}</div>
-                    </div>
-                `;
-            });
-            box.scrollTop = box.scrollHeight;
-        });
-
-        db.collection("tournaments").onSnapshot(snap => {
-            const h = document.getElementById('homeTourGrid'), f = document.getElementById('fullTourGrid');
-            h.innerHTML = f.innerHTML = "";
             snap.forEach(doc => {
-                const t = doc.data();
-                const html = `<div class="tour-item"><div><h3>${t.title}</h3><p>${t.prize}</p></div><button class="btn-join" onclick="joinReq('${t.title}')">انضمام</button></div>`;
-                h.innerHTML += html; f.innerHTML += html;
+                const p = doc.data();
+                const gp = p.gpPoints || 0;
+                const r = p.rank || 1000;
+                const pwr = Math.floor(r + (gp * 0.1));
+                const lvl = Math.floor((p.xp || 0) / 1000) + 1;
+                
+                totalGP += gp;
+                if(p.isVerified) verifiedCount++;
+
+                const verifiedHTML = p.isVerified ? '<i class="fas fa-check-circle verified-check"></i>' : '';
+
+                container.innerHTML += `
+                    <div class="player-card">
+                        <div class="card-top">
+                            <div class="player-img-container">
+                                <img src="${p.photoURL || 'https://via.placeholder.com/90'}" class="player-img">
+                                <div class="level-badge">LVL ${lvl}</div>
+                            </div>
+                            <div class="info-main">
+                                <h3>${p.nickname} ${verifiedHTML}</h3>
+                                <p><i class="fas fa-fingerprint"></i> ID: #${p.playerID || '0000'}</p>
+                                <p><i class="fas fa-envelope"></i> ${p.email}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <span class="stat-label">POWER</span>
+                                <span class="stat-val power-val">${pwr}</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">RATING</span>
+                                <span class="stat-val">${r}</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">GP</span>
+                                <span class="stat-val">${gp}</span>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            <button class="btn-action btn-verify" onclick="toggleVerify('${doc.id}', ${p.isVerified})">
+                                <i class="fas fa-user-check"></i> ${p.isVerified ? 'إلغاء التوثيق' : 'توثيق الحساب'}
+                            </button>
+                            <button class="btn-action btn-ban" onclick="banPlayer('${doc.id}')">
+                                <i class="fas fa-user-slash"></i> حظر
+                            </button>
+                        </div>
+                    </div>
+                `;
             });
+
+            document.getElementById('verifiedPlayers').innerText = verifiedCount;
+            document.getElementById('totalGP').innerText = totalGP.toLocaleString();
         });
     }
 
-    async function sendMsg() {
-        const i = document.getElementById('chatInp');
-        if(i.value.trim() && uID) {
-            const text = i.value; i.value = "";
-            await db.collection("global_chat").add({
-                sender: userData.nickname,
-                text: text,
-                playerID: userData.playerID,
-                photo: userData.photoURL,
-                isVerified: userData.isVerified || false,
-                time: firebase.firestore.FieldValue.serverTimestamp()
-            });
+    // وظائف التحكم (أمثلة للربط)
+    async function toggleVerify(id, currentStatus) {
+        if(confirm("هل تريد تغيير حالة التوثيق لهذا اللاعب؟")) {
+            await db.collection("players").doc(id).update({ isVerified: !currentStatus });
         }
     }
 
-    function tab(id) {
-        document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
-        document.getElementById(id + '-sec').classList.add('active');
+    function banPlayer(id) {
+        alert("وظيفة الحظر تحتاج لربطها بـ Cloud Functions أو حقل خاص في الداتا، تم تحديد المعرف: " + id);
     }
 
-    async function joinReq(tName) {
-        if(!uID) return alert("سجل دخولك!");
-        if(confirm(`انضمام لـ ${tName}؟`)) {
-            await db.collection("playerRequests").add({ uid: uID, playerName: userData.nickname, tournamentName: tName, status: "pending", time: Date.now() });
-            alert("تم إرسال الطلب!");
+    function search() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let cards = document.getElementsByClassName('player-card');
+        for (let card of cards) {
+            let text = card.innerText.toLowerCase();
+            card.style.display = text.includes(input) ? "flex" : "none";
         }
     }
 </script>
 </body>
 </html>
-
-
-
-
