@@ -19,12 +19,10 @@
 }
 
 * {margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
-body {
-    background: url('https://images.unsplash.com/photo-1605902711622-cfb43c4437a4?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-    overflow-x:hidden;color:white;
-}
+body {overflow-x:hidden;color:white;}
 
-nav {
+/* NAV */
+nav{
     height:80px;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:space-between;padding:0 30px;
     border-bottom:2px solid var(--green);position:sticky;top:0;z-index:1000;
 }
@@ -33,44 +31,52 @@ nav {
 .nav-user{display:flex;align-items:center;gap:20px;}
 .nav-user img{width:55px;height:55px;border-radius:50%;border:2px solid var(--green);}
 
+/* MAIN GRID */
 .app-container{display:grid;grid-template-columns:350px 1fr 350px;gap:20px;padding:20px;max-width:1800px;margin:auto;}
+
+/* GLASS PANELS */
 .glass-panel{background:var(--panel);border:1px solid var(--border);border-radius:25px;padding:25px;margin-bottom:20px;position:relative;overflow:hidden;transition:0.3s;}
 .glass-panel:hover{border-color:var(--green);box-shadow:0 10px 40px rgba(0,242,255,0.1);}
+
+/* AVATAR */
 .avatar-ring{width:140px;height:140px;margin:0 auto 15px;padding:5px;border-radius:50%;background:linear-gradient(45deg,var(--green),var(--accent));position:relative;}
 .avatar-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:4px solid var(--dark);}
 .xp-bar-bg{height:12px;background:#111;border-radius:10px;overflow:hidden;margin-top:8px;}
 .xp-bar-fill{height:100%;background:linear-gradient(to right,var(--green),var(--accent));width:0%;transition:1.5s;}
 
+/* MENU */
 .menu-nav{display:flex;flex-direction:column;gap:10px;margin-top:20px;}
 .menu-link{padding:16px 22px;border-radius:16px;color:#ccc;text-decoration:none;cursor:pointer;display:flex;align-items:center;gap:18px;transition:0.3s;}
 .menu-link:hover,.menu-link.active{background:rgba(0,242,255,0.1);color:var(--green);}
 
+/* SECTIONS */
 .top-legends-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:15px;}
 .legend-card{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.05);padding:20px 10px;border-radius:20px;text-align:center;border-top:3px solid #333;}
-
 .tour-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
 .tour-item{background:#08080c;border-radius:20px;border:1px solid var(--border);overflow:hidden;transition:0.3s;padding:15px;}
 .tour-item h4{margin-bottom:5px;}
 .tour-item button{margin-top:10px;background:var(--green);color:#000;border:none;padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:900;transition:0.3s;}
 .tour-item button:hover{background:var(--accent);color:white;}
 
+/* CHAT */
 .chat-box{height:350px;overflow-y:auto;padding:10px;display:flex;flex-direction:column-reverse;background:rgba(0,0,0,0.3);border-radius:12px;}
 .chat-box div{margin-bottom:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.05);}
 .chat-input{display:flex;gap:5px;margin-top:10px;}
 .chat-input input{flex:1;padding:10px;border-radius:8px;border:1px solid #222;background:#000;color:white;}
 .chat-input button{padding:10px 12px;border:none;border-radius:8px;background:var(--green);cursor:pointer;color:#000;}
 
+/* OTHER */
 .section-view{display:none;}
 .section-view.active{display:block;animation:fadeIn 0.5s ease;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-
 .btn-save{width:100%;padding:12px;background:var(--green);border:none;border-radius:12px;font-weight:900;cursor:pointer;color:#000;transition:0.3s;}
 .btn-save:hover{background:var(--accent);color:white;}
-
 .announcement{background:rgba(0,0,0,0.6);padding:15px;margin-bottom:20px;border-radius:15px;border:1px solid rgba(255,255,255,0.1);}
 </style>
 </head>
 <body>
+
+<canvas id="bgCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
 
 <nav>
     <div class="logo">PES<span>ELITE</span></div>
@@ -84,6 +90,7 @@ nav {
 </nav>
 
 <div class="app-container">
+<!-- LEFT PANEL -->
 <aside>
     <div class="glass-panel" style="text-align:center;">
         <div class="avatar-ring">
@@ -112,6 +119,7 @@ nav {
     </div>
 </aside>
 
+<!-- MAIN -->
 <main>
 <section id="dash-sec" class="section-view active">
     <div class="announcement" id="announcementArea">
@@ -140,6 +148,7 @@ nav {
 </section>
 </main>
 
+<!-- RIGHT PANEL -->
 <aside>
     <button class="btn-save" onclick="window.location.href='league.html'" style="margin-bottom:20px;"><i class="fas fa-shield-halved" style="font-size:35px"></i> LEAGUE HUB</button>
     <div class="glass-panel">
@@ -157,17 +166,14 @@ nav {
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script>
+// Firebase
 const firebaseConfig = { apiKey:"AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow", authDomain:"pes-elite.firebaseapp.com", projectId:"pes-elite", storageBucket:"pes-elite.firebasestorage.app", messagingSenderId:"407069539120", appId:"1:407069539120:web:466249fa7f716266d9e6f5" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
 let uID,userData;
-
-auth.onAuthStateChanged(user => {
-    if(user){ uID=user.uid; syncUser(); } 
-    else{ window.location.href="login.html"; }
-});
+auth.onAuthStateChanged(user=>{ if(user){ uID=user.uid; syncUser(); } else{ window.location.href="login.html"; } });
 
 function syncUser(){
     db.collection("players").doc(uID).onSnapshot(doc=>{
@@ -185,28 +191,11 @@ function syncUser(){
     loadApp();
 }
 
-async function joinReq(tName){
-    if(!userData) return;
-    if(confirm(`هل تريد الانضمام لبطولة: ${tName}?`)){
-        await db.collection("playerRequests").add({uid:uID,playerName:userData.nickname,playerPhoto:userData.photoURL||"",tournamentName:tName,status:"pending",time:Date.now()});
-        alert("تم إرسال طلبك بنجاح!");
-    }
-}
+function joinReq(tName){if(!userData) return; if(confirm(`هل تريد الانضمام لبطولة: ${tName}?`)){ db.collection("playerRequests").add({uid:uID,playerName:userData.nickname,playerPhoto:userData.photoURL||"",tournamentName:tName,status:"pending",time:Date.now()}); alert("تم إرسال طلبك بنجاح!");}}
 
-function handleImg(input){
-    const file=input.files[0];
-    if(!file) return;
-    const reader=new FileReader();
-    reader.onload=function(e){ document.getElementById('myAvatar').src=e.target.result; document.getElementById('navUserImg').src=e.target.result; }
-    reader.readAsDataURL(file);
-}
+function handleImg(input){const file=input.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=function(e){ document.getElementById('myAvatar').src=e.target.result; document.getElementById('navUserImg').src=e.target.result; } reader.readAsDataURL(file);}
 
-function updateProfile(){
-    const newName=document.getElementById('editName').value.trim();
-    if(!newName) return alert("اكتب الاسم الجديد!");
-    db.collection("players").doc(uID).update({nickname:newName});
-    alert("تم تحديث الاسم!");
-}
+function updateProfile(){const newName=document.getElementById('editName').value.trim(); if(!newName) return alert("اكتب الاسم الجديد!"); db.collection("players").doc(uID).update({nickname:newName}); alert("تم تحديث الاسم!");}
 
 function loadApp(){
     db.collection("tournaments").onSnapshot(snap=>{
@@ -233,18 +222,58 @@ function loadApp(){
     });
 }
 
-function sendMsg(){
-    const inp=document.getElementById('chatInp'); if(!inp.value.trim()) return;
-    db.collection("global_chat").add({sender:userData.nickname,text:inp.value,time:firebase.firestore.FieldValue.serverTimestamp()});
-    inp.value="";
+function sendMsg(){const inp=document.getElementById('chatInp'); if(!inp.value.trim()) return; db.collection("global_chat").add({sender:userData.nickname,text:inp.value,time:firebase.firestore.FieldValue.serverTimestamp()}); inp.value="";}
+
+function tab(id,el){document.querySelectorAll('.section-view').forEach(s=>s.classList.remove('active')); document.getElementById(id+'-sec').classList.add('active'); document.querySelectorAll('.menu-link').forEach(l=>l.classList.remove('active')); el.classList.add('active');}
+</script>
+
+<script>
+// BACKGROUND ANIMATION - الملعب
+const bgCanvas = document.getElementById('bgCanvas');
+const ctx = bgCanvas.getContext('2d');
+let width = bgCanvas.width = window.innerWidth;
+let height = bgCanvas.height = window.innerHeight;
+
+// متغيرات خطوط الملعب
+let lines = [];
+for(let i=0;i<50;i++){
+  lines.push({x: Math.random()*width, y: Math.random()*height, length: 100+Math.random()*200, speed:0.3+Math.random()*0.5, color:i%2===0?"#fff":"#1b5e20"});
 }
 
-function tab(id,el){
-    document.querySelectorAll('.section-view').forEach(s=>s.classList.remove('active'));
-    document.getElementById(id+'-sec').classList.add('active');
-    document.querySelectorAll('.menu-link').forEach(l=>l.classList.remove('active'));
-    el.classList.add('active');
-}
-</script>
-</body>
-</html>
+// الكرة الدائرية تتحرك خفيف (ديكور)
+let ball = {x:width/2,y:height/2,r:20,dx:2,dy:1.5,color:"#ffd700"};
+
+function drawField(){
+    // أرضية
+    ctx.fillStyle = "#1b5e20";
+    ctx.fillRect(0,0,width,height);
+
+    // خطوط بيضاء
+    ctx.strokeStyle="#ffffff";
+    ctx.lineWidth=4;
+    // خط المنتصف
+    ctx.beginPath();
+    ctx.moveTo(width/2,0);
+    ctx.lineTo(width/2,height);
+    ctx.stroke();
+    // دائرة المنتصف
+    ctx.beginPath();
+    ctx.arc(width/2,height/2,70,0,Math.PI*2);
+    ctx.stroke();
+
+    // المرمى
+    ctx.strokeStyle="#ccc";
+    ctx.lineWidth=3;
+    ctx.strokeRect(50,height/2-50,10,100);
+    ctx.strokeRect(width-60,height/2-50,10,100);
+
+    // خطوط متحركة
+    lines.forEach(l=>{
+        ctx.beginPath();
+        ctx.strokeStyle=l.color;
+        ctx.lineWidth=2;
+        ctx.moveTo(l.x,l.y);
+        ctx.lineTo(l.x,l.y+l.length);
+        ctx.stroke();
+        l.y-=l.speed;
+        if(l.y+l.length<0){l.y
