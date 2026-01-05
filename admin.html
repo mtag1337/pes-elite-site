@@ -2,89 +2,80 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>PES ELITE | Admin Dashboard</title>
+    <title>PES ELITE | لوحة التحكم النهائية</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #eaff00; --bg: #050508; --card: #12121a; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .card { background: var(--card); border: 1px solid var(--main); padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; margin-bottom: 20px; text-align: center; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #000; color: #fff; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; background: var(--main); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #main-ui { display: none; width: 100%; max-width: 800px; }
+        body { background: #050508; color: white; font-family: 'Cairo'; display: flex; justify-content: center; padding: 20px; }
+        .card { background: #12121a; padding: 20px; border-radius: 15px; border: 1px solid #eaff00; width: 100%; max-width: 500px; text-align: center; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; background: #000; color: #fff; border: 1px solid #333; }
+        .btn { width: 100%; padding: 15px; background: #eaff00; color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #admin-panel { display: none; width: 100%; max-width: 800px; }
     </style>
 </head>
 <body>
     <div id="auth-gate" class="card">
-        <h2>🔒 دخول الأدمن</h2>
-        <button class="btn" onclick="login()">دخول عبر Google</button>
-        <div id="pass-step" style="display:none; margin-top:20px;">
-            <input type="password" id="admin-pass" placeholder="كلمة سر اللوحة">
-            <button class="btn" onclick="verifyPass()">فتح اللوحة</button>
+        <h2>🔒 حماية الأدمن</h2>
+        <button class="btn" onclick="login()">دخول جوجل</button>
+        <div id="pass-section" style="display:none; margin-top:15px;">
+            <input type="password" id="sk" placeholder="كلمة السر">
+            <button class="btn" onclick="checkSk()">فتح اللوحة</button>
         </div>
     </div>
 
-    <div id="main-ui">
+    <div id="admin-panel">
         <div class="card" style="max-width:none">
-            <h2 style="color:var(--main)">⚽ تسجيل نتيجة</h2>
-            <div style="display:flex; gap:10px">
-                <select id="t1"></select> <select id="t2"></select>
-            </div>
-            <div style="display:flex; gap:10px">
-                <input type="number" id="s1" placeholder="أهداف 1"> <input type="number" id="s2" placeholder="أهداف 2">
-            </div>
-            <button class="btn" onclick="saveMatch()">حفظ النتيجة ✅</button>
+            <h2>⚽ تسجيل نتيجة</h2>
+            <select id="t1"></select><select id="t2"></select>
+            <input type="number" id="s1" placeholder="أهداف الأول"><input type="number" id="s2" placeholder="أهداف الثاني">
+            <button class="btn" onclick="addMatch()">حفظ النتيجة ✅</button>
         </div>
-
-        <div class="card" style="max-width:none">
-            <h2 style="color:var(--main)">📝 تعديل الأسماء</h2>
-            <select id="editSelect"></select>
+        <div class="card" style="max-width:none; margin-top:20px;">
+            <h2>📝 تعديل اسم</h2>
+            <select id="editList"></select>
             <input type="text" id="newName" placeholder="الاسم الجديد">
-            <button class="btn" style="background:#fff" onclick="updateName()">تحديث 🔄</button>
+            <button class="btn" style="background:#fff" onclick="rename()">تحديث الاسم 🔄</button>
         </div>
-
-        <div class="card" style="max-width:none; border-color:red">
-            <button class="btn" style="background:red; color:#fff" onclick="resetLeague()">🚨 تصفير الدوري بالكامل</button>
-        </div>
+        <button class="btn" style="background:red; color:white; margin-top:20px;" onclick="resetAll()">🚨 تصفير الدوري بالكامل</button>
     </div>
 
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow", authDomain: "pes-elite.firebaseapp.com", projectId: "pes-elite", storageBucket: "pes-elite.firebasestorage.app", messagingSenderId: "407069539120", appId: "1:407069539120:web:466249fa7f716266d9e6f5" };
-    firebase.initializeApp(firebaseConfig);
+    const config = { apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow", authDomain: "pes-elite.firebaseapp.com", projectId: "pes-elite", storageBucket: "pes-elite.firebasestorage.app", messagingSenderId: "407069539120", appId: "1:407069539120:web:466249fa7f716266d9e6f5" };
+    firebase.initializeApp(config);
     const db = firebase.firestore(); const auth = firebase.auth();
-    const SECRET = "123456";
 
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function verifyPass() { if(document.getElementById('admin-pass').value === SECRET) { document.getElementById('auth-gate').style.display='none'; document.getElementById('main-ui').style.display='block'; load(); } }
-
-    auth.onAuthStateChanged(user => { if(user && user.email === "mtag1337@gmail.com") document.getElementById('pass-step').style.display='block'; });
+    function checkSk() { if(document.getElementById('sk').value === "123456") { document.getElementById('auth-gate').style.display='none'; document.getElementById('admin-panel').style.display='block'; load(); } }
+    auth.onAuthStateChanged(u => { if(u && u.email === "mtag1337@gmail.com") document.getElementById('pass-section').style.display='block'; });
 
     function load() {
         db.collection("MainLeague").orderBy("id").onSnapshot(s => {
-            let h = ''; s.forEach(d => h += `<option value="${d.id}">${d.data().name}</option>`);
-            document.getElementById('t1').innerHTML = h; document.getElementById('t2').innerHTML = h; document.getElementById('editSelect').innerHTML = h;
+            let h = '<option value="">اختر..</option>'; s.forEach(d => h+=`<option value="${d.id}">${d.data().name}</option>`);
+            document.getElementById('t1').innerHTML=h; document.getElementById('t2').innerHTML=h; document.getElementById('editList').innerHTML=h;
         });
     }
 
-    async function saveMatch() {
-        const id1 = document.getElementById('t1').value, id2 = document.getElementById('t2').value, s1 = parseInt(document.getElementById('s1').value), s2 = parseInt(document.getElementById('s2').value);
-        await db.collection("AllMatches").add({t1:id1, t2:id2, s1, s2, time:Date.now()});
-        await up(id1, s1, s2); await up(id2, s2, s1); alert("تم!");
+    async function addMatch() {
+        const i1=document.getElementById('t1').value, i2=document.getElementById('t2').value, g1=parseInt(document.getElementById('s1').value), g2=parseInt(document.getElementById('s2').value);
+        if(!i1 || !i2) return alert("اختر الفرق!");
+        await db.collection("AllMatches").add({t1:i1, t2:i2, s1:g1, s2:g2, time:Date.now()});
+        await up(i1, g1, g2); await up(i2, g2, g1); alert("تم الحفظ!");
     }
 
     async function up(id, gf, ga) {
-        const r = db.collection("MainLeague").doc(id), d = (await r.get()).data();
-        let w = gf > ga ? 1 : 0, dr = gf === ga ? 1 : 0;
-        await r.update({ played: (d.played||0)+1, pts: (d.pts||0)+(w*3+dr), gd: (d.gd||0)+(gf-ga) });
+        const r=db.collection("MainLeague").doc(id), d=(await r.get()).data();
+        let w=gf>ga?1:0, dr=gf===ga?1:0;
+        await r.update({ played:(d.played||0)+1, pts:(d.pts||0)+(w*3+dr), gd:(d.gd||0)+(gf-ga) });
     }
 
-    async function updateName() { await db.collection("MainLeague").doc(document.getElementById('editSelect').value).update({name: document.getElementById('newName').value}); alert("تم!"); }
-    
-    async function resetLeague() {
-        if(!confirm("مسح؟")) return;
+    async function rename() { await db.collection("MainLeague").doc(document.getElementById('editList').value).update({name:document.getElementById('newName').value}); alert("تم!"); }
+
+    async function resetAll() {
+        if(!confirm("مسح كل شيء؟")) return;
         for(let i=1; i<=15; i++) await db.collection("MainLeague").doc("team"+i).set({id:i, name:"فريق "+i, played:0, pts:0, gd:0});
-        alert("دوري جديد جاهز!");
+        alert("تم التصفير!");
     }
 </script>
 </body>
