@@ -19,7 +19,7 @@
         }
         body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--dark-bg); color: white; display: flex; }
         
-        .sidebar { width: 280px; background: #000; border-left: 1px solid #222; height: 100vh; position: fixed; padding: 20px; z-index: 100; }
+        .sidebar { width: 280px; background: #000; border-left: 1px solid #222; height: 100vh; position: fixed; padding: 20px; z-index: 100; overflow-y: auto; }
         .sidebar-header { font-family: 'Orbitron'; font-size: 22px; color: var(--ef-yellow); border-bottom: 2px solid var(--ef-pink); padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
         
         .nav-link { 
@@ -44,12 +44,15 @@
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; color: #aaa; font-size: 14px; }
         input, select { width: 100%; padding: 12px; background: #1a1a25; border: 1px solid #333; color: white; border-radius: 8px; outline: none; box-sizing: border-box; }
-        .btn-action { width: 100%; padding: 15px; background: var(--ef-pink); border: none; color: white; font-weight: 900; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .btn-action { width: 100%; padding: 12px; background: var(--ef-pink); border: none; color: white; font-weight: 900; border-radius: 8px; cursor: pointer; margin-top: 10px; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #000; border-radius: 10px; overflow: hidden; }
         th { background: #1a1a25; padding: 15px; color: var(--ef-yellow); text-align: center; }
         td { padding: 15px; text-align: center; border-bottom: 1px solid #111; }
         .btn-delete { color: #ff4d4d; cursor: pointer; background: none; border: none; }
+        .badge { padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        .bg-success { background: #00ff88; color: black; }
+        .bg-warning { background: orange; color: black; }
     </style>
 </head>
 <body>
@@ -58,10 +61,12 @@
         <div class="sidebar-header">PES ELITE HUB</div>
         <button class="nav-link active" onclick="openTab('overview')"><i class="fas fa-home"></i> الرئيسية</button>
         <button class="nav-link" onclick="openTab('tournaments')"><i class="fas fa-trophy"></i> إدارة البطولات</button>
+        <button class="nav-link" onclick="openTab('requests')"><i class="fas fa-user-check"></i> طلبات الانضمام</button>
+        <button class="nav-link" onclick="openTab('generator')"><i class="fas fa-calendar-alt"></i> توليد الجدول</button>
         <button class="nav-link" onclick="openTab('players')"><i class="fas fa-user-plus"></i> إدارة اللاعبين</button>
         <button class="nav-link" onclick="openTab('results')"><i class="fas fa-file-invoice"></i> تسجيل النتائج</button>
         <button class="nav-link" onclick="openTab('news')"><i class="fas fa-rss"></i> الأخبار والسيستم</button>
-        <button class="nav-link" style="color:var(--ef-pink); margin-top:100px;" onclick="auth.signOut()"><i class="fas fa-power-off"></i> خروج</button>
+        <button class="nav-link" style="color:var(--ef-pink); margin-top:50px;" onclick="auth.signOut()"><i class="fas fa-power-off"></i> خروج</button>
     </div>
 
     <div class="content">
@@ -71,14 +76,11 @@
                 <div class="stat-box"><h3>البطولات</h3><p id="stat-tours">0</p></div>
                 <div class="stat-box"><h3>اللاعبين</h3><p id="stat-players">0</p></div>
                 <div class="stat-box"><h3>المباريات</h3><p id="stat-matches">0</p></div>
-                <div class="stat-box"><h3>الجوائز</h3><p id="stat-awards">120K</p></div>
+                <div class="stat-box"><h3>الطلبات</h3><p id="stat-reqs">0</p></div>
             </div>
             <div class="glass-card">
                 <h2>آخر اللاعبين المنضمين</h2>
-                <table>
-                    <thead><tr><th>اللاعب</th><th>الحساب</th><th>ID</th><th>الإجراء</th></tr></thead>
-                    <tbody id="pList"></tbody>
-                </table>
+                <tbody id="pList"></tbody> <table id="playersTableMain"><thead><tr><th>اللاعب</th><th>ID</th><th>الإجراء</th></tr></thead><tbody id="pListBody"></tbody></table>
             </div>
         </div>
 
@@ -88,43 +90,46 @@
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
                     <div class="form-group"><label>اسم البطولة</label><input type="text" id="tourName"></div>
                     <div class="form-group"><label>رابط اللوجو</label><input type="text" id="tourLogo"></div>
-                    <div class="form-group">
-                        <label>نوع البطولة</label>
-                        <select id="tourType"><option value="league">دوري (نقاط)</option><option value="knockout">خروج مغلوب</option></select>
-                    </div>
+                    <div class="form-group"><label>نوع البطولة</label><select id="tourType"><option value="league">دوري (نقاط)</option><option value="knockout">خروج مغلوب</option></select></div>
                     <div class="form-group"><label>الجائزة</label><input type="text" id="tourPrize"></div>
                 </div>
                 <button class="btn-action" onclick="addTournament()">إضافة البطولة</button>
             </div>
+            <div class="glass-card"><h2>البطولات الجارية</h2><table><thead><tr><th>لوجو</th><th>الاسم</th><th>النوع</th><th>الإجراء</th></tr></thead><tbody id="tList"></tbody></table></div>
+        </div>
+
+        <div id="requests" class="admin-section">
             <div class="glass-card">
-                <h2>البطولات الجارية</h2>
-                <table>
-                    <thead><tr><th>اللوجو</th><th>الاسم</th><th>النوع</th><th>الإجراء</th></tr></thead>
-                    <tbody id="tList"></tbody>
-                </table>
+                <h2><i class="fas fa-user-clock"></i> طلبات الانضمام للبطولات</h2>
+                <table><thead><tr><th>اللاعب</th><th>البطولة</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="reqList"></tbody></table>
+            </div>
+        </div>
+
+        <div id="generator" class="admin-section">
+            <div class="glass-card">
+                <h2><i class="fas fa-magic"></i> مولد الجدول التلقائي</h2>
+                <div class="form-group"><label>اختر البطولة</label><select id="genTourId"></select></div>
+                <button class="btn-action" style="background:var(--ef-blue)" onclick="generateSchedule()">توليد جدول مواجهات (الكل ضد الكل)</button>
             </div>
         </div>
 
         <div id="news" class="admin-section">
             <div class="glass-card">
-                <h2><i class="fas fa-rss"></i> تحديث الأخبار العالمية</h2>
-                <input type="text" id="globalNews" placeholder="اكتب الخبر الجديد...">
-                <button class="btn-action" onclick="saveNews()">نشر الآن</button>
+                <h2>تحديث شريط الأخبار</h2>
+                <input type="text" id="globalNews" placeholder="الخبر الجديد...">
+                <button class="btn-action" onclick="saveNews()">نشر الخبر</button>
             </div>
         </div>
 
         <div id="results" class="admin-section">
             <div class="glass-card">
-                <h2><i class="fas fa-futbol"></i> تسجيل نتيجة مباراة</h2>
-                <div class="form-group">
-                    <label>اختر البطولة</label>
-                    <select id="matchTourId"></select>
-                </div>
+                <h2>تسجيل نتيجة مباراة</h2>
+                <div class="form-group"><label>البطولة</label><select id="matchTourId"></select></div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                    <div class="form-group"><label>اللاعب 1</label><input type="text" id="resP1"></div>
-                    <div class="form-group"><label>اللاعب 2</label><input type="text" id="resP2"></div>
-                    <div class="form-group"><label>أهداف 1</label><input type="number" id="resS1"></div>
-                    <div class="form-group"><label>أهداف 2</label><input type="number" id="resS2"></div>
+                    <input type="text" id="resP1" placeholder="لاعب 1">
+                    <input type="text" id="resP2" placeholder="لاعب 2">
+                    <input type="number" id="resS1" placeholder="أهداف 1">
+                    <input type="number" id="resS2" placeholder="أهداف 2">
                 </div>
                 <button class="btn-action" style="background:var(--ef-blue)" onclick="saveMatch()">اعتماد النتيجة</button>
             </div>
@@ -132,10 +137,10 @@
 
         <div id="players" class="admin-section">
             <div class="glass-card">
-                <h2><i class="fas fa-user-edit"></i> إضافة لاعب يدوياً</h2>
-                <div class="form-group"><label>Nickname</label><input type="text" id="addName"></div>
-                <div class="form-group"><label>E-Football ID</label><input type="text" id="addID"></div>
-                <button class="btn-action" onclick="addPlayer()">إضافة للنظام</button>
+                <h2>إضافة لاعب يدوياً</h2>
+                <input type="text" id="addName" placeholder="الاسم">
+                <input type="text" id="addID" placeholder="E-Football ID">
+                <button class="btn-action" onclick="addPlayer()">إضافة</button>
             </div>
         </div>
     </div>
@@ -154,7 +159,7 @@
 
         auth.onAuthStateChanged(user => {
             if(!user || user.email !== "mtag1337@gmail.com") window.location.href="login.html";
-            else { loadStats(); loadTournaments(); }
+            else { loadStats(); loadTournaments(); loadRequests(); }
         });
 
         function openTab(id) {
@@ -167,75 +172,72 @@
         function loadStats() {
             db.collection("players").onSnapshot(s => {
                 document.getElementById('stat-players').innerText = s.size;
-                let html = "";
-                s.forEach(doc => {
-                    const p = doc.data();
-                    html += `<tr><td>${p.nickname}</td><td>${p.email || 'يدوي'}</td><td>${p.efootballId}</td><td><button class="btn-delete" onclick="deleteDoc('players','${doc.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
-                });
-                document.getElementById('pList').innerHTML = html;
+                let h = ""; s.forEach(d => { const p = d.data(); h += `<tr><td>${p.nickname}</td><td>${p.efootballId}</td><td><button class="btn-delete" onclick="deleteDoc('players','${d.id}')">حذف</button></td></tr>`; });
+                document.getElementById('pListBody').innerHTML = h;
             });
             db.collection("leagueMatches").onSnapshot(s => document.getElementById('stat-matches').innerText = s.size);
             db.collection("tournaments").onSnapshot(s => document.getElementById('stat-tours').innerText = s.size);
+            db.collection("joinRequests").where("status","==","pending").onSnapshot(s => document.getElementById('stat-reqs').innerText = s.size);
         }
 
-        // --- Tournament Functions ---
         async function addTournament() {
-            const tour = {
-                name: document.getElementById('tourName').value,
-                logo: document.getElementById('tourLogo').value,
-                type: document.getElementById('tourType').value,
-                prize: document.getElementById('tourPrize').value,
-                active: true
-            };
-            await db.collection("tournaments").add(tour);
-            alert("تمت إضافة البطولة!");
+            const t = { name: document.getElementById('tourName').value, logo: document.getElementById('tourLogo').value, type: document.getElementById('tourType').value, prize: document.getElementById('tourPrize').value, active: true };
+            await db.collection("tournaments").add(t); alert("تم بنجاح!");
         }
 
         function loadTournaments() {
             db.collection("tournaments").onSnapshot(s => {
-                let listHtml = ""; let selectHtml = "";
-                s.forEach(doc => {
-                    const t = doc.data();
-                    listHtml += `<tr><td><img src="${t.logo}" width="30"></td><td>${t.name}</td><td>${t.type}</td><td><button class="btn-delete" onclick="deleteDoc('tournaments','${doc.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
-                    selectHtml += `<option value="${doc.id}">${t.name}</option>`;
+                let h = ""; let opt = "";
+                s.forEach(d => { 
+                    const t = d.data(); 
+                    h += `<tr><td><img src="${t.logo}" width="30"></td><td>${t.name}</td><td>${t.type}</td><td><button class="btn-delete" onclick="deleteDoc('tournaments','${d.id}')">حذف</button></td></tr>`;
+                    opt += `<option value="${d.id}">${t.name}</option>`;
                 });
-                document.getElementById('tList').innerHTML = listHtml;
-                document.getElementById('matchTourId').innerHTML = selectHtml;
+                document.getElementById('tList').innerHTML = h;
+                document.getElementById('matchTourId').innerHTML = opt;
+                document.getElementById('genTourId').innerHTML = opt;
             });
         }
 
-        // --- Shared Functions ---
+        function loadRequests() {
+            db.collection("joinRequests").onSnapshot(s => {
+                let h = "";
+                s.forEach(d => {
+                    const r = d.data();
+                    h += `<tr><td>${r.playerName}</td><td>${r.tourName}</td><td><span class="badge ${r.status=='pending'?'bg-warning':'bg-success'}">${r.status}</span></td>
+                    <td><button onclick="updateReq('${d.id}','approved','${r.tourId}','${r.playerEmail}')">قبول</button></td></tr>`;
+                });
+                document.getElementById('reqList').innerHTML = h;
+            });
+        }
+
+        async function updateReq(id, stat, tId, pEmail) {
+            await db.collection("joinRequests").doc(id).update({status: stat});
+            if(stat=='approved') await db.collection("tournaments").doc(tId).collection("participants").add({email: pEmail});
+            alert("تم التحديث!");
+        }
+
+        async function generateSchedule() {
+            const tId = document.getElementById('genTourId').value;
+            const snap = await db.collection("tournaments").doc(tId).collection("participants").get();
+            const players = []; snap.forEach(d => players.push(d.data().email));
+            if(players.length < 2) return alert("اللعيبة قليلين!");
+            for(let i=0; i<players.length; i++) {
+                for(let j=i+1; j<players.length; j++) {
+                    await db.collection("leagueMatches").add({ tournamentId: tId, player1: players[i], player2: players[j], score1: "-", score2: "-", status: "scheduled", time: new Date() });
+                }
+            }
+            alert("تم توليد الجدول!");
+        }
+
         async function saveMatch() {
-            const match = {
-                tournamentId: document.getElementById('matchTourId').value,
-                player1: document.getElementById('resP1').value,
-                player2: document.getElementById('resP2').value,
-                score1: document.getElementById('resS1').value,
-                score2: document.getElementById('resS2').value,
-                time: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            await db.collection("leagueMatches").add(match);
-            alert("تم تسجيل النتيجة بنجاح!");
+            const m = { tournamentId: document.getElementById('matchTourId').value, player1: document.getElementById('resP1').value, player2: document.getElementById('resP2').value, score1: document.getElementById('resS1').value, score2: document.getElementById('resS2').value, time: new Date() };
+            await db.collection("leagueMatches").add(m); alert("سُجلت!");
         }
 
-        async function saveNews() {
-            const news = document.getElementById('globalNews').value;
-            await db.collection("settings").doc("leagueConfig").set({ news: news }, { merge: true });
-            alert("تم النشر!");
-        }
-
-        async function addPlayer() {
-            await db.collection("players").add({
-                nickname: document.getElementById('addName').value,
-                efootballId: document.getElementById('addID').value,
-                joinedAt: new Date()
-            });
-            alert("تمت الإضافة!");
-        }
-
-        async function deleteDoc(col, id) {
-            if(confirm("هل أنت متأكد؟")) await db.collection(col).doc(id).delete();
-        }
+        async function deleteDoc(c, i) { if(confirm("أكيد؟")) await db.collection(c).doc(i).delete(); }
+        async function saveNews() { await db.collection("settings").doc("leagueConfig").set({news: document.getElementById('globalNews').value}, {merge:true}); alert("نُشر!"); }
+        async function addPlayer() { await db.collection("players").add({nickname: document.getElementById('addName').value, efootballId: document.getElementById('addID').value}); alert("تم!"); }
     </script>
 </body>
 </html>
