@@ -37,7 +37,7 @@
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .glass-panel { background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(10px); border-radius: 20px; padding: 25px; margin-bottom: 30px; }
 
-        /* Dashboard Styles */
+        /* Battle Pass & Dashboard */
         .battle-pass-container { display: flex; align-items: center; gap: 25px; border-right: 4px solid var(--ef-yellow); }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--ef-blue), var(--ef-pink)); width: 0%; transition: 1.5s; }
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
@@ -49,24 +49,16 @@
             box-sizing: border-box;
         }
 
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-        .gallery-item { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; border: 1px solid var(--glass-border); }
-
         .btn-main { background: var(--ef-blue); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-family: 'Cairo'; width: 100%; font-weight: bold; transition: 0.3s; }
         .btn-main:hover { opacity: 0.8; box-shadow: 0 0 15px var(--ef-blue); }
+        .btn-pending { background: #444 !important; cursor: not-allowed; }
+        .btn-accepted { background: #28a745 !important; cursor: default; }
+
+        .status-tag { font-size: 10px; padding: 2px 8px; border-radius: 5px; margin-bottom: 5px; display: inline-block; font-weight: bold; }
         
-        input[type="file"] { display: none; }
-        .upload-label { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; display: block; text-align: center; cursor: pointer; border: 1px dashed var(--ef-blue); margin-bottom: 10px; font-size: 13px; }
-
-        /* Verified Badge */
-        .v-badge { color: #1DA1F2; margin-right: 5px; font-size: 16px; display: none; }
-
-        /* Post Cards */
+        /* Posts */
         .post-card { background: rgba(255,255,255,0.04); border-radius: 15px; padding: 15px; margin-bottom: 15px; border-right: 3px solid var(--ef-blue); }
-        .post-type-tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-bottom: 5px; display: inline-block; }
-        .type-sale { background: var(--ef-pink); }
-        .type-challenge { background: var(--ef-yellow); color: black; }
-        .type-general { background: #333; }
+        .v-badge { color: #1DA1F2; margin-right: 5px; font-size: 16px; display: none; }
 
         @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
@@ -101,9 +93,11 @@
                     <div><i class="fas fa-gamepad"></i> <h3 id="statMatches">0</h3><p>المباريات</p></div>
                     <div><i class="fas fa-medal"></i> <h3 id="statRank">#--</h3><p>الترتيب</p></div>
                 </div>
+                
                 <h3 style="font-family:'Orbitron'"><i class="fas fa-fire" style="color:var(--ef-pink)"></i> ACTIVE TOURNAMENTS</h3>
-                <div id="toursList" class="dashboard-grid" style="grid-template-columns: 1fr 1fr;"></div>
+                <div id="toursList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
             </div>
+
             <div class="sidebar">
                 <div class="glass-panel">
                     <h4 style="font-family:'Orbitron'"><i class="fas fa-crown"></i> LEADERBOARD</h4>
@@ -115,52 +109,36 @@
 
     <div id="profileOverlay" class="animate__animated animate__fadeIn">
         <div style="max-width: 900px; margin: auto;">
-            <button onclick="toggleProfile()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer; margin-bottom: 20px;"><i class="fas fa-arrow-right"></i> العودة للرئيسية</button>
+            <button onclick="toggleProfile()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer; margin-bottom: 20px;"><i class="fas fa-arrow-right"></i> العودة</button>
             
             <div class="glass-panel" style="text-align:center;">
-                <div style="position: relative; width: 120px; margin: auto;">
-                    <img id="profileBigAvatar" src="" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--ef-blue); object-fit:cover;">
-                    <label for="avatarUpload" style="position:absolute; bottom:5px; right:5px; background:var(--ef-blue); width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fas fa-camera" style="font-size:12px;"></i></label>
-                </div>
+                <img id="profileBigAvatar" src="" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--ef-blue); object-fit:cover;">
                 <h2 style="font-family:'Orbitron'; margin:10px 0;">
                     <span id="profileBigName">---</span>
-                    <i id="verifiedBadge" class="fas fa-check-circle v-badge" title="حساب موثق من الإدارة"></i>
+                    <i id="verifiedBadge" class="fas fa-check-circle v-badge"></i>
                 </h2>
-                <p id="profileBigID" style="color:var(--ef-yellow); font-size: 14px;">ID: ---</p>
-                <input type="file" id="avatarUpload" accept="image/*" onchange="uploadToStorage(this, 'avatar')">
+                
+                <div style="margin: 15px 0;">
+                    <input type="text" id="avatarLinkInput" placeholder="ضع رابط صورتك هنا (اختياري)" style="width:70%; padding:8px; background:#111; border:1px solid #333; color:white; border-radius:5px;">
+                    <button onclick="updateAvatarViaLink()" class="btn-main" style="width:25%; display:inline-block; padding:8px;">تحديث</button>
+                </div>
             </div>
 
             <div class="dashboard-grid">
                 <div class="main-side">
                     <div class="glass-panel">
                         <h4><i class="fas fa-pen"></i> انشر في المجتمع</h4>
-                        <select id="postType" style="width:100%; background:#111; color:white; padding:8px; border-radius:8px; border:1px solid #333; margin-bottom:10px;">
-                            <option value="general">منشور عام</option>
-                            <option value="sale">بيع حساب 💰</option>
-                            <option value="challenge">طلب تحدي 🔥</option>
-                        </select>
-                        <textarea id="postContent" style="width:100%; background:rgba(0,0,0,0.3); color:white; border:1px solid #333; padding:10px; border-radius:10px; min-height:80px;" placeholder="ماذا يدور في ذهنك؟"></textarea>
+                        <textarea id="postContent" style="width:100%; background:rgba(0,0,0,0.3); color:white; border:1px solid #333; padding:10px; border-radius:10px;" placeholder="ماذا يدور في ذهنك؟"></textarea>
                         <button class="btn-main" onclick="saveNewPost()" style="margin-top:10px;">نشر</button>
                     </div>
                     <div id="postsContainer"></div>
                 </div>
                 <div class="sidebar">
                     <div class="glass-panel">
-                        <h4><i class="fas fa-images"></i> المعرض</h4>
-                        <label class="upload-label" for="galleryUpload"><i class="fas fa-plus"></i> إضافة صورة فوز أو تشكيلة</label>
-                        <input type="file" id="galleryUpload" accept="image/*" onchange="uploadToStorage(this, 'gallery')">
-                        <div id="userGallery" class="gallery-grid"></div>
-                    </div>
-                    <div class="glass-panel">
                         <h4><i class="fas fa-cog"></i> الإعدادات</h4>
-                        <label style="font-size: 12px; color: #aaa;">الاسم المستعار</label>
-                        <input type="text" id="editNick" style="width:100%; padding:8px; background:#111; border:1px solid #333; color:white; border-radius:5px; margin-bottom:10px;">
-                        
-                        <label style="font-size: 12px; color: #aaa;">E-Football ID (يُحفظ مرة واحدة)</label>
-                        <input type="text" id="editEFID" style="width:100%; padding:8px; background:#111; border:1px solid #333; color:white; border-radius:5px;">
-                        <small id="idWarning" style="color:var(--ef-pink); display:none; font-size:10px;">للتغيير تواصل مع الدعم الفني.</small>
-                        
-                        <button class="btn-main" onclick="saveSettings()" style="margin-top:15px;">حفظ التعديلات</button>
+                        <label>E-Football ID:</label>
+                        <input type="text" id="editEFID" style="width:100%; padding:8px; background:#111; border:1px solid #333; color:white; border-radius:5px; margin-bottom:10px;">
+                        <button class="btn-main" id="saveIdBtn" onclick="saveEFID()">حفظ الـ ID</button>
                     </div>
                 </div>
             </div>
@@ -168,25 +146,24 @@
     </div>
 
     <script>
+        // --- تهيئة Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
             authDomain: "pes-elite.firebaseapp.com",
             projectId: "pes-elite",
-            storageBucket: "pes-elite.appspot.com",
-            messagingSenderId: "407069539120",
-            appId: "1:407069539120:web:466249fa7f716266d9e6f5"
+            storageBucket: "pes-elite.appspot.com"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(), auth = firebase.auth(), storage = firebase.storage();
+        const db = firebase.firestore(), auth = firebase.auth();
 
         let userDocId = null, userData = null;
 
         auth.onAuthStateChanged(user => {
-            if(!user) window.location.href="login.html";
-            else loadAllData(user.email);
+            if(user) loadData(user.email);
+            else window.location.href="login.html";
         });
 
-        function loadAllData(email) {
+        async function loadData(email) {
             db.collection("players").where("email", "==", email).onSnapshot(snap => {
                 if(!snap.empty) {
                     userData = snap.docs[0].data();
@@ -196,124 +173,102 @@
             });
             loadLeaderboard();
             loadTournaments();
-            loadMyPosts();
+            loadPosts();
         }
 
         function updateUI() {
-            // Navbar & General
             document.getElementById('navUserName').innerText = userData.nickname;
             document.getElementById('navAvatar').src = userData.avatar || 'https://via.placeholder.com/40';
-            document.getElementById('statPoints').innerText = userData.points || 0;
-            document.getElementById('statMatches').innerText = userData.matchesPlayed || 0;
-            
-            // Profile
             document.getElementById('profileBigName').innerText = userData.nickname;
             document.getElementById('profileBigAvatar').src = userData.avatar || 'https://via.placeholder.com/120';
-            document.getElementById('profileBigID').innerText = "ID: " + (userData.efootballId || "غير معرف");
-            document.getElementById('editNick').value = userData.nickname;
-            
-            // التوثيق (يتحكم به الأدمن فقط من قاعدة البيانات)
+            document.getElementById('statPoints').innerText = userData.points || 0;
             document.getElementById('verifiedBadge').style.display = userData.isVerified ? 'inline-block' : 'none';
 
-            const idInput = document.getElementById('editEFID');
             if(userData.efootballId) {
-                idInput.value = userData.efootballId;
-                idInput.disabled = true;
-                document.getElementById('idWarning').style.display = 'block';
+                document.getElementById('editEFID').value = userData.efootballId;
+                document.getElementById('editEFID').disabled = true;
+                document.getElementById('saveIdBtn').style.display = 'none';
             }
-
-            // Gallery
-            const galleryHtml = (userData.gallery || []).map(img => `<img src="${img}" class="gallery-item">`).join('');
-            document.getElementById('userGallery').innerHTML = galleryHtml;
         }
 
         function toggleProfile() {
-            const overlay = document.getElementById('profileOverlay');
-            overlay.style.display = (overlay.style.display === 'block') ? 'none' : 'block';
+            const p = document.getElementById('profileOverlay');
+            p.style.display = (p.style.display === 'block') ? 'none' : 'block';
         }
 
-        // --- رفع الصور الحقيقي للسيرفر ---
-        async function uploadToStorage(input, type) {
-            const file = input.files[0];
-            if(!file) return;
+        // --- نظام البطولات المتطور (طلب انضمام) ---
+        async function loadTournaments() {
+            const tSnap = await db.collection("tournaments").get();
+            const rSnap = await db.collection("requests").where("playerEmail", "==", auth.currentUser.email).get();
+            
+            let statuses = {};
+            rSnap.forEach(doc => statuses[doc.data().tournamentId] = doc.data().status);
 
-            Swal.fire({ title: 'جاري الرفع...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            let html = "";
+            tSnap.forEach(doc => {
+                const t = doc.data();
+                const status = statuses[doc.id] || "none";
+                
+                let btnHtml = `<button onclick="joinTour('${doc.id}', '${t.name}')" class="btn-main">انضمام الآن</button>`;
+                if(status === "pending") btnHtml = `<button class="btn-main btn-pending" disabled>قيد الانتظار...</button>`;
+                else if(status === "accepted") btnHtml = `<button class="btn-main btn-accepted" disabled>تم قبولك ✅</button>`;
 
-            try {
-                const ref = storage.ref(`players/${auth.currentUser.uid}/${type}_${Date.now()}`);
-                await ref.put(file);
-                const url = await ref.getDownloadURL();
-
-                if(type === 'avatar') {
-                    await db.collection("players").doc(userDocId).update({ avatar: url });
-                } else {
-                    await db.collection("players").doc(userDocId).update({
-                        gallery: firebase.firestore.FieldValue.arrayUnion(url)
-                    });
-                }
-                Swal.fire('نجاح', 'تم تحديث الصورة بنجاح', 'success');
-            } catch (error) {
-                Swal.fire('خطأ', 'فشل الرفع', 'error');
-            }
+                html += `
+                    <div class="glass-panel" style="text-align:center; padding:15px;">
+                        <img src="${t.logo}" style="width:100%; height:100px; object-fit:cover; border-radius:10px;">
+                        <h4>${t.name}</h4>
+                        ${btnHtml}
+                    </div>`;
+            });
+            document.getElementById('toursList').innerHTML = html;
         }
 
-        // --- نظام المنشورات المتطور ---
+        async function joinTour(id, name) {
+            if(!userData.efootballId) return Swal.fire('تنبيه', 'سجل الـ ID الخاص بك أولاً', 'warning');
+            await db.collection("requests").add({
+                tournamentId: id,
+                tournamentName: name,
+                playerEmail: userData.email,
+                playerNickname: userData.nickname,
+                status: "pending"
+            });
+            Swal.fire('تم الإرسال', 'طلبك الآن قيد المراجعة لدى الأدمن', 'success');
+        }
+
+        // تحديث الصورة برابط (مجاني)
+        async function updateAvatarViaLink() {
+            const link = document.getElementById('avatarLinkInput').value;
+            if(!link.startsWith('http')) return;
+            await db.collection("players").doc(userDocId).update({ avatar: link });
+            Swal.fire('تم', 'تم تحديث الصورة', 'success');
+        }
+
+        async function saveEFID() {
+            const val = document.getElementById('editEFID').value;
+            if(!val) return;
+            await db.collection("players").doc(userDocId).update({ efootballId: val });
+        }
+
+        // نظام المنشورات
         async function saveNewPost() {
             const content = document.getElementById('postContent').value;
-            const type = document.getElementById('postType').value;
             if(!content.trim()) return;
-
             await db.collection("posts").add({
-                uid: auth.currentUser.uid,
                 author: userData.nickname,
                 content: content,
-                type: type,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('postContent').value = "";
-            Swal.fire('تم النشر', 'منشورك متاح الآن للجميع', 'success');
         }
 
-        function loadMyPosts() {
-            db.collection("posts").where("uid", "==", auth.currentUser.uid)
-              .orderBy("timestamp", "desc").onSnapshot(snap => {
+        function loadPosts() {
+            db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
                 let html = "";
                 snap.forEach(doc => {
                     const p = doc.data();
-                    let typeLabel = p.type === 'sale' ? 'بيع حساب' : (p.type === 'challenge' ? 'تحدي' : 'عام');
-                    let typeClass = p.type === 'sale' ? 'type-sale' : (p.type === 'challenge' ? 'type-challenge' : 'type-general');
-                    
-                    html += `
-                        <div class="post-card">
-                            <span class="post-type-tag ${typeClass}">${typeLabel}</span>
-                            <p style="margin:5px 0;">${p.content}</p>
-                            <small style="color:#555; font-size:10px;">${p.timestamp ? p.timestamp.toDate().toLocaleString('ar-EG') : 'الآن'}</small>
-                        </div>
-                    `;
+                    html += `<div class="post-card"><b>${p.author}:</b> <p>${p.content}</p></div>`;
                 });
                 document.getElementById('postsContainer').innerHTML = html;
-            });
-        }
-
-        async function saveSettings() {
-            const update = { nickname: document.getElementById('editNick').value };
-            if(!userData.efootballId) update.efootballId = document.getElementById('editEFID').value;
-            await db.collection("players").doc(userDocId).update(update);
-            Swal.fire('تم!', 'تم حفظ الإعدادات بنجاح', 'success');
-        }
-
-        function loadTournaments() {
-            db.collection("tournaments").onSnapshot(snap => {
-                let html = "";
-                snap.forEach(doc => {
-                    const t = doc.data();
-                    html += `<div class="glass-panel" style="padding:10px; font-size:12px; text-align:center;">
-                        <img src="${t.logo}" style="width:100%; height:80px; object-fit:cover; border-radius:10px; margin-bottom:10px;">
-                        <h4 style="margin:5px 0;">${t.name}</h4>
-                        <button class="btn-main" style="padding:5px; font-size:10px;">عرض التفاصيل</button>
-                    </div>`;
-                });
-                document.getElementById('toursList').innerHTML = html;
             });
         }
 
@@ -321,10 +276,7 @@
             db.collection("players").orderBy("points", "desc").limit(5).onSnapshot(snap => {
                 let html = "";
                 snap.forEach((doc, i) => {
-                    html += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <span>#${i+1} ${doc.data().nickname}</span>
-                        <span style="color:var(--ef-yellow); font-weight:bold;">${doc.data().points}</span>
-                    </div>`;
+                    html += `<div style="display:flex; justify-content:space-between; padding:5px;"><span>#${i+1} ${doc.data().nickname}</span> <b>${doc.data().points}</b></div>`;
                 });
                 document.getElementById('leaderboardList').innerHTML = html;
             });
