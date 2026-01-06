@@ -16,148 +16,162 @@
     <style>
         :root {
             --ef-blue: #0014d3; --ef-yellow: #eaff00; --ef-pink: #ff007a;
-            --dark-bg: #030305; --card-bg: rgba(17, 17, 24, 0.7);
-            --neon-glow: 0 0 20px rgba(0, 20, 211, 0.4);
+            --main-bg: #05050a; /* اللون الموحد الأساسي */
         }
 
+        /* الإعدادات العامة للخلفية الموحدة */
         body { 
-            margin: 0; font-family: 'Cairo', sans-serif; background: var(--dark-bg); color: white; 
-            overflow-x: hidden; scroll-behavior: smooth;
+            margin: 0; 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--main-bg); 
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 20, 211, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 122, 0.1) 0%, transparent 40%);
+            background-attachment: fixed; /* الخلفية ثابتة أثناء السكرول */
+            color: white; 
+            overflow-x: hidden;
         }
 
-        /* Animated Particles Canvas */
-        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        /* جزيئات متحركة خفيفة فوق الخلفية الموحدة */
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
-        /* News Ticker Professional */
+        /* شريط الأخبار المدمج */
         .news-header {
-            background: rgba(255, 0, 122, 0.15); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--ef-pink); padding: 10px 0; overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 0;
         }
-        .news-header marquee { font-weight: 900; font-family: 'Cairo'; font-size: 14px; color: #fff; }
+        .news-header marquee { font-weight: 700; color: var(--ef-yellow); }
 
-        /* Navbar Glassmorphism */
+        /* Navbar */
         .navbar {
             padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky; top: 0; z-index: 1000;
         }
-        .logo { font-family: 'Orbitron'; font-size: 26px; font-weight: 900; color: var(--ef-yellow); text-shadow: var(--neon-glow); }
-        .user-panel { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 50px; border: 1px solid #333; }
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--ef-blue); object-fit: cover; }
+        .logo { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; color: #fff; letter-spacing: 2px; }
 
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
 
-        /* Dashboard Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 50px; }
-        .stat-card { 
-            background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
-            text-align: center; position: relative; overflow: hidden; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* تصميم الكروت الموحد (Glassmorphism) */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            transition: 0.3s;
         }
-        .stat-card:hover { transform: translateY(-10px); border-color: var(--ef-blue); box-shadow: var(--neon-glow); }
-        .stat-card i { font-size: 30px; color: var(--ef-yellow); margin-bottom: 15px; }
-        .stat-card h3 { margin: 0; font-family: 'Orbitron'; font-size: 28px; color: #fff; }
-        .stat-card p { margin: 5px 0 0; font-size: 12px; color: #888; text-transform: uppercase; }
+        .glass-panel:hover { border-color: var(--ef-blue); background: rgba(255, 255, 255, 0.05); }
 
-        /* Tournament Section - Glass Effect */
-        .section-title { font-family: 'Orbitron'; color: var(--ef-yellow); margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
-        .section-title::after { content: ''; flex: 1; height: 2px; background: linear-gradient(to left, var(--ef-pink), transparent); }
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .stat-item { text-align: center; }
+        .stat-item i { font-size: 28px; color: var(--ef-blue); margin-bottom: 10px; }
+        .stat-item h3 { font-family: 'Orbitron'; font-size: 30px; margin: 0; color: var(--ef-yellow); }
 
-        .tour-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        /* Tournaments */
         .tour-card {
-            background: var(--card-bg); border-radius: 25px; overflow: hidden; border: 1px solid #222;
-            transition: 0.5s; position: relative; backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.3); border-radius: 20px; overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.4s;
         }
-        .tour-card:hover { border-color: var(--ef-blue); transform: scale(1.02); }
-        .tour-img { height: 180px; position: relative; }
-        .tour-img img { width: 100%; height: 100%; object-fit: cover; }
-        .tour-content { padding: 25px; }
-        .tour-price { color: var(--ef-yellow); font-weight: bold; font-family: 'Orbitron'; margin-bottom: 15px; display: block; }
-        
-        .btn-action {
-            width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: 900;
-            cursor: pointer; transition: 0.3s; font-family: 'Cairo';
-        }
-        .btn-join { background: var(--ef-blue); color: white; box-shadow: 0 5px 15px rgba(0, 20, 211, 0.3); }
-        .btn-join:hover { background: #fff; color: var(--ef-blue); }
+        .tour-card:hover { transform: translateY(-10px); border-color: var(--ef-pink); }
+        .tour-img { height: 150px; background: #111; position: relative; }
+        .tour-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+        .tour-body { padding: 20px; }
 
-        /* Matches Professional Design */
+        /* Matches List */
         .match-row {
-            background: rgba(255,255,255,0.03); margin-bottom: 15px; padding: 20px;
-            border-radius: 20px; display: flex; justify-content: space-around; align-items: center;
-            border: 1px solid #1a1a1a; transition: 0.3s;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; background: rgba(255,255,255,0.02); border-radius: 15px;
+            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);
         }
-        .match-row:hover { background: rgba(255,255,255,0.06); border-color: var(--ef-pink); }
-        .p-name { font-weight: 900; font-size: 16px; width: 30%; text-align: center; }
-        .score-box {
-            background: #000; padding: 10px 30px; border-radius: 10px; border: 1px solid #333;
+        .score-display {
             font-family: 'Orbitron'; font-size: 22px; color: var(--ef-yellow);
+            background: #000; padding: 8px 25px; border-radius: 50px; border: 1px solid var(--ef-blue);
         }
-        .btn-report { background: none; border: 1px solid var(--ef-pink); color: var(--ef-pink); padding: 5px 15px; border-radius: 8px; cursor: pointer; font-size: 12px; }
 
-        /* Modal Customization */
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; backdrop-filter:blur(10px); }
-        .modal-content { background:#0a0a0f; width:90%; max-width:500px; margin:50px auto; padding:40px; border-radius:30px; border:1px solid var(--ef-blue); }
-        input { width:100%; padding:12px; background:#111; border:1px solid #222; color:white; border-radius:10px; margin-top:10px; margin-bottom:20px; }
+        /* Buttons */
+        .btn-main {
+            background: var(--ef-blue); color: white; border: none; padding: 12px 25px;
+            border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s;
+            font-family: 'Cairo'; width: 100%;
+        }
+        .btn-main:hover { background: var(--ef-pink); box-shadow: 0 0 20px rgba(255, 0, 122, 0.4); }
+
+        /* Settings Modal */
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; }
+        .modal-box { 
+            background: var(--main-bg); width: 90%; max-width: 450px; margin: 100px auto; 
+            padding: 30px; border-radius: 25px; border: 1px solid var(--ef-blue); 
+        }
+        input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 10px; margin-bottom: 15px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-    <canvas id="particles"></canvas>
+    <canvas id="particles-js"></canvas>
 
     <div class="news-header">
-        <marquee id="newsTicker" scrollamount="7">... جاري جلب أحدث الأخبار والنتائج المباشرة من PES ELITE HUB</marquee>
+        <marquee id="newsText" scrollamount="6">... PES ELITE : مرحباً بك في أقوى ساحة لتنظيم بطولات بيس</marquee>
     </div>
 
     <nav class="navbar">
-        <div class="logo">PES ELITE</div>
-        <div class="user-panel">
-            <img src="" id="userAvatar" class="user-avatar" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
-            <span id="userName" style="font-weight:bold; font-size:14px;">PLAYER</span>
-            <button onclick="openSettings()" style="background:none; border:none; color:#fff; cursor:pointer;"><i class="fas fa-cog"></i></button>
-            <button onclick="auth.signOut()" style="background:none; border:none; color:var(--ef-pink); cursor:pointer;"><i class="fas fa-power-off"></i></button>
+        <div class="logo">PES <span style="color:var(--ef-blue)">ELITE</span></div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span id="userName" style="font-weight: 700; font-size: 14px; color: #ccc;">PLAYER</span>
+            <button onclick="openSettings()" style="background:none; border:1px solid #333; color:#fff; padding:6px 12px; border-radius:8px; cursor:pointer;"><i class="fas fa-cog"></i></button>
+            <button onclick="auth.signOut()" style="color:var(--ef-pink); background:none; border:none; cursor:pointer; font-size: 18px;"><i class="fas fa-power-off"></i></button>
         </div>
     </nav>
 
     <div class="container">
-        <div class="stats-grid animate__animated animate__fadeIn">
-            <div class="stat-card">
-                <i class="fas fa-shield-alt"></i>
-                <h3 id="statMatches">0</h3>
-                <p>مباريات لعبت</p>
-            </div>
-            <div class="stat-card" style="border-bottom: 4px solid var(--ef-blue);">
-                <i class="fas fa-coins"></i>
+        <div class="glass-panel stats-grid animate__animated animate__fadeIn">
+            <div class="stat-item">
+                <i class="fas fa-trophy"></i>
                 <h3 id="statPoints">0</h3>
-                <p>إجمالي النقاط</p>
+                <p>نقاطك</p>
             </div>
-            <div class="stat-card">
-                <i class="fas fa-medal"></i>
+            <div class="stat-item">
+                <i class="fas fa-gamepad"></i>
+                <h3 id="statMatches">0</h3>
+                <p>المباريات</p>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-chart-line"></i>
                 <h3 id="statRank">#--</h3>
-                <p>الترتيب الحالي</p>
+                <p>ترتيبك</p>
             </div>
         </div>
 
-        <h2 class="section-title animate__animated animate__fadeInLeft">ACTIVE TOURNAMENTS</h2>
-        <div class="tour-grid" id="toursList">
+        <h3 style="font-family:'Orbitron'; margin-bottom: 20px;"><i class="fas fa-fire" style="color:var(--ef-pink)"></i> ACTIVE TOURNAMENTS</h3>
+        <div class="tour-grid" id="toursList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             </div>
 
-        <h2 class="section-title animate__animated animate__fadeInLeft" style="margin-top:50px;">MY FIXTURES</h2>
+        <h3 style="font-family:'Orbitron'; margin-bottom: 20px;"><i class="fas fa-clock" style="color:var(--ef-blue)"></i> MY FIXTURES</h3>
         <div id="myMatchesList">
             </div>
     </div>
 
     <div id="settingsModal" class="modal">
-        <div class="modal-content animate__animated animate__zoomIn">
-            <h2 style="font-family:'Orbitron'; color:var(--ef-yellow)">ACCOUNT SETTINGS</h2>
-            <label>اسم الشهرة</label><input type="text" id="setNick">
-            <label>E-Football ID</label><input type="text" id="setEFID">
-            <label>رابط الصورة</label><input type="text" id="setAvatar">
-            <button class="btn-action btn-join" onclick="updateProfile()">حفظ البيانات</button>
-            <button onclick="closeSettings()" style="background:none; border:none; color:#666; width:100%; margin-top:15px; cursor:pointer;">إلغاء</button>
+        <div class="modal-box animate__animated animate__zoomIn">
+            <h2 style="font-family:'Orbitron'; color:var(--ef-yellow); margin-bottom: 20px;">PROFILE SETTINGS</h2>
+            <label style="font-size: 12px; color: #888;">Nickname</label>
+            <input type="text" id="setNick">
+            <label style="font-size: 12px; color: #888;">E-Football ID</label>
+            <input type="text" id="setEFID">
+            <label style="font-size: 12px; color: #888;">Avatar URL</label>
+            <input type="text" id="setAvatar">
+            <button class="btn-main" onclick="updateProfile()">حفظ البيانات</button>
+            <button onclick="closeSettings()" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer;">إلغاء</button>
         </div>
     </div>
 
     <script>
+        // Firebase Configuration (تأكد من وضع بياناتك الصحيحة هنا)
         const firebaseConfig = {
             apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
             authDomain: "pes-elite.firebaseapp.com",
@@ -169,29 +183,34 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
 
-        let userData = null;
+        let userDocId = null;
 
         auth.onAuthStateChanged(user => {
             if(!user) window.location.href="login.html";
             else {
                 loadProfile(user.email);
+                loadNews();
                 loadTours();
                 loadMatches(user.email);
-                loadNews();
             }
         });
 
         function loadProfile(email) {
             db.collection("players").where("email", "==", email).onSnapshot(snap => {
                 if(!snap.empty) {
-                    userData = snap.docs[0].data();
-                    userData.docId = snap.docs[0].id;
-                    document.getElementById('userName').innerText = userData.nickname;
-                    document.getElementById('userAvatar').src = userData.avatar || "";
-                    document.getElementById('statPoints').innerText = userData.points || 0;
-                    document.getElementById('statMatches').innerText = userData.matchesPlayed || 0;
-                    document.getElementById('statRank').innerText = "#" + (userData.rank || "--");
+                    const data = snap.docs[0].data();
+                    userDocId = snap.docs[0].id;
+                    document.getElementById('userName').innerText = data.nickname;
+                    document.getElementById('statPoints').innerText = data.points || 0;
+                    document.getElementById('statMatches').innerText = data.matchesPlayed || 0;
+                    document.getElementById('statRank').innerText = "#" + (data.rank || "--");
                 }
+            });
+        }
+
+        function loadNews() {
+            db.collection("settings").doc("leagueConfig").onSnapshot(doc => {
+                if(doc.exists) document.getElementById('newsText').innerText = doc.data().news;
             });
         }
 
@@ -201,13 +220,12 @@
                 snap.forEach(doc => {
                     const t = doc.data();
                     html += `
-                        <div class="tour-card">
+                        <div class="tour-card glass-panel">
                             <div class="tour-img"><img src="${t.logo}"></div>
-                            <div class="tour-content">
-                                <span class="tour-price">${t.prize} EGP</span>
-                                <h3 style="margin:0;">${t.name}</h3>
-                                <p style="color:#666; font-size:12px; margin-bottom:15px;">النوع: ${t.type}</p>
-                                <button class="btn-action btn-join" onclick="joinReq('${doc.id}', '${t.name}')">انضم للبطولة</button>
+                            <div class="tour-body">
+                                <h4 style="margin:0; font-family:'Orbitron'">${t.name}</h4>
+                                <p style="font-size:12px; color:var(--ef-yellow); margin: 10px 0;">الجائزة: ${t.prize} EGP</p>
+                                <button class="btn-main" onclick="joinTour('${doc.id}', '${t.name}')">انضمام للبطولة</button>
                             </div>
                         </div>`;
                 });
@@ -223,79 +241,64 @@
                     if(m.player1 === email || m.player2 === email) {
                         const opp = (m.player1 === email) ? m.player2 : m.player1;
                         html += `
-                            <div class="match-row animate__animated animate__fadeInRight">
-                                <div class="p-name">أنت</div>
-                                <div class="score-box">${m.score1} - ${m.score2}</div>
-                                <div class="p-name" style="color:var(--ef-pink)">${opp}</div>
-                                <button class="btn-report" onclick="alert('ارسل سكرين للنتيجة للادارة')">إبلاغ</button>
+                            <div class="match-row animate__animated animate__fadeInLeft">
+                                <div style="font-weight:bold;">أنت</div>
+                                <div class="score-display">${m.score1} - ${m.score2}</div>
+                                <div style="font-weight:bold; color:var(--ef-pink);">${opp}</div>
                             </div>`;
                     }
                 });
-                document.getElementById('myMatchesList').innerHTML = html || "<p style='text-align:center; color:#555;'>لا توجد مباريات مجدولة</p>";
+                document.getElementById('myMatchesList').innerHTML = html || "<p style='color:#555;'>لا يوجد مباريات مسجلة</p>";
             });
         }
 
-        function loadNews() {
-            db.collection("settings").doc("leagueConfig").onSnapshot(doc => {
-                if(doc.exists) document.getElementById('newsTicker').innerText = doc.data().news;
-            });
-        }
-
-        async function joinReq(id, name) {
+        async function joinTour(id, name) {
             await db.collection("joinRequests").add({
                 tourId: id, tourName: name, playerEmail: auth.currentUser.email,
-                playerName: userData.nickname, status: "pending", time: new Date()
+                playerName: document.getElementById('userName').innerText, status: "pending", time: new Date()
             });
-            alert("تم إرسال طلب الانضمام!");
+            alert("تم إرسال طلبك للإدارة!");
         }
 
-        function openSettings() { 
-            document.getElementById('settingsModal').style.display='block'; 
-            document.getElementById('setNick').value = userData.nickname;
-            document.getElementById('setEFID').value = userData.efootballId;
-            document.getElementById('setAvatar').value = userData.avatar || "";
-        }
+        function openSettings() { document.getElementById('settingsModal').style.display='block'; }
         function closeSettings() { document.getElementById('settingsModal').style.display='none'; }
-        
+
         async function updateProfile() {
-            await db.collection("players").doc(userData.docId).update({
+            await db.collection("players").doc(userDocId).update({
                 nickname: document.getElementById('setNick').value,
                 efootballId: document.getElementById('setEFID').value,
                 avatar: document.getElementById('setAvatar').value
             });
-            alert("تم التحديث!"); closeSettings();
+            alert("تم تحديث البيانات!"); closeSettings();
         }
 
-        // Particle Background Logic
-        const canvas = document.getElementById('particles');
+        // Particle Animation (خلفية موحدة)
+        const canvas = document.getElementById('particles-js');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particlesArray = [];
-        class Particle {
+        let particles = [];
+        class P {
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if(this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if(this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height;
+                this.s = Math.random()*1.5; this.vx = Math.random()*0.5-0.25; this.vy = Math.random()*0.5-0.25;
             }
             draw() {
-                ctx.fillStyle = 'rgba(0, 20, 211, 0.5)';
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill();
+            }
+            move() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x<0 || this.x>canvas.width) this.vx*=-1;
+                if(this.y<0 || this.y>canvas.height) this.vy*=-1;
             }
         }
-        function init() { for(let i=0; i<80; i++) particlesArray.push(new Particle()); }
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particlesArray.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
+        for(let i=0; i<60; i++) particles.push(new P());
+        function anim() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach(p=>{p.move(); p.draw();});
+            requestAnimationFrame(anim);
         }
-        init(); animate();
+        anim();
     </script>
 </body>
 </html>
