@@ -2,80 +2,243 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>PES ELITE | ADMIN FINAL</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PES ELITE | PRO ADMIN SYSTEM</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { background: #050508; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .card { background: #12121a; border: 1px solid #eaff00; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; }
-        input, select { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; }
-        .btn { width: 90%; padding: 12px; background: #eaff00; color: #000; border: none; font-weight: bold; cursor: pointer; }
+        :root {
+            --ef-blue: #0014d3; --ef-yellow: #eaff00; --ef-pink: #ff007a;
+            --dark-bg: #050508; --card-bg: #111118;
+        }
+        body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--dark-bg); color: white; display: flex; }
+        
+        .sidebar { width: 280px; background: #000; border-left: 1px solid #222; height: 100vh; position: fixed; padding: 20px; z-index: 100; overflow-y: auto; }
+        .sidebar-header { font-family: 'Orbitron'; font-size: 22px; color: var(--ef-yellow); border-bottom: 2px solid var(--ef-pink); padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
+        
+        .nav-link { 
+            width: 100%; padding: 15px; margin-bottom: 8px; border-radius: 10px; border: none; 
+            background: none; color: #888; text-align: right; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 12px; font-weight: bold;
+        }
+        .nav-link:hover, .nav-link.active { background: var(--ef-blue); color: white; box-shadow: 0 5px 15px rgba(0,20,211,0.4); }
+
+        .content { margin-right: 280px; flex: 1; padding: 40px; }
+        .admin-section { display: none; animation: slideUp 0.4s ease; }
+        .admin-section.active { display: block; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-card { background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid #222; margin-bottom: 25px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-box { background: var(--card-bg); padding: 20px; border-radius: 15px; border-bottom: 4px solid var(--ef-blue); text-align: center; }
+        .stat-box h3 { font-size: 14px; color: #666; margin: 0; }
+        .stat-box p { font-size: 28px; font-family: 'Orbitron'; margin: 10px 0 0; color: var(--ef-yellow); }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; color: #aaa; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; background: #1a1a25; border: 1px solid #333; color: white; border-radius: 8px; outline: none; box-sizing: border-box; }
+        .btn-action { width: 100%; padding: 12px; background: var(--ef-pink); border: none; color: white; font-weight: 900; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #000; border-radius: 10px; overflow: hidden; }
+        th { background: #1a1a25; padding: 15px; color: var(--ef-yellow); text-align: center; }
+        td { padding: 15px; text-align: center; border-bottom: 1px solid #111; }
+        .btn-delete { color: #ff4d4d; cursor: pointer; background: none; border: none; }
+        .badge { padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        .bg-success { background: #00ff88; color: black; }
+        .bg-warning { background: orange; color: black; }
     </style>
 </head>
 <body>
-    <div id="auth-gate" class="card">
-        <h2>🔒 تسجيل دخول الأدمن</h2>
-        <button class="btn" onclick="login()">دخول بواسطة Google</button>
-        <div id="pass-area" style="display:none; margin-top:15px;">
-            <input type="password" id="sk" placeholder="كلمة السر">
-            <button class="btn" onclick="openPanel()">فتح اللوحة</button>
+
+    <div class="sidebar">
+        <div class="sidebar-header">PES ELITE HUB</div>
+        <button class="nav-link active" onclick="openTab('overview')"><i class="fas fa-home"></i> الرئيسية</button>
+        <button class="nav-link" onclick="openTab('tournaments')"><i class="fas fa-trophy"></i> إدارة البطولات</button>
+        <button class="nav-link" onclick="openTab('requests')"><i class="fas fa-user-check"></i> طلبات الانضمام</button>
+        <button class="nav-link" onclick="openTab('generator')"><i class="fas fa-calendar-alt"></i> توليد الجدول</button>
+        <button class="nav-link" onclick="openTab('players')"><i class="fas fa-user-plus"></i> إدارة اللاعبين</button>
+        <button class="nav-link" onclick="openTab('results')"><i class="fas fa-file-invoice"></i> تسجيل النتائج</button>
+        <button class="nav-link" onclick="openTab('news')"><i class="fas fa-rss"></i> الأخبار والسيستم</button>
+        <button class="nav-link" style="color:var(--ef-pink); margin-top:50px;" onclick="auth.signOut()"><i class="fas fa-power-off"></i> خروج</button>
+    </div>
+
+    <div class="content">
+        <div id="overview" class="admin-section active">
+            <h1 style="font-family:'Orbitron'">DASHBOARD OVERVIEW</h1>
+            <div class="stats-grid">
+                <div class="stat-box"><h3>البطولات</h3><p id="stat-tours">0</p></div>
+                <div class="stat-box"><h3>اللاعبين</h3><p id="stat-players">0</p></div>
+                <div class="stat-box"><h3>المباريات</h3><p id="stat-matches">0</p></div>
+                <div class="stat-box"><h3>الطلبات</h3><p id="stat-reqs">0</p></div>
+            </div>
+            <div class="glass-card">
+                <h2>آخر اللاعبين المنضمين</h2>
+                <tbody id="pList"></tbody> <table id="playersTableMain"><thead><tr><th>اللاعب</th><th>ID</th><th>الإجراء</th></tr></thead><tbody id="pListBody"></tbody></table>
+            </div>
+        </div>
+
+        <div id="tournaments" class="admin-section">
+            <div class="glass-card">
+                <h2><i class="fas fa-plus-circle"></i> إنشاء بطولة جديدة</h2>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                    <div class="form-group"><label>اسم البطولة</label><input type="text" id="tourName"></div>
+                    <div class="form-group"><label>رابط اللوجو</label><input type="text" id="tourLogo"></div>
+                    <div class="form-group"><label>نوع البطولة</label><select id="tourType"><option value="league">دوري (نقاط)</option><option value="knockout">خروج مغلوب</option></select></div>
+                    <div class="form-group"><label>الجائزة</label><input type="text" id="tourPrize"></div>
+                </div>
+                <button class="btn-action" onclick="addTournament()">إضافة البطولة</button>
+            </div>
+            <div class="glass-card"><h2>البطولات الجارية</h2><table><thead><tr><th>لوجو</th><th>الاسم</th><th>النوع</th><th>الإجراء</th></tr></thead><tbody id="tList"></tbody></table></div>
+        </div>
+
+        <div id="requests" class="admin-section">
+            <div class="glass-card">
+                <h2><i class="fas fa-user-clock"></i> طلبات الانضمام للبطولات</h2>
+                <table><thead><tr><th>اللاعب</th><th>البطولة</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="reqList"></tbody></table>
+            </div>
+        </div>
+
+        <div id="generator" class="admin-section">
+            <div class="glass-card">
+                <h2><i class="fas fa-magic"></i> مولد الجدول التلقائي</h2>
+                <div class="form-group"><label>اختر البطولة</label><select id="genTourId"></select></div>
+                <button class="btn-action" style="background:var(--ef-blue)" onclick="generateSchedule()">توليد جدول مواجهات (الكل ضد الكل)</button>
+            </div>
+        </div>
+
+        <div id="news" class="admin-section">
+            <div class="glass-card">
+                <h2>تحديث شريط الأخبار</h2>
+                <input type="text" id="globalNews" placeholder="الخبر الجديد...">
+                <button class="btn-action" onclick="saveNews()">نشر الخبر</button>
+            </div>
+        </div>
+
+        <div id="results" class="admin-section">
+            <div class="glass-card">
+                <h2>تسجيل نتيجة مباراة</h2>
+                <div class="form-group"><label>البطولة</label><select id="matchTourId"></select></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                    <input type="text" id="resP1" placeholder="لاعب 1">
+                    <input type="text" id="resP2" placeholder="لاعب 2">
+                    <input type="number" id="resS1" placeholder="أهداف 1">
+                    <input type="number" id="resS2" placeholder="أهداف 2">
+                </div>
+                <button class="btn-action" style="background:var(--ef-blue)" onclick="saveMatch()">اعتماد النتيجة</button>
+            </div>
+        </div>
+
+        <div id="players" class="admin-section">
+            <div class="glass-card">
+                <h2>إضافة لاعب يدوياً</h2>
+                <input type="text" id="addName" placeholder="الاسم">
+                <input type="text" id="addID" placeholder="E-Football ID">
+                <button class="btn-action" onclick="addPlayer()">إضافة</button>
+            </div>
         </div>
     </div>
 
-    <div id="panel" style="display:none;">
-        <div class="card">
-            <h2>⚽ تسجيل ماتش</h2>
-            <select id="t1"></select> <select id="t2"></select>
-            <input type="number" id="s1" placeholder="أهداف 1"> <input type="number" id="s2" placeholder="أهداف 2">
-            <button class="btn" onclick="addMatch()">حفظ النتيجة ✅</button>
-        </div>
-        <div class="card" style="margin-top:20px;">
-            <h2>📝 تعديل أسماء</h2>
-            <select id="editList"></select>
-            <input type="text" id="newName" placeholder="الاسم الجديد">
-            <button class="btn" onclick="rename()">تحديث الاسم 🔄</button>
-        </div>
-        <button onclick="resetLeague()" style="background:red; color:white; margin-top:30px; padding:10px;">🚨 تصفير الدوري (15 لاعب)</button>
-    </div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
+            authDomain: "pes-elite.firebaseapp.com",
+            projectId: "pes-elite",
+            storageBucket: "pes-elite.firebasestorage.app",
+            messagingSenderId: "407069539120",
+            appId: "1:407069539120:web:466249fa7f716266d9e6f5"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(), auth = firebase.auth();
 
-<script>
-    const config = { apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow", authDomain: "pes-elite.firebaseapp.com", projectId: "pes-elite", storageBucket: "pes-elite.firebasestorage.app", messagingSenderId: "407069539120", appId: "1:407069539120:web:466249fa7f716266d9e6f5" };
-    firebase.initializeApp(config);
-    const db = firebase.firestore(); const auth = firebase.auth();
-
-    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function openPanel() { if(document.getElementById('sk').value === "123456") { document.getElementById('auth-gate').style.display='none'; document.getElementById('panel').style.display='block'; load(); } }
-    
-    auth.onAuthStateChanged(u => { if(u && u.email === "mtag1337@gmail.com") document.getElementById('pass-area').style.display='block'; });
-
-    function load() {
-        db.collection("leaguePlayers").orderBy("id").onSnapshot(s => {
-            let h = '<option value="">اختر..</option>'; s.forEach(d => h+=`<option value="${d.id}">${d.data().name}</option>`);
-            document.getElementById('t1').innerHTML=h; document.getElementById('t2').innerHTML=h; document.getElementById('editList').innerHTML=h;
+        auth.onAuthStateChanged(user => {
+            if(!user || user.email !== "mtag1337@gmail.com") window.location.href="login.html";
+            else { loadStats(); loadTournaments(); loadRequests(); }
         });
-    }
 
-    async function addMatch() {
-        const i1=document.getElementById('t1').value, i2=document.getElementById('t2').value, g1=parseInt(document.getElementById('s1').value), g2=parseInt(document.getElementById('s2').value);
-        if(!i1 || !i2 || isNaN(g1)) return alert("أكمل البيانات");
-        await db.collection("leagueMatches").add({t1:i1, t2:i2, s1:g1, s2:g2, time:Date.now()});
-        await up(i1, g1, g2); await up(i2, g2, g1); alert("تم الحفظ!");
-    }
+        function openTab(id) {
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
 
-    async function up(id, gf, ga) {
-        const r=db.collection("leaguePlayers").doc(id), d=(await r.get()).data();
-        let w=gf>ga?1:0, dr=gf===ga?1:0;
-        await r.update({ played:(d.played||0)+1, pts:(d.pts||0)+(w*3+dr), gd:(d.gd||0)+(gf-ga) });
-    }
+        function loadStats() {
+            db.collection("players").onSnapshot(s => {
+                document.getElementById('stat-players').innerText = s.size;
+                let h = ""; s.forEach(d => { const p = d.data(); h += `<tr><td>${p.nickname}</td><td>${p.efootballId}</td><td><button class="btn-delete" onclick="deleteDoc('players','${d.id}')">حذف</button></td></tr>`; });
+                document.getElementById('pListBody').innerHTML = h;
+            });
+            db.collection("leagueMatches").onSnapshot(s => document.getElementById('stat-matches').innerText = s.size);
+            db.collection("tournaments").onSnapshot(s => document.getElementById('stat-tours').innerText = s.size);
+            db.collection("joinRequests").where("status","==","pending").onSnapshot(s => document.getElementById('stat-reqs').innerText = s.size);
+        }
 
-    async function rename() { await db.collection("leaguePlayers").doc(document.getElementById('editList').value).update({name:document.getElementById('newName').value}); alert("تم!"); }
+        async function addTournament() {
+            const t = { name: document.getElementById('tourName').value, logo: document.getElementById('tourLogo').value, type: document.getElementById('tourType').value, prize: document.getElementById('tourPrize').value, active: true };
+            await db.collection("tournaments").add(t); alert("تم بنجاح!");
+        }
 
-    async function resetLeague() {
-        if(!confirm("تصفير؟")) return;
-        for(let i=1; i<=15; i++) await db.collection("leaguePlayers").doc("p"+i).set({id:i, name:"لاعب "+i, played:0, pts:0, gd:0});
-        alert("تم إنشاء 15 لاعب!");
-    }
-</script>
+        function loadTournaments() {
+            db.collection("tournaments").onSnapshot(s => {
+                let h = ""; let opt = "";
+                s.forEach(d => { 
+                    const t = d.data(); 
+                    h += `<tr><td><img src="${t.logo}" width="30"></td><td>${t.name}</td><td>${t.type}</td><td><button class="btn-delete" onclick="deleteDoc('tournaments','${d.id}')">حذف</button></td></tr>`;
+                    opt += `<option value="${d.id}">${t.name}</option>`;
+                });
+                document.getElementById('tList').innerHTML = h;
+                document.getElementById('matchTourId').innerHTML = opt;
+                document.getElementById('genTourId').innerHTML = opt;
+            });
+        }
+
+        function loadRequests() {
+            db.collection("joinRequests").onSnapshot(s => {
+                let h = "";
+                s.forEach(d => {
+                    const r = d.data();
+                    h += `<tr><td>${r.playerName}</td><td>${r.tourName}</td><td><span class="badge ${r.status=='pending'?'bg-warning':'bg-success'}">${r.status}</span></td>
+                    <td><button onclick="updateReq('${d.id}','approved','${r.tourId}','${r.playerEmail}')">قبول</button></td></tr>`;
+                });
+                document.getElementById('reqList').innerHTML = h;
+            });
+        }
+
+        async function updateReq(id, stat, tId, pEmail) {
+            await db.collection("joinRequests").doc(id).update({status: stat});
+            if(stat=='approved') await db.collection("tournaments").doc(tId).collection("participants").add({email: pEmail});
+            alert("تم التحديث!");
+        }
+
+        async function generateSchedule() {
+            const tId = document.getElementById('genTourId').value;
+            const snap = await db.collection("tournaments").doc(tId).collection("participants").get();
+            const players = []; snap.forEach(d => players.push(d.data().email));
+            if(players.length < 2) return alert("اللعيبة قليلين!");
+            for(let i=0; i<players.length; i++) {
+                for(let j=i+1; j<players.length; j++) {
+                    await db.collection("leagueMatches").add({ tournamentId: tId, player1: players[i], player2: players[j], score1: "-", score2: "-", status: "scheduled", time: new Date() });
+                }
+            }
+            alert("تم توليد الجدول!");
+        }
+
+        async function saveMatch() {
+            const m = { tournamentId: document.getElementById('matchTourId').value, player1: document.getElementById('resP1').value, player2: document.getElementById('resP2').value, score1: document.getElementById('resS1').value, score2: document.getElementById('resS2').value, time: new Date() };
+            await db.collection("leagueMatches").add(m); alert("سُجلت!");
+        }
+
+        async function deleteDoc(c, i) { if(confirm("أكيد؟")) await db.collection(c).doc(i).delete(); }
+        async function saveNews() { await db.collection("settings").doc("leagueConfig").set({news: document.getElementById('globalNews').value}, {merge:true}); alert("نُشر!"); }
+        async function addPlayer() { await db.collection("players").add({nickname: document.getElementById('addName').value, efootballId: document.getElementById('addID').value}); alert("تم!"); }
+    </script>
 </body>
 </html>
+
