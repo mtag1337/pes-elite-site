@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES ELITE | ساحة البطولة</title>
+    <title>PES ELITE | PLAYER HUB</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -19,73 +19,85 @@
         }
         body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--dark-bg); color: white; }
         
-        /* Navbar */
+        /* Navbar & Profile Header */
         .navbar { background: #000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ef-blue); position: sticky; top: 0; z-index: 1000; }
         .logo { font-family: 'Orbitron'; font-size: 24px; color: var(--ef-yellow); text-decoration: none; }
-        .user-info { display: flex; align-items: center; gap: 15px; }
+        
+        .user-panel { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 50px; border: 1px solid #333; }
+        .user-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--ef-yellow); object-fit: cover; }
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
 
-        /* Tournament Cards */
-        .section-title { font-family: 'Orbitron'; border-right: 4px solid var(--ef-pink); padding-right: 15px; margin-bottom: 25px; color: var(--ef-yellow); }
-        .tour-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .tour-card { background: var(--card-bg); border-radius: 20px; overflow: hidden; border: 1px solid #222; transition: 0.3s; }
-        .tour-card:hover { transform: translateY(-10px); border-color: var(--ef-blue); }
-        .tour-banner { height: 150px; background-size: cover; background-position: center; position: relative; }
-        .tour-content { padding: 20px; }
-        .tour-badge { background: var(--ef-blue); padding: 5px 12px; border-radius: 5px; font-size: 12px; position: absolute; top: 10px; right: 10px; }
+        /* Dashboard Profile Card */
+        .profile-card { background: linear-gradient(45deg, var(--card-bg), #1a1a2e); padding: 30px; border-radius: 20px; border: 1px solid #222; display: flex; align-items: center; gap: 25px; margin-bottom: 40px; }
+        .profile-info h1 { margin: 0; font-family: 'Orbitron'; color: var(--ef-yellow); }
+        .profile-info p { margin: 5px 0; color: #aaa; font-size: 14px; }
+        .player-id-badge { background: var(--ef-blue); padding: 4px 12px; border-radius: 5px; font-family: 'Orbitron'; font-size: 12px; color: white; }
 
-        .btn-join { width: 100%; padding: 12px; background: var(--ef-pink); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .btn-join:disabled { background: #444; cursor: not-allowed; }
+        /* Settings Modal */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+        .modal-content { background: var(--card-bg); margin: 10% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; border: 1px solid var(--ef-blue); }
 
-        /* Matches Table */
-        .glass-card { background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid #222; margin-top: 40px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { color: #666; text-align: center; padding: 15px; border-bottom: 1px solid #222; }
-        td { padding: 15px; text-align: center; border-bottom: 1px solid #111; }
-        .score-box { background: #000; padding: 5px 15px; border-radius: 5px; font-family: 'Orbitron'; color: var(--ef-yellow); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #888; }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; }
 
-        .news-ticker { background: var(--ef-pink); color: white; padding: 10px; overflow: hidden; white-space: nowrap; }
-        .news-ticker span { display: inline-block; animation: marquee 20s linear infinite; font-weight: bold; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .btn-save { width: 100%; padding: 12px; background: var(--ef-blue); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .btn-settings { background: none; border: 1px solid #444; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-settings:hover { border-color: var(--ef-yellow); color: var(--ef-yellow); }
+
+        /* Matches Styling */
+        .match-row { background: #0a0a0f; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; text-align: center; border: 1px solid #1a1a1a; }
+        .score-display { font-family: 'Orbitron'; font-size: 20px; color: var(--ef-pink); font-weight: 900; }
     </style>
 </head>
 <body>
 
-    <div class="news-ticker"><span id="tickerNews">تحميل آخر الأخبار...</span></div>
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-family:'Orbitron'; color:var(--ef-yellow)">ACCOUNT SETTINGS</h2>
+            <div class="form-group">
+                <label>Nickname (اسم الشهرة)</label>
+                <input type="text" id="setNick">
+            </div>
+            <div class="form-group">
+                <label>E-Football ID</label>
+                <input type="text" id="setEFID">
+            </div>
+            <div class="form-group">
+                <label>رابط صورة البروفايل</label>
+                <input type="text" id="setAvatar">
+            </div>
+            <button class="btn-save" onclick="updateProfile()">حفظ التعديلات</button>
+            <button onclick="closeSettings()" style="background:none; border:none; color:#666; width:100%; margin-top:10px; cursor:pointer;">إغلاق</button>
+        </div>
+    </div>
 
     <nav class="navbar">
         <a href="#" class="logo">PES ELITE</a>
-        <div class="user-info">
-            <span id="userName" style="font-weight: bold;">...</span>
-            <button onclick="auth.signOut()" style="background:none; border:none; color:var(--ef-pink); cursor:pointer;"><i class="fas fa-sign-out-alt"></i></button>
+        <div class="user-panel">
+            <img src="" id="navAvatar" class="user-avatar" onerror="this.src='https://via.placeholder.com/150'">
+            <span id="navName">...</span>
+            <button class="btn-settings" onclick="openSettings()"><i class="fas fa-cog"></i></button>
         </div>
     </nav>
 
     <div class="container">
-        <h2 class="section-title">البطولات النشطة</h2>
-        <div class="tour-grid" id="toursList">
+        <div class="profile-card">
+            <img src="" id="mainAvatar" style="width:100px; height:100px; border-radius:20px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/150'">
+            <div class="profile-info">
+                <h1 id="mainName">PLAYER NAME</h1>
+                <p>إيميل الحساب: <span id="mainEmail" style="color:var(--ef-blue)">...</span></p>
+                <p>ID اللعبة: <span id="mainEFID" class="player-id-badge">لم يحدد</span></p>
             </div>
-
-        <div class="glass-card">
-            <h2 class="section-title" style="border-color: var(--ef-blue);">مبارياتي القادمة</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>البطولة</th>
-                        <th>الخصم</th>
-                        <th>النتيجة</th>
-                        <th>الحالة</th>
-                    </tr>
-                </thead>
-                <tbody id="myMatches">
-                    </tbody>
-            </table>
         </div>
+
+        <h2 style="font-family:'Orbitron'; margin-bottom:20px; border-right:4px solid var(--ef-pink); padding-right:15px;">MY SCHEDULED MATCHES</h2>
+        <div id="myMatchesGrid">
+            </div>
     </div>
 
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
             authDomain: "pes-elite.firebaseapp.com",
@@ -97,82 +109,77 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
 
+        let currentUserData = null;
+
         auth.onAuthStateChanged(user => {
             if(!user) window.location.href="login.html";
             else {
-                document.getElementById('userName').innerText = user.displayName || user.email;
-                loadTours();
+                fetchPlayerData(user);
                 loadMyMatches(user.email);
-                loadNews();
             }
         });
 
-        // 1. تحميل الأخبار من الـ Admin
-        function loadNews() {
-            db.collection("settings").doc("leagueConfig").onSnapshot(doc => {
-                if(doc.exists) document.getElementById('tickerNews').innerText = doc.data().news;
+        // جلب بيانات اللاعب من مجموعة Players
+        function fetchPlayerData(user) {
+            db.collection("players").where("email", "==", user.email).onSnapshot(snap => {
+                if(!snap.empty) {
+                    currentUserData = snap.docs[0].data();
+                    currentUserData.docId = snap.docs[0].id;
+                    
+                    // تحديث الواجهة
+                    document.getElementById('navName').innerText = currentUserData.nickname;
+                    document.getElementById('mainName').innerText = currentUserData.nickname;
+                    document.getElementById('mainEmail').innerText = user.email;
+                    document.getElementById('mainEFID').innerText = currentUserData.efootballId || "---";
+                    document.getElementById('navAvatar').src = currentUserData.avatar || "";
+                    document.getElementById('mainAvatar').src = currentUserData.avatar || "";
+                }
             });
         }
 
-        // 2. تحميل البطولات المتاحة للاشتراك
-        function loadTours() {
-            db.collection("tournaments").onSnapshot(snap => {
-                let html = "";
-                snap.forEach(doc => {
-                    const t = doc.data();
-                    html += `
-                        <div class="tour-card">
-                            <div class="tour-banner" style="background-image: url('${t.logo || 'https://via.placeholder.com/300x150'}')">
-                                <span class="tour-badge">${t.type == 'league' ? 'دوري' : 'تصفيات'}</span>
-                            </div>
-                            <div class="tour-content">
-                                <h3 style="margin-top:0">${t.name}</h3>
-                                <p style="color:#888; font-size:14px;"><i class="fas fa-gift"></i> الجائزة: ${t.prize}</p>
-                                <button class="btn-join" onclick="joinRequest('${doc.id}', '${t.name}')">طلب انضمام للبطولة</button>
-                            </div>
-                        </div>`;
-                });
-                document.getElementById('toursList').innerHTML = html;
-            });
-        }
-
-        // 3. إرسال طلب انضمام للـ Admin
-        async function joinRequest(tId, tName) {
-            const user = auth.currentUser;
-            await db.collection("joinRequests").add({
-                tourId: tId,
-                tourName: tName,
-                playerEmail: user.email,
-                playerName: user.displayName || user.email,
-                status: "pending",
-                time: new Date()
-            });
-            alert("تم إرسال طلبك للإدارة! انتظر الموافقة للبدء.");
-        }
-
-        // 4. تحميل مباريات اللاعب الحالية (فقط مبارياته هو)
+        // تحميل مبارياتي فقط
         function loadMyMatches(email) {
             db.collection("leagueMatches")
-              .where("status", "==", "scheduled")
               .onSnapshot(snap => {
                 let html = "";
                 snap.forEach(doc => {
                     const m = doc.data();
-                    // فلترة: هل اللاعب أحد طرفي المباراة؟
                     if(m.player1 === email || m.player2 === email) {
                         const opponent = (m.player1 === email) ? m.player2 : m.player1;
                         html += `
-                            <tr>
-                                <td>${m.tournamentId}</td> <td>${opponent}</td>
-                                <td><span class="score-box">${m.score1} - ${m.score2}</span></td>
-                                <td style="color:var(--ef-yellow)">مجدولة</td>
-                            </tr>`;
+                            <div class="match-row">
+                                <div style="font-weight:bold; color:#888;">أنت</div>
+                                <div class="score-display">${m.score1} - ${m.score2}</div>
+                                <div style="color:var(--ef-yellow)">${opponent}</div>
+                            </div>`;
                     }
                 });
-                document.getElementById('myMatches').innerHTML = html || "<tr><td colspan='4'>لا توجد مباريات قادمة حالياً</td></tr>";
+                document.getElementById('myMatchesGrid').innerHTML = html || "<p>لا توجد مباريات مجدولة لك حالياً.</p>";
             });
+        }
+
+        // إعدادات الحساب
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'block';
+            if(currentUserData) {
+                document.getElementById('setNick').value = currentUserData.nickname;
+                document.getElementById('setEFID').value = currentUserData.efootballId;
+                document.getElementById('setAvatar').value = currentUserData.avatar || "";
+            }
+        }
+
+        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+
+        async function updateProfile() {
+            if(!currentUserData) return;
+            await db.collection("players").doc(currentUserData.docId).update({
+                nickname: document.getElementById('setNick').value,
+                efootballId: document.getElementById('setEFID').value,
+                avatar: document.getElementById('setAvatar').value
+            });
+            alert("تم تحديث بياناتك بنجاح!");
+            closeSettings();
         }
     </script>
 </body>
 </html>
-
