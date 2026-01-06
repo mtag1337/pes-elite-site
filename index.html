@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,32 +33,31 @@
 
         /* Navbar */
         .navbar { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 1000; }
-        .logo { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; color: #fff; letter-spacing: 2px; }
+        .nav-user-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ef-blue); cursor: pointer; object-fit: cover; }
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
 
-        .glass-panel { background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(10px); border-radius: 20px; padding: 25px; margin-bottom: 30px; transition: 0.3s; }
-        
-        /* Profile Header */
-        .profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
-        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--ef-blue); object-fit: cover; background: #111; }
+        /* Glass Panel */
+        .glass-panel { background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(10px); border-radius: 20px; padding: 25px; margin-bottom: 30px; }
 
-        /* Social Feed & Gallery */
-        .post-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 15px; color: white; padding: 15px; margin-bottom: 10px; resize: none; font-family: 'Cairo'; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
-        .gallery-item { aspect-ratio: 1; border-radius: 10px; object-fit: cover; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
-        .gallery-item:hover { border-color: var(--ef-yellow); transform: scale(1.05); }
-
-        /* Stats */
-        .stat-item h3 { font-family: 'Orbitron'; font-size: 24px; margin: 0; color: var(--ef-yellow); }
+        /* Dashboard Styles */
+        .battle-pass-container { display: flex; align-items: center; gap: 25px; border-right: 4px solid var(--ef-yellow); }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--ef-blue), var(--ef-pink)); width: 0%; transition: 1.5s; }
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
 
-        /* Buttons & Inputs */
-        .btn-main { background: var(--ef-blue); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; }
-        .btn-main:hover { background: var(--ef-pink); }
-        .btn-support { background: #25D366; color: white; padding: 8px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 5px; }
+        /* Profile Overlay (The Hidden Page) */
+        #profileOverlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--main-bg); z-index: 3000; overflow-y: auto; padding: 20px;
+            box-sizing: border-box;
+        }
 
-        .id-locked { background: rgba(255,0,0,0.1) !important; border-color: #500 !important; color: #aaa !important; cursor: not-allowed; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .gallery-item { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; border: 1px solid var(--glass-border); }
+
+        .btn-main { background: var(--ef-blue); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-family: 'Cairo'; width: 100%; font-weight: bold; }
+        input[type="file"] { display: none; }
+        .upload-label { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; display: block; text-align: center; cursor: pointer; border: 1px dashed var(--ef-blue); margin-bottom: 10px; }
 
         @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
@@ -67,202 +67,215 @@
     <canvas id="particles-js"></canvas>
 
     <nav class="navbar">
-        <div class="logo">PES <span style="color:var(--ef-blue)">ELITE</span></div>
+        <div class="logo" style="font-family: 'Orbitron'; font-weight: 900;">PES <span style="color:var(--ef-blue)">ELITE</span></div>
         <div style="display: flex; align-items: center; gap: 15px;">
-            <span id="userNameHeader" style="font-weight: 700;">PLAYER</span>
-            <button onclick="openSettings()" style="background:none; border:1px solid #333; color:#fff; padding:6px 12px; border-radius:8px; cursor:pointer;"><i class="fas fa-user-edit"></i></button>
+            <span id="navUserName" style="font-weight: 700;">PLAYER</span>
+            <img id="navAvatar" src="https://via.placeholder.com/40" class="nav-user-img" onclick="toggleProfile()">
             <button onclick="auth.signOut()" style="color:var(--ef-pink); background:none; border:none; cursor:pointer;"><i class="fas fa-power-off"></i></button>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="glass-panel profile-header animate__animated animate__fadeIn">
-            <img src="" id="userAvatarMain" class="profile-avatar" alt="Avatar">
-            <div>
-                <h2 id="userNickMain" style="margin:0; font-family:'Orbitron';">---</h2>
-                <p id="userIDMain" style="margin:5px 0; color:var(--ef-yellow); font-size:14px;">ID: --------</p>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <span class="badge" style="background:var(--ef-blue); padding:4px 10px; border-radius:20px; font-size:10px;">PRO PLAYER</span>
-                    <span id="verificationStatus" style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:20px; font-size:10px;"><i class="fas fa-check-circle"></i> موثق</span>
+    <div class="container" id="mainDashboard">
+        <div class="glass-panel battle-pass-container animate__animated animate__fadeInDown">
+            <div id="playerLevel" style="font-family:'Orbitron'; font-weight:900; background:black; padding:15px; border-radius:50%; border:2px solid var(--ef-blue);">LV 1</div>
+            <div style="flex:1">
+                <div style="display:flex; justify-content:space-between; font-size:12px;"><span>BATTLE XP</span> <span id="xpText">0/1000</span></div>
+                <div style="height:10px; background:#000; border-radius:10px; margin-top:5px; overflow:hidden;">
+                    <div id="xpFill" class="progress-fill"></div>
                 </div>
             </div>
+            <div style="text-align:center;"><i class="fas fa-coins" style="color:var(--ef-yellow)"></i> <div id="userCoins">0</div></div>
         </div>
 
         <div class="dashboard-grid">
             <div class="main-side">
-                <div class="glass-panel">
-                    <h4 style="margin-top:0;"><i class="fas fa-pen-nib"></i> انشر تحديثاً أو إعلان بيع حساب</h4>
-                    <textarea id="postContent" class="post-input" placeholder="بماذا تفكر؟ (بيع حساب، طلب تحدي، فوز ساحق...)"></textarea>
-                    <button class="btn-main" onclick="addPost()" style="width: auto; padding: 8px 30px;">نشر الآن</button>
+                <div class="glass-panel" style="display:grid; grid-template-columns:repeat(3,1fr); text-align:center;">
+                    <div><i class="fas fa-trophy"></i> <h3 id="statPoints">0</h3><p>النقاط</p></div>
+                    <div><i class="fas fa-gamepad"></i> <h3 id="statMatches">0</h3><p>المباريات</p></div>
+                    <div><i class="fas fa-medal"></i> <h3 id="statRank">#--</h3><p>الترتيب</p></div>
                 </div>
-
-                <div id="postsContainer">
-                    </div>
+                <h3 style="font-family:'Orbitron'"><i class="fas fa-fire" style="color:var(--ef-pink)"></i> ACTIVE TOURNAMENTS</h3>
+                <div id="toursList" class="dashboard-grid" style="grid-template-columns: 1fr 1fr;"></div>
             </div>
-
             <div class="sidebar">
                 <div class="glass-panel">
-                    <h4 style="margin-top:0;"><i class="fas fa-images"></i> معرض الصور</h4>
-                    <input type="text" id="imgUrlInput" placeholder="رابط الصورة (URL)" style="font-size: 12px; margin-bottom: 5px;">
-                    <button onclick="addToGallery()" class="btn-main" style="font-size: 11px; padding: 5px;">إضافة للمعرض</button>
-                    <div class="gallery-grid" id="userGallery">
-                        </div>
-                </div>
-
-                <div class="glass-panel">
-                    <h4 style="margin-top:0;"><i class="fas fa-headset"></i> الدعم الفني</h4>
-                    <p style="font-size: 11px; color: #888;">لتغيير الـ ID أو حل مشاكل الحساب:</p>
-                    <a href="https://wa.me/201234567890" target="_blank" class="btn-support">
-                        <i class="fab fa-whatsapp"></i> واتساب
-                    </a>
-                    <a href="mailto:support@peselite.com" class="btn-support" style="background: #444;">
-                        <i class="fas fa-envelope"></i> البريد الإلكتروني
-                    </a>
+                    <h4 style="font-family:'Orbitron'"><i class="fas fa-crown"></i> LEADERBOARD</h4>
+                    <div id="leaderboardList"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="settingsModal" class="modal">
-        <div class="modal-box animate__animated animate__zoomIn">
-            <h2 style="font-family:'Orbitron'; color:var(--ef-yellow);">تعديل البيانات</h2>
+    <div id="profileOverlay" class="animate__animated animate__fadeIn">
+        <div style="max-width: 800px; margin: auto;">
+            <button onclick="toggleProfile()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;"><i class="fas fa-arrow-right"></i> العودة للرئيسية</button>
             
-            <label style="font-size: 12px; color: #888;">الاسم المستعار</label>
-            <input type="text" id="setNick">
-            
-            <label style="font-size: 12px; color: #888;">E-Football ID (يعدل لمرة واحدة)</label>
-            <input type="text" id="setEFID" placeholder="مثال: 123-456-789">
-            
-            <label style="font-size: 12px; color: #888;">رابط صورة البروفايل</label>
-            <input type="text" id="setAvatar">
-            
-            <button class="btn-main" onclick="updateProfile()">حفظ التغييرات</button>
-            <button onclick="closeSettings()" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer;">إلغاء</button>
+            <div class="glass-panel" style="margin-top:20px; text-align:center;">
+                <img id="profileBigAvatar" src="" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--ef-blue); object-fit:cover;">
+                <h2 id="profileBigName" style="font-family:'Orbitron'; margin:10px 0;">---</h2>
+                <p id="profileBigID" style="color:var(--ef-yellow)">ID: ---</p>
+                
+                <label class="upload-label" for="avatarUpload"><i class="fas fa-camera"></i> تغيير صورة البروفايل</label>
+                <input type="file" id="avatarUpload" accept="image/*" onchange="uploadImage(this, 'avatar')">
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="main-side">
+                    <div class="glass-panel">
+                        <h4><i class="fas fa-pen"></i> انشر شيئاً</h4>
+                        <textarea id="postContent" style="width:100%; background:rgba(0,0,0,0.3); color:white; border:1px solid #333; padding:10px; border-radius:10px;" placeholder="ماذا يدور في ذهنك؟"></textarea>
+                        <button class="btn-main" onclick="addPost()" style="margin-top:10px;">نشر</button>
+                    </div>
+                    <div id="postsContainer"></div>
+                </div>
+                <div class="sidebar">
+                    <div class="glass-panel">
+                        <h4><i class="fas fa-images"></i> المعرض</h4>
+                        <label class="upload-label" for="galleryUpload" style="font-size:12px;"><i class="fas fa-plus"></i> إضافة صورة</label>
+                        <input type="file" id="galleryUpload" accept="image/*" onchange="uploadImage(this, 'gallery')">
+                        <div id="userGallery" class="gallery-grid"></div>
+                    </div>
+                    <div class="glass-panel">
+                        <h4><i class="fas fa-cog"></i> الإعدادات</h4>
+                        <label>الاسم المستعار</label>
+                        <input type="text" id="editNick" style="width:100%; padding:8px; background:#111; border:1px solid #333; color:white; border-radius:5px; margin-bottom:10px;">
+                        
+                        <label>E-Football ID</label>
+                        <input type="text" id="editEFID" style="width:100%; padding:8px; background:#111; border:1px solid #333; color:white; border-radius:5px;">
+                        <small id="idWarning" style="color:var(--ef-pink); display:none; font-size:10px;">لا يمكن تغيير الـ ID بعد حفظه، تواصل مع الدعم.</small>
+                        
+                        <button class="btn-main" onclick="saveSettings()" style="margin-top:15px;">حفظ التعديلات</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Firebase Config (Keep your existing config)
+        // Firebase Configuration (تأكد من استخدام بياناتك الصحيحة)
         const firebaseConfig = {
             apiKey: "AIzaSyCYAtj7gB7bfXPPSRojddCzhIyUMN7Tnow",
             authDomain: "pes-elite.firebaseapp.com",
             projectId: "pes-elite",
-            storageBucket: "pes-elite.firebasestorage.app",
+            storageBucket: "pes-elite.appspot.com", // تأكد من صحة هذا الرابط
             messagingSenderId: "407069539120",
             appId: "1:407069539120:web:466249fa7f716266d9e6f5"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(), auth = firebase.auth();
+        const db = firebase.firestore(), auth = firebase.auth(), storage = firebase.storage();
 
         let userDocId = null;
-        let currentUserData = null;
+        let userData = null;
 
         auth.onAuthStateChanged(user => {
             if(!user) window.location.href="login.html";
             else {
-                loadProfile(user.email);
-                loadPosts(user.email);
+                loadAllData(user.email);
             }
         });
 
-        function loadProfile(email) {
+        function loadAllData(email) {
+            // Load Profile
             db.collection("players").where("email", "==", email).onSnapshot(snap => {
                 if(!snap.empty) {
-                    const data = snap.docs[0].data();
+                    userData = snap.docs[0].data();
                     userDocId = snap.docs[0].id;
-                    currentUserData = data;
-
-                    // Update UI
-                    document.getElementById('userNameHeader').innerText = data.nickname;
-                    document.getElementById('userNickMain').innerText = data.nickname;
-                    document.getElementById('userAvatarMain').src = data.avatar || 'https://via.placeholder.com/100';
-                    document.getElementById('userIDMain').innerText = "ID: " + (data.efootballId || "لم يتم الربط");
-                    
-                    // Fill Settings Fields
-                    document.getElementById('setNick').value = data.nickname;
-                    document.getElementById('setAvatar').value = data.avatar || '';
-                    
-                    // Lock ID Field logic
-                    const idInput = document.getElementById('setEFID');
-                    if(data.efootballId) {
-                        idInput.value = data.efootballId;
-                        idInput.disabled = true;
-                        idInput.classList.add('id-locked');
-                    }
-
-                    // Load Gallery
-                    renderGallery(data.gallery || []);
+                    updateUI();
                 }
             });
+            loadLeaderboard();
+            loadTournaments();
+            loadPosts(email);
         }
 
-        async function updateProfile() {
-            const updateData = {
-                nickname: document.getElementById('setNick').value,
-                avatar: document.getElementById('setAvatar').value
-            };
-
-            // Only update EFID if it wasn't already set
-            if(!currentUserData.efootballId) {
-                const newID = document.getElementById('setEFID').value;
-                if(newID) updateData.efootballId = newID;
+        function updateUI() {
+            // Nav & Dashboard
+            document.getElementById('navUserName').innerText = userData.nickname;
+            document.getElementById('navAvatar').src = userData.avatar || 'https://via.placeholder.com/40';
+            document.getElementById('statPoints').innerText = userData.points || 0;
+            document.getElementById('statMatches').innerText = userData.matchesPlayed || 0;
+            
+            // Profile Overlay
+            document.getElementById('profileBigName').innerText = userData.nickname;
+            document.getElementById('profileBigAvatar').src = userData.avatar || 'https://via.placeholder.com/120';
+            document.getElementById('profileBigID').innerText = "ID: " + (userData.efootballId || "غير معرف");
+            document.getElementById('editNick').value = userData.nickname;
+            
+            const idInput = document.getElementById('editEFID');
+            if(userData.efootballId) {
+                idInput.value = userData.efootballId;
+                idInput.disabled = true;
+                document.getElementById('idWarning').style.display = 'block';
             }
 
-            await db.collection("players").doc(userDocId).update(updateData);
-            alert("تم تحديث البيانات بنجاح!");
-            closeSettings();
+            // Gallery
+            const galleryHtml = (userData.gallery || []).map(img => `<img src="${img}" class="gallery-item">`).join('');
+            document.getElementById('userGallery').innerHTML = galleryHtml;
         }
 
-        // Gallery Functions
-        function renderGallery(imgs) {
-            const container = document.getElementById('userGallery');
-            container.innerHTML = imgs.map(img => `<img src="${img}" class="gallery-item" onclick="window.open('${img}')">`).join('');
+        function toggleProfile() {
+            const overlay = document.getElementById('profileOverlay');
+            overlay.style.display = (overlay.style.display === 'block') ? 'none' : 'block';
         }
 
-        async function addToGallery() {
-            const url = document.getElementById('imgUrlInput').value;
-            if(!url) return;
-            await db.collection("players").doc(userDocId).update({
-                gallery: firebase.firestore.FieldValue.arrayUnion(url)
-            });
-            document.getElementById('imgUrlInput').value = "";
+        // Image Upload to Firebase Storage
+        async function uploadImage(input, type) {
+            const file = input.files[0];
+            if(!file) return;
+            
+            const ref = storage.ref(`players/${auth.currentUser.uid}/${type}_${Date.now()}`);
+            alert("جاري التحميل... انتظر قليلاً");
+            
+            await ref.put(file);
+            const url = await ref.getDownloadURL();
+            
+            if(type === 'avatar') {
+                await db.collection("players").doc(userDocId).update({ avatar: url });
+            } else {
+                await db.collection("players").doc(userDocId).update({
+                    gallery: firebase.firestore.FieldValue.arrayUnion(url)
+                });
+            }
+            alert("تم الرفع بنجاح!");
         }
 
-        // Post Functions (Simple Feed)
-        async function addPost() {
-            const content = document.getElementById('postContent').value;
-            if(!content) return;
-            await db.collection("posts").add({
-                authorEmail: auth.currentUser.email,
-                authorName: currentUserData.nickname,
-                authorAvatar: currentUserData.avatar,
-                content: content,
-                time: new Date()
-            });
-            document.getElementById('postContent').value = "";
+        async function saveSettings() {
+            const update = { nickname: document.getElementById('editNick').value };
+            if(!userData.efootballId) {
+                update.efootballId = document.getElementById('editEFID').value;
+            }
+            await db.collection("players").doc(userDocId).update(update);
+            alert("تم الحفظ!");
         }
 
-        function loadPosts(email) {
-            db.collection("posts").where("authorEmail", "==", email).orderBy("time", "desc").onSnapshot(snap => {
+        // --- Keep your existing Load functions here (Tournaments, Leaderboard, Posts) ---
+        function loadTournaments() {
+            db.collection("tournaments").onSnapshot(snap => {
                 let html = "";
                 snap.forEach(doc => {
-                    const p = doc.data();
-                    html += `
-                        <div class="glass-panel animate__animated animate__fadeInUp" style="padding:15px; border-right: 3px solid var(--ef-pink);">
-                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                                <img src="${p.authorAvatar}" style="width:30px; height:30px; border-radius:50%;">
-                                <strong style="font-size:12px;">${p.authorName}</strong>
-                                <small style="color:#666; font-size:10px;">${p.time.toDate().toLocaleString()}</small>
-                            </div>
-                            <p style="margin:0; font-size:14px;">${p.content}</p>
-                        </div>`;
+                    const t = doc.data();
+                    html += `<div class="glass-panel" style="padding:10px; font-size:12px;">
+                        <img src="${t.logo}" style="width:100%; height:80px; object-fit:cover; border-radius:10px;">
+                        <h4>${t.name}</h4>
+                        <button class="btn-main" style="padding:5px;">Join</button>
+                    </div>`;
                 });
-                document.getElementById('postsContainer').innerHTML = html;
+                document.getElementById('toursList').innerHTML = html;
             });
         }
 
-        function openSettings() { document.getElementById('settingsModal').style.display='block'; }
-        function closeSettings() { document.getElementById('settingsModal').style.display='none'; }
+        function loadLeaderboard() {
+            db.collection("players").orderBy("points", "desc").limit(5).onSnapshot(snap => {
+                let html = "";
+                snap.forEach((doc, i) => {
+                    html += `<div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #111;">
+                        <span>#${i+1} ${doc.data().nickname}</span>
+                        <span style="color:var(--ef-yellow)">${doc.data().points}</span>
+                    </div>`;
+                });
+                document.getElementById('leaderboardList').innerHTML = html;
+            });
+        }
     </script>
 </body>
 </html>
